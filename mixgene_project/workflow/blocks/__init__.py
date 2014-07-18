@@ -6,24 +6,25 @@ from merge_gene_set_annotation import MergeGeneSetWithPlatformAnnotation
 from globaltest import GlobalTest
 from user_upload import UserUpload, UserUploadComplex, UploadInteraction, UploadGeneSets
 from expression_sets_merge import MergeExpressionSets
-from workflow.blocks.aggregation import SubAggregation, SvdAggregation
-from workflow.blocks.aggregation import GeneSetAgg
-from workflow.blocks.classifiers import GaussianNb, DecisionTree, RandomForest, \
+from aggregation import SubAggregation, SvdAggregation
+from aggregation import GeneSetAgg
+from classifiers import GaussianNb, DecisionTree, RandomForest, \
     KnnClassifier, LinearSVM, KernelSvm
-from workflow.blocks.custom_iterator import CustomIterator
-from workflow.blocks.filter_by_bi import FilterByInteraction
-from workflow.blocks.mass_upload import MassUpload
+from custom_iterator import CustomIterator
+from filter_by_bi import FilterByInteraction
+from mass_upload import MassUpload
 
-from workflow.blocks.multi_features import MultiFeature
-from workflow.blocks.box_plot import BoxPlot
-from workflow.blocks.pca_visualize import PcaVisualize
-from workflow.blocks.rc_table import RenderTable
-from workflow.blocks.feature_selection import SvmrfeRanking, \
+from multi_features import MultiFeature
+from box_plot import BoxPlot
+from pca_visualize import PcaVisualize
+from rc_table import RenderTable
+from feature_selection import SvmrfeRanking, \
     SvmrfeRestrictedRanking, TTestRanking, RandomRanking, FeatureSelectionByCut
-from workflow.blocks.table_result_view import TableResultView
+from table_result_view import TableResultView
+from paper import PaperBlock
 
 
-from workflow.blocks.blocks_pallet import block_classes_by_name, blocks_by_group
+from blocks_pallet import block_classes_by_name, blocks_by_group
 
 
 def get_block_class_by_name(name):

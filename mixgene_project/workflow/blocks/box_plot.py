@@ -8,7 +8,7 @@ from webapp.tasks import wrapper_task
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField
 
-from workflow.blocks.rc_vizualize import RcVisualizer
+from rc_vizualize import RcVisualizer
 
 from wrappers.boxplot_stats import boxplot_stats
 

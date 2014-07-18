@@ -7,7 +7,7 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inpu
 
 from workflow.blocks.generic import GenericBlock, save_params_actions_list, execute_block_actions_list
 
-from wrappers.aggregation import aggregation_task
+from wrappers.aggregation.aggregation import aggregation_task
 
 
 def filter_by_bi(

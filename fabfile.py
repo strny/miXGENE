@@ -11,18 +11,18 @@ CONFIG = {
 }
 
 
-def prod():
-    env.user = "kost"  # create mixgene user
-    env.hosts = ["mixgene.felk.cvut.cz"]
-    CONFIG["ROOT_DIR"] = "/home/kost"
-    CONFIG["RES_DIR"] = "/home/kost/res"
-    CONFIG["PREFIX"] = "production"
+#def prod():
+#    env.user = "kost"  # create mixgene user
+#    env.hosts = ["mixgene.felk.cvut.cz"]
+#    CONFIG["ROOT_DIR"] = "/home/kost"
+#    CONFIG["RES_DIR"] = "/home/kost/res"
+#    CONFIG["PREFIX"] = "production"
 
 
 def local():
     env.hosts = ["127.0.0.1"]
     CONFIG["ROOT_DIR"] = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-    CONFIG["RES_DIR"] = "/home/kost/res/mixgene_mixgene_workdir"
+    CONFIG["RES_DIR"] = "/Migration/skola/phd/projects/mixgene_res"
     CONFIG["PREFIX"] = "development"
     print CONFIG
 
@@ -210,16 +210,16 @@ def run_status():
 
 
 def initial_install():
-    debian_whezzy_backports()
+#    debian_whezzy_backports()
     basic_packages()
     install_node_npm()
     install_r_packages()
 
     configure_supervisor()
-    put_nginx_conf()
+ #   put_nginx_conf()
 
-    git_clone()
+#    git_clone()
     mk_dirs()
-    update_from_gh()
+#    update_from_gh()
 
     start_all()

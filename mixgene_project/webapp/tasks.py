@@ -11,6 +11,7 @@ from webapp.notification import AllUpdated, NotifyMode
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+
 @task(name="webapp.tasks.auto_exec")
 def auto_exec_task(exp, scope_name, is_init=False):
     r = get_redis_instance()

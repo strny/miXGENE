@@ -5,7 +5,7 @@ from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
     OutputBlockField
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
-from wrappers.aggregation import aggregation_task
+from wrappers.aggregation.aggregation import aggregation_task
 
 def do_gs_agg(
     exp, block,

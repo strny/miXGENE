@@ -1,5 +1,6 @@
 # Django settings for mixgene project.
-MAIN_LOG_LEVEL = "INFO"
+MAIN_LOG_LEVEL = "DEBUG"
+DEBUG = True
 
 from local_settings import *
 
@@ -40,7 +41,7 @@ BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 360000} # 100-hours
 CELERY_RESULT_BACKEND = BROKER_URL
 
 CELERY_ENABLE_UTC = True
-CELERY_TIMEZONE = 'Europe/Moscow'
+CELERY_TIMEZONE = 'Europe/Prague'
 CELERY_IMPORTS = (
     "webapp.tasks",
     "workflow.common_tasks",
@@ -71,7 +72,7 @@ R_LIB_CUSTOM_PATH = BASE_DIR + '/data/R'
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Europe/Prague'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
