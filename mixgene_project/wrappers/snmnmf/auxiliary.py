@@ -16,7 +16,7 @@ def loadGmtFile(file_url, sep = '\t', comment = 1):
     return { line[0]:line[1:] for line in lines} # return pathway_name: list of elements
     
 # Python implementation of a matlab genelowvalfilter function    
-def geneLowValFilter(expr_data, q = 60):
+def gene_low_val_filter(expr_data, q = 60):
     """We removed the gene expression profiles with overall small absolute \\
     values less than a percentile cutoff (60% is used here).
     
@@ -31,7 +31,7 @@ def geneLowValFilter(expr_data, q = 60):
     return expr_data[expr_data.columns[~index_remove]]
 
 # Python implementation of a matlab genevarfilter function
-def geneVarFilter(expr_data, q = 30):
+def gene_var_filter(expr_data, q = 30):
     """we removed the gene expression profiles with a variance less 
     than the percentile specified by another cutoff (30% is used here)
     

@@ -21,7 +21,7 @@ from rc_table import RenderTable
 from feature_selection import SvmrfeRanking, \
     SvmrfeRestrictedRanking, TTestRanking, RandomRanking, FeatureSelectionByCut
 from table_result_view import TableResultView
-from paper import PaperBlock
+from filter import FilterBlock
 
 
 from blocks_pallet import block_classes_by_name, blocks_by_group

@@ -167,11 +167,11 @@ def loadData(full = False):
     pp_intction.index = m_rna.columns    
     
     ## filter the data
-    m_rna = aux.geneLowValFilter(m_rna)
-    m_rna = aux.geneVarFilter(m_rna)
+    m_rna = aux.gene_low_val_filter(m_rna)
+    m_rna = aux.gene_var_filter(m_rna)
     #
-    mi_rna = aux.geneLowValFilter(mi_rna)
-    mi_rna = aux.geneVarFilter(mi_rna)    
+    mi_rna = aux.gene_low_val_filter(mi_rna)
+    mi_rna = aux.gene_var_filter(mi_rna)
     
     # select a submatrix just for the testing purposes
     if full == False:

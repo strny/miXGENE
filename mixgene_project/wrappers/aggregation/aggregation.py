@@ -19,7 +19,7 @@ from pandas import DataFrame, Series, Index
 import sys
 
 
-#@task(name="wrappers.aggregation.aggregation_task")
+#@task(name="wrappers.aggregation.aggregation.aggregation_task")
 def aggregation_task(exp, block,
                      mode, c,
                      m_rna_es, mi_rna_es, interaction_matrix,
