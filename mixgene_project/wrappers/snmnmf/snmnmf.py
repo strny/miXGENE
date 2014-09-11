@@ -151,15 +151,15 @@ class SNMNMF(object):
 def loadData(full = False):
     """Loads data from Zhang2011"""
     # mRNA
-    m_rna = pd.read_csv('data/genedata3_30.csv.bz2', header=0, compression='bz2')
+    m_rna = pd.read_csv('test/data/genedata3_30.csv.bz2', header=0, compression='bz2')
     # miRNA
-    mi_rna = pd.read_csv('data/microdata3_30.csv.bz2', header=0, compression='bz2')
+    mi_rna = pd.read_csv('test/data/microdata3_30.csv.bz2', header=0, compression='bz2')
     #  
-    m2g_intction =  pd.read_csv('data/geneMicroMatrix_v5.csv.bz2', header=None, compression='bz2').to_sparse()    
+    m2g_intction =  pd.read_csv('test/data/geneMicroMatrix_v5.csv.bz2', header=None, compression='bz2').to_sparse()
     #
-    pp_intction = pd.read_csv('data/ppiMatrixTF.csv.bz2', header=None, compression='bz2').to_sparse()
+    pp_intction = pd.read_csv('test/data/ppiMatrixTF.csv.bz2', header=None, compression='bz2').to_sparse()
     #
-    bpGO = aux.loadGmtFile('data/c5.bp.v4.0.symbols.gmt')
+    bpGO = aux.loadGmtFile('test/data/c5.bp.v4.0.symbols.gmt')
     # fix the missing col and row names
     m2g_intction.columns = m_rna.columns
     m2g_intction.index = mi_rna.columns
