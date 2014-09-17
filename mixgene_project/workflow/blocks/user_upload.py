@@ -225,7 +225,8 @@ class UserUploadComplex(GenericBlock):
                 m_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                         base_filename="%s_m_rna_es" % self.uuid)
                 m_rna_es.store_assay_data_frame(m_rna_assay_df)
-                m_rna_es.store_pheno_data_frame(pheno_df)
+                if pheno_df:
+                    m_rna_es.store_pheno_data_frame(pheno_df)
                 m_rna_es.working_unit = self.m_rna_unit
 
                 self.set_out_var("m_rna_es", m_rna_es)
@@ -238,7 +239,8 @@ class UserUploadComplex(GenericBlock):
                 mi_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                         base_filename="%s_mi_rna_es" % self.uuid)
                 mi_rna_es.store_assay_data_frame(mi_rna_assay_df)
-                mi_rna_es.store_pheno_data_frame(pheno_df)
+                if pheno_df:
+                    mi_rna_es.store_pheno_data_frame(pheno_df)
 
                 self.set_out_var("mi_rna_es", mi_rna_es)
 
@@ -249,7 +251,8 @@ class UserUploadComplex(GenericBlock):
                 methyl_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                           base_filename="%s_methyl_es" % self.uuid)
                 methyl_es.store_assay_data_frame(methyl_assay_df)
-                methyl_es.store_pheno_data_frame(pheno_df)
+                if pheno_df:
+                    methyl_es.store_pheno_data_frame(pheno_df)
 
                 self.set_out_var("methyl_es", methyl_es)
 

@@ -2,6 +2,30 @@ __author__ = 'pavel'
 
 import numpy as np
 
+#@task(name="wrappers.filter.quant_norm_task")
+def quant_norm_task(exp, block,
+                     es,
+                     base_filename,
+    ):
+    """
+        @type es: ExpressionSet
+
+    """
+    import sys
+    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+    import pydevd
+    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
+
+    m = es.get_assay_data_frame()
+    result_df = (m - m.mean()) / (m.max() - m.min())
+    result = es.clone(base_filename)
+    result.store_assay_data_frame(result_df)
+#    result.store_pheno_data_frame(es.get_pheno_data_frame())
+
+    return [result], {}
+
+
 
 #@task(name="wrappers.filter.filter_task")
 def filter_task(exp, block,
@@ -14,6 +38,10 @@ def filter_task(exp, block,
         @type es: ExpressionSet
 
     """
+    import sys
+    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+    import pydevd
+    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     filter_func = gene_low_val_filter
     if filter_type == "LOW_VAL":
@@ -25,7 +53,7 @@ def filter_task(exp, block,
     result_df = filter_func(m, q)
     result = es.clone(base_filename)
     result.store_assay_data_frame(result_df)
-    result.store_pheno_data_frame(es.get_pheno_data_frame())
+    #result.store_pheno_data_frame(es.get_pheno_data_frame())
 
     return [result], {}
 

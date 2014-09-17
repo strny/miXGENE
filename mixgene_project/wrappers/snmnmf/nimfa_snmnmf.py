@@ -76,7 +76,7 @@ class NIMFA_SNMNMF(SNMNMF):
         A  = csr_matrix(self.gene2gene)
         B  = csr_matrix(self.miRNA2gene)
         
-        fctr = nimfa.mf(target = (V, V1), 
+        fctr = nimfa.mf(target = (V, V1),
                       seed = params['seed'], # e.g., "random_c", 
                       rank = params['rank'], # e.g., 50, 
                       method = "snmnmf", 

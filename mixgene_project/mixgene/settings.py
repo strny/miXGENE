@@ -59,7 +59,7 @@ CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
 
-R_LIB_CUSTOM_PATH = BASE_DIR + '/data/R'
+R_LIB_CUSTOM_PATH = BASE_DIR + '/media/data/R'
 
 #R: .libPaths(c("/home/kost/res/mixgene_workdir/data/R",.libPaths()))
 

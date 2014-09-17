@@ -490,6 +490,8 @@ class UploadedFileWrapper(object):
         if self.orig_name[-2:] == "gz":
             with gzip.open(path) as inp:
                 res = pd.DataFrame.from_csv(inp.read(), sep=sep)
+        elif self.orig_name[-3:] == "bz2":
+            res = pd.read_csv(path, header=0, compression='bz2')
         else:
             res = pd.DataFrame.from_csv(path, sep=sep)
 

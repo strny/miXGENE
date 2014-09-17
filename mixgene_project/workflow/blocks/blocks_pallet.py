@@ -26,3 +26,5 @@ class GroupType(object):
     VISUALIZE = "Visualize"
     CLASSIFIER = "Classifier"
     PROCESSING = "Data processing"
+    SNMNMF = "SNMNMF"
+    FILTER = "Filter"
