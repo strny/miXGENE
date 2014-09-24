@@ -1,6 +1,39 @@
 __author__ = 'pavel'
 
 import numpy as np
+from scipy import stats
+import pandas as pd
+
+
+
+#@task(name="wrappers.filter.zscore_task")
+def zscore_task(exp, block,
+                     es,
+                     base_filename,
+    ):
+    """
+        @type es: ExpressionSet
+
+    """
+    import sys
+    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+    import pydevd
+    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
+
+    m = es.get_assay_data_frame()
+    result_arr = stats.zscore(m.as_matrix())
+    result_df = pd.DataFrame(columns=m.columns, index=m.index)
+    for val, item in enumerate(result_arr):
+        result_df.ix[val] = item
+
+    result = es.clone(base_filename)
+    result.store_assay_data_frame(result_df)
+#    result.store_pheno_data_frame(es.get_pheno_data_frame())
+
+    return [result], {}
+
+
 
 #@task(name="wrappers.filter.quant_norm_task")
 def quant_norm_task(exp, block,

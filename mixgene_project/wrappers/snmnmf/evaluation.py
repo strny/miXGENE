@@ -33,18 +33,36 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
     
     def __init__(self, snmnmf):        
         SNMNMNMFEvaluation. __init__(self, snmnmf)        
-    
+
+    def getGeneSet(self, H_matrix, T):
+        S = []
+        for H in [H_matrix]:
+            if isinstance(H, DataFrame):
+                S.append(self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T)))
+        print(S)
+        S = DataFrame(S)
+        return S
+
+
     def getGeneSets(self, T):
         H1 = self.snmnmf.H1_miRNA
+        print(H1)
         H2 = self.snmnmf.H2_genes
         H3 = self.snmnmf.H3_DNAmethyl
         S = []
         for H in [H1, H2, H3]:
             if isinstance(H, DataFrame):                
-                S.append(self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T)))       
+                S.append(self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T)))
+        print(S)
         S = DataFrame(S)
         return S.apply(lambda x: set.union(*x))
-    
+
+    def getEnrichmentRatioInGeneSetsWithH(self, geneSets, H, T, enrichment_threshold = 0.05, N = 100):
+           S = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))
+           cm_set = reduce(or_, S)
+           tmp = self.computeEnrichmentRatio(cm_set, geneSets, T, enrichment_threshold=enrichment_threshold, N=N)
+           return tmp
+
     def getEnrichmentRatioInGeneSets(self, geneSets, T, enrichment_threshold = 0.05, N = 100):
            H = self.snmnmf.H2_genes
            S = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))
@@ -52,7 +70,15 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
            tmp = self.computeEnrichmentRatio(cm_set, geneSets, T\
            , enrichment_threshold = enrichment_threshold, N = N)
            return tmp
-           
+
+    def getEnrichmentInGeneSetsWithH(self, geneSets, H, T):
+        S = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))
+        cm_set = reduce(or_, S)
+        all_genes = reduce(or_, Series(geneSets).apply(lambda x: set(x)))
+        cm_genes  = set(cm_set).intersection(all_genes)
+        enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets)
+        return retdict
+
     def getEnrichmentInGeneSets(self, geneSets, T):
         H = self.snmnmf.H2_genes
         S = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))

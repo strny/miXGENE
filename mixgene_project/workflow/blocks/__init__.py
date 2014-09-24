@@ -23,7 +23,13 @@ from feature_selection import SvmrfeRanking, \
 from table_result_view import TableResultView
 from filter import FilterBlock
 from filter import QuantileNormBlock
+from filter import ZScoreBlock
+from threshold import ThresholdBlock
+from comodule_visualize import ComoduleSetView
+from merge_comodule import MergeComoduleSets
+from enrichment_block import EnrichmentBlock
 from nimfa_snmnmf import NIMFASNMNMFBlock
+
 
 from blocks_pallet import block_classes_by_name, blocks_by_group
 

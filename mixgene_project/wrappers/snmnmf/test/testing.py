@@ -31,6 +31,7 @@ if __name__ == "__main__":
     e = EnrichmentInGeneSets(snm)
     # get co-modules
     i = e.getGeneSets(T=1)
+
     ## compute enrichment in GO terms ()
     enrich_bpGO = e.getEnrichmentInGeneSets(bpGO, T=0.1)
     # sort resultst accodring p-values

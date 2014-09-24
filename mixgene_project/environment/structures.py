@@ -27,6 +27,7 @@ class PickleStorage(object):
             pickle.dump(obj, out, 2)
 
 
+
 class DataFrameStorage(object):
     sep = " "
     header = 0
@@ -123,6 +124,38 @@ class BinaryInteraction(GenericStoreStructure):
     def load_matrix(self):
         if self.storage is None:
             raise RuntimeError("Interaction data wasn't stored prior")
+        return self.storage.load()
+
+
+class ComoduleSet(GenericStoreStructure):
+    def __init__(self, *args, **kwargs):
+        super(ComoduleSet, self).__init__(*args, **kwargs)
+        self.storage = None
+
+    def store_set(self, df):
+        if self.storage is None:
+            self.storage = DataFrameStorage(self.form_filepath("comodule"))
+        self.storage.store(df)
+
+    def load_set(self):
+        if self.storage is None:
+            raise RuntimeError("Comodule data wasn't stored prior")
+        return self.storage.load()
+
+
+class DictionarySet(GenericStoreStructure):
+    def __init__(self, base_dir, base_filename):
+        super(DictionarySet, self).__init__(base_dir, base_filename)
+        self.storage = None
+
+    def store_dict(self, d):
+        if self.storage is None:
+            self.storage = PickleStorage(self.form_filepath("dict_set"))
+        self.storage.store(d)
+
+    def load_dict(self):
+        if self.storage is None:
+            raise RuntimeError("Dictionary data wasn't stored prior!")
         return self.storage.load()
 
 
@@ -350,6 +383,7 @@ class GeneSets(GenericStoreStructure):
         if self.storage is None:
             raise RuntimeError("No gene sets was stored")
         return self.storage.load()
+
 
 
 class PlatformAnnotation(object):
