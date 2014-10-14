@@ -35,13 +35,15 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
         SNMNMNMFEvaluation. __init__(self, snmnmf)        
 
     def getGeneSet(self, H_matrix, T):
-        S = []
+        s = []
         for H in [H_matrix]:
             if isinstance(H, DataFrame):
-                S.append(self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T)))
-        print(S)
-        S = DataFrame(S)
-        return S
+                s = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))
+        print(s)
+        out = {}
+        for idx, val in s.iteritems():
+            out[idx]=val
+        return out
 
 
     def getGeneSets(self, T):
@@ -63,6 +65,12 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
            tmp = self.computeEnrichmentRatio(cm_set, geneSets, T, enrichment_threshold=enrichment_threshold, N=N)
            return tmp
 
+    def getEnrichmentRatioInGeneSetsWithComodule(self, geneSets, comodule, enrichment_threshold = 0.05, N = 100):
+           S = self.removeTemporaryNegativeFeatures(comodule)
+           cm_set = reduce(or_, S)
+           tmp = self.computeEnrichmentRatio(cm_set, geneSets, 0, enrichment_threshold=enrichment_threshold, N=N)
+           return tmp
+
     def getEnrichmentRatioInGeneSets(self, geneSets, T, enrichment_threshold = 0.05, N = 100):
            H = self.snmnmf.H2_genes
            S = self.removeTemporaryNegativeFeatures(self.getCommoduleMembers(H, T))
@@ -78,6 +86,25 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
         cm_genes  = set(cm_set).intersection(all_genes)
         enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets)
         return retdict
+
+
+    def getEnrichmentInGeneSetsWithComodule(self, geneSets, comodule):
+        S = self.removeTemporaryNegativeFeatures(comodule)
+        cm_set = reduce(or_, S)
+        all_genes = reduce(or_, Series(geneSets).apply(lambda x: set(x)))
+        cm_genes  = set(cm_set).intersection(all_genes)
+        enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets)
+        return retdict
+
+    def getModuleEnrichmentInGeneSets(self, geneModules, geneSets, pval_threshold=.05):
+        module_enrichment = {}
+        module_id = 0
+        all_genes = reduce(or_, Series(geneSets).apply(lambda x: set(x)))
+        for index, cm_set in geneModules.iteritems():
+            cm_genes = set(cm_set).intersection(all_genes)
+            enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets)
+            module_enrichment[index] = (cm_set, sorted(retdict.items(), key=lambda x: x[1]))
+        return module_enrichment
 
     def getEnrichmentInGeneSets(self, geneSets, T):
         H = self.snmnmf.H2_genes

@@ -26,9 +26,12 @@ from filter import QuantileNormBlock
 from filter import ZScoreBlock
 from threshold import ThresholdBlock
 from comodule_visualize import ComoduleSetView
+from dictionary_visualize import DictionarySetView
+from enrichment_no_t_block import EnrichmentNoTBlock
 from merge_comodule import MergeComoduleSets
-from enrichment_block import EnrichmentBlock
+# from enrichment_block import EnrichmentBlock
 from nimfa_snmnmf import NIMFASNMNMFBlock
+from enrichment_visualize import EnrichmentVisualize
 
 
 from blocks_pallet import block_classes_by_name, blocks_by_group

@@ -8,33 +8,52 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inpu
 from workflow.blocks.generic import GenericBlock, save_params_actions_list, execute_block_actions_list
 
 from wrappers.aggregation.aggregation import aggregation_task
+from django.conf import settings
 
+import logging
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 def filter_by_bi(
     exp, block,
     m_rna_es, mi_rna_es, interaction_matrix,
     base_filename
 ):
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     m_rna_df = m_rna_es.get_assay_data_frame()
     mi_rna_df = mi_rna_es.get_assay_data_frame()
     targets_matrix = interaction_matrix.load_matrix()
+    targets_matrix.columns = m_rna_df.columns
+    targets_matrix.index = mi_rna_df.columns
 
     allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.index)
+    #allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.columns)
+
     m_rna_df_filtered = m_rna_df.loc[allowed_m_rna_index_set, :]
 
     allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.index)
+    #allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.columns)
+
     mi_rna_df_filtered = mi_rna_df.loc[allowed_mi_rna_index_set, :]
 
     #result_df = agg_func(m_rna, mi_rna, targets_matrix, c)
     m_rna_result = m_rna_es.clone(base_filename + "_mRNA")
     m_rna_result.store_assay_data_frame(m_rna_df_filtered)
-    m_rna_result.store_pheno_data_frame(m_rna_es.get_pheno_data_frame())
-
+    try:
+        m_rna_result.store_pheno_data_frame(m_rna_es.get_pheno_data_frame())
+    except RuntimeError as re:
+        log.debug("Phenotype not set")
     mi_rna_result = mi_rna_es.clone(base_filename + "_miRNA")
     mi_rna_result.store_assay_data_frame(mi_rna_df_filtered)
-    mi_rna_result.store_pheno_data_frame(mi_rna_es.get_pheno_data_frame())
-
+    try:
+        mi_rna_result.store_pheno_data_frame(mi_rna_es.get_pheno_data_frame())
+    except RuntimeError as re:
+        log.debug("Phenotype not set")
     return [m_rna_result, mi_rna_result], {}
 
 
@@ -76,7 +95,6 @@ class FilterByInteraction(GenericBlock):
         self.celery_task = wrapper_task.s(
             filter_by_bi,
             exp, self,
-
             m_rna_es=mRNA_es,
             mi_rna_es=miRNA_es,
             interaction_matrix=interaction_matrix,

@@ -16,7 +16,8 @@ Constructor.factory("blockAccess", function($http, $log){
         "ExpressionSet",
         "GeneSets",
         "BinaryInteraction",
-        "TableResult"
+        "TableResult",
+        "ComoduleSet"
     ]
 
     var sockjs = new SockJS('/subscribe');

@@ -3,7 +3,7 @@ __author__ = 'pavel'
 import numpy as np
 from scipy import stats
 import pandas as pd
-
+from django.conf import settings
 
 
 #@task(name="wrappers.filter.zscore_task")
@@ -15,11 +15,11 @@ def zscore_task(exp, block,
         @type es: ExpressionSet
 
     """
-    import sys
-    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    import pydevd
-    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
-
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     m = es.get_assay_data_frame()
     result_arr = stats.zscore(m.as_matrix())
@@ -44,11 +44,11 @@ def quant_norm_task(exp, block,
         @type es: ExpressionSet
 
     """
-    import sys
-    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    import pydevd
-    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
-
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     m = es.get_assay_data_frame()
     result_df = (m - m.mean()) / (m.max() - m.min())
@@ -71,10 +71,11 @@ def filter_task(exp, block,
         @type es: ExpressionSet
 
     """
-    import sys
-    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    import pydevd
-    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     filter_func = gene_low_val_filter
     if filter_type == "LOW_VAL":

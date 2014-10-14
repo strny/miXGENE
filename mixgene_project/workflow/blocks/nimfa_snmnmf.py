@@ -6,7 +6,7 @@ from fields import ActionsList, ActionRecord, InputBlockField, ParamField, Input
     OutputBlockField
 from generic import GenericBlock, execute_block_actions_list
 import wrappers.snmnmf.nimfa_snmnmf as ns
-
+from django.conf import settings
 
 # @task(name="wrappers.filter.filter_task")
 def nimfa_snmnmf_task(exp,
@@ -20,12 +20,11 @@ def nimfa_snmnmf_task(exp,
                       params,
                       base_filename
 ):
-    import sys
-
-    sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    import pydevd
-
-    pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     ### factorization ###
     # initialize the factorization

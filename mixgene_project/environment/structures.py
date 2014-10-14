@@ -134,7 +134,7 @@ class ComoduleSet(GenericStoreStructure):
 
     def store_set(self, df):
         if self.storage is None:
-            self.storage = DataFrameStorage(self.form_filepath("comodule"))
+            self.storage = PickleStorage(self.form_filepath("comodule"))
         self.storage.store(df)
 
     def load_set(self):

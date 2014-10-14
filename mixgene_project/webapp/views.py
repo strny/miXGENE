@@ -176,6 +176,12 @@ def blocks_resource(request, exp_id):
     json.dump(result, resp)
     return resp
 
+import json
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
 
 @csrf_protect
 @log_timing
@@ -208,9 +214,9 @@ def block_resource(request, exp_id, block_uuid, action_code=None):
         resp = HttpResponse(content_type="application/json")
         if action_result is None:
             block_dict = exp.get_block(block_uuid).to_dict()
-            json.dump(block_dict, resp)
+            json.dump(block_dict, resp, cls=SetEncoder)
         else:
-            json.dump(action_result, resp)
+            json.dump(action_result, resp, cls=SetEncoder)
         return resp
 
     return HttpResponseNotAllowed(["POST", "GET", "DELETE"])
@@ -231,7 +237,8 @@ def block_field_resource(request, exp_id, block_uuid, field, format=None):
     if format == "json":
         content_type = "application/json"
         resp = HttpResponse(content_type=content_type)
-        json.dump(data, resp)
+        resp['Content-Disposition'] = 'attachment; filename=export.json'
+        json.dump(data, resp, cls=SetEncoder)
     elif format == "csv":
         content_type = "text/csv"
         resp = HttpResponse(content_type=content_type)

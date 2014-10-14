@@ -1,5 +1,6 @@
 __author__ = 'pavel'
 
+
 from collections import defaultdict
 import hashlib
 import logging
@@ -13,17 +14,17 @@ from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField, ActionsList, ActionRecord, \
     InputBlockField
 from workflow.blocks.generic import GenericBlock
-from django.core.urlresolvers import reverse
 
+from django.core.urlresolvers import reverse
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
-class ComoduleSetView(GenericBlock):
-    block_base_name = "CS_VIEW"
+class DictionarySetView(GenericBlock):
+    block_base_name = "DS_VIEW"
     block_group = GroupType.VISUALIZE
-    name = "Comodule Set View"
+    name = "Dictionary Set view"
 
     is_block_supports_auto_execution = False
 
@@ -34,7 +35,7 @@ class ComoduleSetView(GenericBlock):
         ActionRecord("on_params_not_valid", ["validating_params"], "created"),
         ActionRecord("on_params_is_valid", ["validating_params"], "valid_params"),
 
-        # ActionRecord("compute_pca", ["valid_params"], "computing_pca", user_title="Compute PCA"),
+        #ActionRecord("compute_pca", ["valid_params"], "computing_pca", user_title="Compute PCA"),
         #ActionRecord("pca_done", ["computing_pca"], "done",),
 
         #ActionRecord("reset_execution", ["*", "done", "execution_error", "ready", "working"], "ready",
@@ -43,21 +44,24 @@ class ComoduleSetView(GenericBlock):
         #ActionRecord("update", ["input_bound", "ready"], "ready"),
     ])
 
-    input_comodule_set = InputBlockField(name="cs", order_num=10,
-                                         required_data_type="ComoduleSet", required=True)
+    _input_dictionary_set = InputBlockField(name="ds", order_num=10,
+                               required_data_type="DictionarySet", required=True)
 
     _table_for_js = BlockField(name="table_js", field_type=FieldType.RAW, is_a_property=True)
 
-    # chart_series = BlockField(name="chart_series", field_type=FieldType.RAW, init_val=[])
+    #chart_series = BlockField(name="chart_series", field_type=FieldType.RAW, init_val=[])
     #chart_categories = BlockField(name="chart_categories", field_type=FieldType.SIMPLE_LIST,
     #                              init_val=[])
 
     _export_raw_results_url = BlockField(name="export_raw_results_url",
-                                         field_type=FieldType.STR, is_a_property=True)
+                                   field_type=FieldType.STR, is_a_property=True)
+
+
 
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
-        "table_result_view.html"
+        "dictionary_set_view.html"
     ])
+
 
     @property
     def export_raw_results_url(self):
@@ -68,20 +72,15 @@ class ComoduleSetView(GenericBlock):
             "format": "json"
         })
 
+
     @property
     def table_js(self):
-        cs = self.get_input_var("cs")
-        """:type :ComoduleSet"""
+        cs = self.get_input_var("ds")
+        """:type :DictionarySet"""
         if cs:
-            table = cs.load_set()
-            """:type :dict"""
-            if isinstance(table[0], set):
-                columns = ["values"]
-            else:
-                columns = ["values", "values"]
+            table = cs.load_dict()
+            table_headers = ['key', 'value']
 
-            # table_headers = ["#"] + table.columns.tolist()
-            table_headers = ["#"] + columns
             column_title_to_code_name = {
                 title: "_" + hashlib.md5(title).hexdigest()[:8]
                 for title in table_headers
@@ -98,16 +97,16 @@ class ComoduleSetView(GenericBlock):
                     for title in table_headers
                 ],
                 "rows": [
-                    dict(zip(fields_list, [idx, list(value)]))
-                    for idx, value in
-                    table.iteritems()  # [:100]
+                    dict(zip(fields_list, row))
+                    for row in
+                    [(k, list(v)) for k, v in table.iteritems()]
+                    #table.to_records().tolist() #[:100]
                 ]
             }
         else:
             return None
 
     def export_json(self, exp, *args, **kwargs):
-        ds = self.get_input_var("cs")
-        table = ds.load_set()
-        return [(idx, list(value)) for idx, value in table.iteritems()]
-
+        ds = self.get_input_var("ds")
+        dic = ds.load_dict()
+        return dic

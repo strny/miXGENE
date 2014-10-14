@@ -43,7 +43,7 @@ def threshold_task(exp, block,
     from wrappers.snmnmf.evaluation import EnrichmentInGeneSets
     z = 1
     x = EnrichmentInGeneSets(z)
-    result = x.getGeneSet(H, T).T
+    result = x.getGeneSet(H, T)
     cs = ComoduleSet(exp.get_data_folder(), base_filename)
     cs.store_set(result)
     return [cs], {}

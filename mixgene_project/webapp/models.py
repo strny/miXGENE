@@ -493,7 +493,7 @@ class UploadedFileWrapper(object):
         elif self.orig_name[-3:] == "bz2":
             res = pd.read_csv(path, header=0, compression='bz2')
         else:
-            res = pd.DataFrame.from_csv(path, sep=sep)
+            res = pd.read_csv(path, header=None)
 
         return res
 
