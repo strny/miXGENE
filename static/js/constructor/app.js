@@ -14,9 +14,11 @@ var Constructor = angular.module("Constructor", [
     }
 );
 
+
+
 Constructor.run(function ($http, $cookies) {
     $http.defaults.headers.common['X-CSRFToken'] = $cookies['csrftoken'];
-})
+});
 
 
 

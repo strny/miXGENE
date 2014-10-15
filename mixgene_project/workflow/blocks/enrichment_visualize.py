@@ -48,7 +48,7 @@ class EnrichmentVisualize(GenericBlock):
 
 
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
-        "dictionary_set_view.html"
+        "enrichment_view.html"
     ])
 
     @property
@@ -76,7 +76,7 @@ class EnrichmentVisualize(GenericBlock):
         """:type :DictionarySet"""
         if cs:
             table = cs.load_dict()
-            table_headers = ['comodule','miRNAs','genes']
+            table_headers = ['comodule','(term, p-val)','genes']
 
             column_title_to_code_name = {
                 title: "_" + hashlib.md5(title).hexdigest()[:8]

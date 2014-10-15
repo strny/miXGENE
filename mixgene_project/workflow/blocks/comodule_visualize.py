@@ -55,9 +55,21 @@ class ComoduleSetView(GenericBlock):
     _export_raw_results_url = BlockField(name="export_raw_results_url",
                                          field_type=FieldType.STR, is_a_property=True)
 
+    _export_results_csv_url = BlockField(name="export_results_csv_url",
+                                   field_type=FieldType.STR, is_a_property=True)
+
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
         "table_result_view.html"
     ])
+
+    @property
+    def export_results_csv_url(self):
+        return reverse("block_field_formatted", kwargs={
+            "exp_id": self.exp_id,
+            "block_uuid": self.uuid,
+            "field": "export_csv",
+            "format": "csv"
+        })
 
     @property
     def export_raw_results_url(self):
@@ -111,3 +123,14 @@ class ComoduleSetView(GenericBlock):
         table = ds.load_set()
         return [(idx, list(value)) for idx, value in table.iteritems()]
 
+
+    def export_csv(self, exp, *args, **kwargs):
+        import csv
+        import StringIO
+        ds = self.get_input_var("cs")
+        tab = ds.load_set()
+        out = StringIO.StringIO()
+        w = csv.writer(out)
+        w.writerows(tab.items())
+        out.seek(0)
+        return out.read()

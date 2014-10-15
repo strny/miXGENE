@@ -102,8 +102,9 @@ class EnrichmentInGeneSets(SNMNMNMFEvaluation):
         all_genes = reduce(or_, Series(geneSets).apply(lambda x: set(x)))
         for index, cm_set in geneModules.iteritems():
             cm_genes = set(cm_set).intersection(all_genes)
-            enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets)
-            module_enrichment[index] = (cm_set, sorted(retdict.items(), key=lambda x: x[1]))
+            enriched_counter, retdict = self.computeFisherExactTest(all_genes, cm_genes, geneSets, pval_threshold)
+            retdict = [(x[0], round(x[1], 4)) for x in retdict.items() if x[1] <= pval_threshold]
+            module_enrichment[index] = (cm_set, sorted(retdict, key=lambda x: x[1]))
         return module_enrichment
 
     def getEnrichmentInGeneSets(self, geneSets, T):

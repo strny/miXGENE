@@ -18,3 +18,9 @@ Constructor.filter('labels_preview', function () {
     };
 
 });
+
+Constructor.filter('to_trusted', ['$sce', function($sce){
+        return function(text) {
+            return $sce.trustAsHtml(text);
+        };
+    }]);

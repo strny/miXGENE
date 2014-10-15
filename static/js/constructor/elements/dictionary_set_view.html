@@ -1,4 +1,4 @@
-<div ng-controller="TableResultViewCtrl">
+<div ng-controller="DictionarySetViewCtrl">
 
     <table ng-table="table_config.tableParams" show-filter="true" class="table">
         <thead>
@@ -39,19 +39,19 @@
         <tr ng-repeat="row in $data"
             ng-click="changeSelection(row, $data, $index, $event)"
             ng-class="{'active': row.$selected}"
-                >
+            >
             <td ng-repeat="column in table_config.columns" ng-show="column.visible" sortable="column.field">
                 {$ row[column.field] $}
             </td>
         </tr>
         </tbody>
-    </table>
-
-    <a href="{$ block.export_raw_results_url $}">
+        </table>
+        <a href="{$ block.export_raw_results_url $}">
            Export raw results as .json
-    </a>
-    <br>
-    <a href="{$ block.export_results_csv_url $}">
+        </a>
+        <br>
+        <a href="{$ block.export_results_csv_url $}">
            Export raw results as .csv
-    </a>
+        </a>
+
 </div>

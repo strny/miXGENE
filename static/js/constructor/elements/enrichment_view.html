@@ -1,4 +1,4 @@
-<div ng-controller="TableResultViewCtrl">
+<div ng-controller="DictionarySetViewCtrl">
 
     <table ng-table="table_config.tableParams" show-filter="true" class="table">
         <thead>
@@ -40,18 +40,29 @@
             ng-click="changeSelection(row, $data, $index, $event)"
             ng-class="{'active': row.$selected}"
                 >
-            <td ng-repeat="column in table_config.columns" ng-show="column.visible" sortable="column.field">
-                {$ row[column.field] $}
+            <td ng-show="table_config.columns[0].visible" sortable="table_config.columns[0].field">
+                {$ row[table_config.columns[0].field] $}
             </td>
+            <td ng-show="table_config.columns[1].visible" sortable="table_config.columns[1].field">
+                <span ng-repeat="pair in row[table_config.columns[1].field]" ng-bind-html="'('+pair[0]+', '+pair[1]+')<br>' | to_trusted">
+                </span>
+            </td>
+            <td ng-show="table_config.columns[2].visible" sortable="table_config.columns[2].field">
+                {$ row[table_config.columns[2].field] $}
+            </td>
+            <!--
+            <td ng-repeat="column in table_config.columns" ng-show="column.visible" sortable="column.field">
+                <p>{$ row[column.field] $}</p>
+            </td>-->
         </tr>
         </tbody>
-    </table>
-
-    <a href="{$ block.export_raw_results_url $}">
+        </table>
+        <a href="{$ block.export_raw_results_url $}">
            Export raw results as .json
-    </a>
-    <br>
-    <a href="{$ block.export_results_csv_url $}">
+        </a>
+        <br>
+        <a href="{$ block.export_results_csv_url $}">
            Export raw results as .csv
-    </a>
+        </a>
+
 </div>
