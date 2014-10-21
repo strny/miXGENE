@@ -44,16 +44,13 @@
                 {$ row[table_config.columns[0].field] $}
             </td>
             <td ng-show="table_config.columns[1].visible" sortable="table_config.columns[1].field">
-                <span ng-repeat="pair in row[table_config.columns[1].field]" ng-bind-html="'('+pair[0]+', '+pair[1]+')<br>' | to_trusted">
+                <span ng-repeat="pair in row[table_config.columns[1].field]" ng-bind-html="'('+'<a href=\'' + pair[0]+'\'>' + pair[1] + '</a>, ' + pair[2] + ')<br>' | to_trusted">
                 </span>
             </td>
-            <td ng-show="table_config.columns[2].visible" sortable="table_config.columns[2].field">
-                {$ row[table_config.columns[2].field] $}
+            <!--ng-bind-html="'<p>'+row[table_config.columns[2].field]+'</p>'| to_trusted"-->
+            <td ng-show="table_config.columns[2].visible"  sortable="table_config.columns[2].field">
+                ["{$ row[table_config.columns[2].field].join('", "') $}"]
             </td>
-            <!--
-            <td ng-repeat="column in table_config.columns" ng-show="column.visible" sortable="column.field">
-                <p>{$ row[column.field] $}</p>
-            </td>-->
         </tr>
         </tbody>
         </table>

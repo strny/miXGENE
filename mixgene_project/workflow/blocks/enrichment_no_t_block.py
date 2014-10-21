@@ -34,7 +34,7 @@ def enrichment_no_t_task(exp, block,
     e = EnrichmentInGeneSets(cs)
     enrich = e.getModuleEnrichmentInGeneSets(cs, gene_set.genes, pval_threshold=T)
     # enrich = [(mod, genes, map(lambda x: (x[0], x[1]), terms)) for (mod, (genes, terms)) in enrich.items()]
-    enrich = dict((mod, (genes, map(lambda x: (gene_set.description[x[0]], x[0], x[1])), terms)) for (mod, (genes, terms)) in enrich.items())
+    enrich = dict((mod, (genes, map(lambda x: (gene_set.description[x[0]], x[0], x[1]), terms))) for (mod, (genes, terms)) in enrich.items())
     # enrich = [(mod, map(lambda x: (gene_set.description[x[0]], x[1]), terms), genes) for (mod, [terms, genes]) in enrich]
     # enrich = [z[0] for z in x[1] for x in enrich.items()]
     ds = DictionarySet(exp.get_data_folder(), base_filename)

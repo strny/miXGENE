@@ -41,7 +41,8 @@
             ng-class="{'active': row.$selected}"
                 >
             <td ng-repeat="column in table_config.columns" ng-show="column.visible" sortable="column.field">
-                {$ row[column.field] $}
+                <span> {$ row[column.field] $} </span>
+                <!--{$ angular.isObject(row[column.field]) ? 'Yes' : 'False'  $}-->
             </td>
         </tr>
         </tbody>

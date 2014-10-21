@@ -24,3 +24,10 @@ Constructor.filter('to_trusted', ['$sce', function($sce){
             return $sce.trustAsHtml(text);
         };
     }]);
+
+Constructor.filter('debug', function() {
+  return function(input) {
+    if (input === '') return 'empty string';
+    return input ? input + typeof input : ('' + input);
+  };
+});

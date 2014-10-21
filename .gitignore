@@ -1,5 +1,6 @@
 ## Django
 local_settings.py
+dump.rdb
 
 ### Linux ###
 .*

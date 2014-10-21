@@ -37,7 +37,8 @@ def nimfa_snmnmf_task(exp,
     miRNA_matrix = miRNA.get_assay_data_frame()
     miRNA_matrix = miRNA_matrix[miRNA_matrix.columns[0:30]]
     snm = ns.NIMFA_SNMNMF(mRNA=mRNA_matrix, miRNA=miRNA_matrix, DNAmethyl=None,
-                          gene2gene=gene2gene.load_matrix(), miRNA2gene=miRNA2gene.load_matrix(),
+                          gene2gene=gene2gene.load_matrix(),
+                          miRNA2gene=miRNA2gene.load_matrix(),
                           gene2DNAmethylation=None,
                           params=params)
 

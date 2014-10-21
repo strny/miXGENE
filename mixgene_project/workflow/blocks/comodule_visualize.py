@@ -110,7 +110,7 @@ class ComoduleSetView(GenericBlock):
                     for title in table_headers
                 ],
                 "rows": [
-                    dict(zip(fields_list, [idx, list(value)]))
+                    dict(zip(fields_list, [idx, "[\"" + '", "'.join(value) + "\"]"]))
                     for idx, value in
                     table.iteritems()  # [:100]
                 ]
