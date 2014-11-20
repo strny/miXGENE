@@ -1,6 +1,6 @@
 <div ng-controller="DictionarySetViewCtrl">
-
-    <table ng-table="table_config.tableParams" show-filter="true" class="table">
+<div class="col-lg-12 col-md-12">
+    <table ng-table="table_config.tableParams" show-filter="false" class="ng-table-responsive">
         <thead>
         <tr>
             <th ng-repeat="column in table_config.columns" ng-show="column.visible"
@@ -25,14 +25,6 @@
                     </span>
             </th>
         </tr>
-        <tr>
-            <th ng-repeat="column in table_config.columns"
-                ng-show="column.visible"
-                class="text-center sortable" >
-                <input type="text" class="form-control"
-                       ng-model="table_config.filter_dict[column.field] "/>
-            </th>
-        </tr>
 
         </thead>
         <tbody>
@@ -49,7 +41,11 @@
             </td>
             <!--ng-bind-html="'<p>'+row[table_config.columns[2].field]+'</p>'| to_trusted"-->
             <td ng-show="table_config.columns[2].visible"  sortable="table_config.columns[2].field">
-                ["{$ row[table_config.columns[2].field].join('", "') $}"]
+                [
+                    <span ng-repeat="pair in row[table_config.columns[2].field]" ng-bind-html="'<a href=\' http://www.ncbi.nlm.nih.gov/gene/?term=' + pair +'\'>' + pair + '</a>, ' | to_trusted">
+                    </span>
+                ]
+               <!-- ["{$ row[table_config.columns[2].field].join('", "') $}"]-->
             </td>
         </tr>
         </tbody>
@@ -61,5 +57,5 @@
         <a href="{$ block.export_results_csv_url $}">
            Export raw results as .csv
         </a>
-
+</div>
 </div>

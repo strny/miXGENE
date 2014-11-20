@@ -1,5 +1,5 @@
 <div ng-controller="TableResultViewCtrl">
-
+<div class="col-lg-12 col-md-12">
     <table ng-table="table_config.tableParams" show-filter="true" class="table">
         <thead>
         <tr>
@@ -25,14 +25,6 @@
                     </span>
             </th>
         </tr>
-        <tr>
-            <th ng-repeat="column in table_config.columns"
-                ng-show="column.visible"
-                class="text-center sortable" >
-                <input type="text" class="form-control"
-                       ng-model="table_config.filter_dict[column.field] "/>
-            </th>
-        </tr>
 
         </thead>
         <tbody>
@@ -55,4 +47,5 @@
     <a href="{$ block.export_results_csv_url $}">
            Export raw results as .csv
     </a>
+    </div>
 </div>

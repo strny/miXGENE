@@ -40,6 +40,19 @@ class MassUpload(UniformMetaBlock):
         options={"multiple": True},
     )
 
+    es_matrices_ori = ParamField(
+        "es_matrices_ori", title="Matrices orientation", order_num=11,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
+
     pheno_matrices = ParamField(
         "pheno_matrices", title="Phenotypes", order_num=40,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM,
@@ -116,7 +129,11 @@ class MassUpload(UniformMetaBlock):
                 pheno_ufw = self.pheno_matrices[pheno_name]
                 pheno_df = pheno_ufw.get_as_data_frame(sep)
 
-                es_sample_names = sorted(es_df.columns.tolist())
+                if self.es_matrices_ori == "GxS":
+                    es_df = es_df.T
+                es_df.set_index(es_df.columns[0],inplace=True)
+                pheno_df.set_index(pheno_df.columns[0],inplace=True)
+                es_sample_names = sorted(es_df.index.tolist())
                 pheno_sample_names = sorted(pheno_df.index.tolist())
                 if es_sample_names != pheno_sample_names:
                     raise RuntimeError("Couldn't match `%s` and `%s` due to "
@@ -126,6 +143,7 @@ class MassUpload(UniformMetaBlock):
                     base_dir=exp.get_data_folder(),
                     base_filename="%s_%s" % (self.uuid, es_name)
                 )
+
                 es.store_assay_data_frame(es_df)
                 es.store_pheno_data_frame(pheno_df)
 

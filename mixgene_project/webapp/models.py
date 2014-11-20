@@ -482,19 +482,18 @@ class UploadedFileWrapper(object):
     def get_file(self):
         return self.ud.data
 
-    def get_as_data_frame(self, sep=None):
+    def get_as_data_frame(self, sep=None, header=0):
         if not sep:
             sep = " "
-
+        #TODO refactor file types processing
         path = self.ud.data.path
         if self.orig_name[-2:] == "gz":
             with gzip.open(path) as inp:
-                res = pd.DataFrame.from_csv(inp.read(), sep=sep)
+                res = pd.DataFrame.from_csv(inp.read(), header=header, sep=sep)
         elif self.orig_name[-3:] == "bz2":
-            res = pd.read_csv(path, header=0, compression='bz2')
+            res = pd.read_csv(path, header=header, sep=sep, compression='bz2')
         else:
-            res = pd.read_csv(path, header=None)
-
+            res = pd.read_csv(path, header=header, sep=sep)
         return res
 
     def to_dict(self, *args, **kwargs):

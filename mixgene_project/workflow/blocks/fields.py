@@ -154,7 +154,7 @@ class ParamField(object):
                 else:
                     val = None
             else:
-                if self.field_type in [FieldType.RAW, FieldType.INT, FieldType.FLOAT] :
+                if self.field_type in [FieldType.RAW, FieldType.INT, FieldType.FLOAT, FieldType.BOOLEAN]:
                     val = raw_val
                 if self.field_type == FieldType.CUSTOM:
                     try:
@@ -162,7 +162,7 @@ class ParamField(object):
                     except Exception, e:
                         log.exception("Failed to serialize field %s with error: %s", self.name, e)
                         val = str(raw_val)
-                if self.field_type in [FieldType.STR, FieldType.BOOLEAN]:
+                if self.field_type in [FieldType.STR]:
                     val = str(raw_val)
                 if self.field_type == FieldType.SIMPLE_DICT:
                     val = {str(k): str(v) for k, v in raw_val.iteritems()}

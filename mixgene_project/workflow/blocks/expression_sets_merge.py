@@ -9,22 +9,32 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inpu
 from workflow.blocks.generic import GenericBlock, save_params_actions_list, execute_block_actions_list
 
 from converters.gene_set_tools import map_gene_sets_to_probes
-
+from django.conf import settings
 
 def merge_two_es(exp, block,
-                 es_1, es_2,
+                 es_1, es_2, con,
                  base_filename):
     """
         @type es_1: ExpressionSet
         @type es_2: ExpressionSet
     """
-    merged_es = es_1.clone(base_filename)
-    merged_es.store_pheno_data_frame(es_1.get_pheno_data_frame())
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
+    merged_es = es_1.clone(base_filename)
+    try:
+        merged_es.store_pheno_data_frame(es_1.get_pheno_data_frame())
+    except RuntimeError as e:
+        pass
+    axis = 0
     assay_df_1 = es_1.get_assay_data_frame()
     assay_df_2 = es_2.get_assay_data_frame()
-
-    merged_assay_df = pd.concat([assay_df_1, assay_df_2])
+    if con == "CC":
+        axis = 1
+    merged_assay_df = pd.concat([assay_df_1, assay_df_2], axis=axis)
     merged_es.store_assay_data_frame(merged_assay_df)
 
     return [merged_es], {}
@@ -49,7 +59,18 @@ class MergeExpressionSets(GenericBlock):
                             required_data_type="ExpressionSet", required=True)
     _es_2 = InputBlockField(name="es_2", title="Set 2", order_num=20,
                             required_data_type="ExpressionSet", required=True)
-
+    _es_matrix_con = ParamField(
+        "es_matrix_con", title="Concatenation", order_num=30,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="CR",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["CR", "concatenate rows"],
+                ["CC", "concatenate columns"]
+            ]
+        }
+    )
     merged_es = OutputBlockField(name="merged_es", provided_data_type="ExpressionSet")
 
     def __init__(self, *args, **kwargs):
@@ -64,6 +85,7 @@ class MergeExpressionSets(GenericBlock):
             exp, self,
             es_1 = self.get_input_var("es_1"),
             es_2 = self.get_input_var("es_2"),
+            con = self._es_matrix_con,
             base_filename="%s_merged" % self.uuid,
         )
         exp.store_block(self)

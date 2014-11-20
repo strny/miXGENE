@@ -154,6 +154,7 @@ def preprocess_soft(exp, block, source_file):
 
     return [expression_set, platform_annotation], {}
 
+from django.conf import settings
 
 def generate_cv_folds(
         exp, block,
@@ -170,6 +171,13 @@ def generate_cv_folds(
         @param inner_output_es_names_map: input field name ->
             (inner output name train, inner output name test)
     """
+    #
+    # if settings.CELERY_DEBUG:
+    #     import sys
+    #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+    #     import pydevd
+    #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     sequence = []
 
     es_0 = es_dict.values()[0]

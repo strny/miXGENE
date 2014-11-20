@@ -37,9 +37,21 @@ class UserUpload(GenericBlock):
 
     es_matrix = ParamField("es_matrix", title="Expression set matrix", order_num=0,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
-    pheno_matrix = ParamField("pheno_matrix", title="Phenotype matrix", order_num=1,
+    es_matrix_ori = ParamField(
+        "es_matrix_ori", title="Matrix orientation", order_num=1,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
+    pheno_matrix = ParamField("pheno_matrix", title="Phenotype matrix", order_num=10,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
-    gpl_platform = ParamField("gpl_platform", title="Platform ID", order_num=2,
+    gpl_platform = ParamField("gpl_platform", title="Platform ID", order_num=20,
         input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
     working_unit = ParamField("working_unit", title="Working unit [used when platform is unknown]",
         order_num=3, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
@@ -110,6 +122,10 @@ class UserUpload(GenericBlock):
         if user_class_title not in pheno_df.columns:
             pheno_df[es.pheno_metadata["user_class_title"]] = ""
 
+        # if matrix is bad oriented, then do transposition
+        if self.es_matrix_ori == "GxS":
+            assay_df = assay_df.T
+
         es.store_assay_data_frame(assay_df)
         es.store_pheno_data_frame(pheno_df)
 
@@ -151,11 +167,50 @@ class UserUploadComplex(GenericBlock):
     m_rna_unit = ParamField("m_rna_unit", title="Working unit [used when platform is unknown]", init_val=None,
                            order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
+    m_rna_matrix_ori = ParamField(
+        "m_rna_matrix_ori", title="Matrix orientation", order_num=13,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
+
+
     mi_rna_matrix = ParamField("mi_rna_matrix", title=u"μRNA expression", order_num=20,
                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
+    mi_rna_matrix_ori = ParamField(
+        "mi_rna_matrix_ori", title="Matrix orientation", order_num=21,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
     methyl_matrix = ParamField("methyl_matrix", title="Methylation expression", order_num=30,
                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
+
+    methyl_matrix_ori = ParamField(
+        "methyl_matrix_ori", title="Matrix orientation", order_num=31,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
 
     pheno_matrix = ParamField("pheno_matrix", title="Phenotype matrix", order_num=40,
                               input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
@@ -222,6 +277,10 @@ class UserUploadComplex(GenericBlock):
             if self.m_rna_matrix is not None:
                 m_rna_assay_df = self.m_rna_matrix.get_as_data_frame(sep)
 
+                # if matrix is bad oriented, then do transposition
+                if self.m_rna_matrix_ori == "GxS":
+                    m_rna_assay_df = m_rna_assay_df.T
+
                 m_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                         base_filename="%s_m_rna_es" % self.uuid)
                 m_rna_es.store_assay_data_frame(m_rna_assay_df)
@@ -236,9 +295,14 @@ class UserUploadComplex(GenericBlock):
             if self.mi_rna_matrix is not None:
                 mi_rna_assay_df = self.mi_rna_matrix.get_as_data_frame(sep)
 
+                # if matrix is bad oriented, then do transposition
+                if self.mi_rna_matrix_ori == "GxS":
+                    mi_rna_assay_df = mi_rna_assay_df.T
+
                 mi_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                         base_filename="%s_mi_rna_es" % self.uuid)
                 mi_rna_es.store_assay_data_frame(mi_rna_assay_df)
+
                 if pheno_df:
                     mi_rna_es.store_pheno_data_frame(pheno_df)
 
@@ -247,6 +311,10 @@ class UserUploadComplex(GenericBlock):
             if self.methyl_matrix is not None:
 
                 methyl_assay_df = self.methyl_matrix.get_as_data_frame(sep)
+
+                # if matrix is bad oriented, then do transposition
+                if self.mi_rna_matrix_ori == "GxS":
+                    methyl_assay_df = methyl_assay_df.T
 
                 methyl_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                           base_filename="%s_methyl_es" % self.uuid)
@@ -331,18 +399,40 @@ class UploadInteraction(GenericBlock):
         order_num=11, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
     col_units = ParamField("col_units", title="Column units",
                            order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    header = ParamField("header", title="Header",
+                           order_num=13, input_type=InputType.CHECKBOX, field_type=FieldType.BOOLEAN, required=False)
+
+    csv_sep = ParamField(
+        "csv_sep", title="CSV separator symbol", order_num=50,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
+            ]
+        }
+    )
 
     _interaction = OutputBlockField(name="interaction", provided_data_type="BinaryInteraction")
 
     def on_params_is_valid(self, exp, *args, **kwargs):
         # Convert to  BinaryInteraction
-        interaction_df = self.upload_interaction.get_as_data_frame()
-
+        sep = getattr(self, "csv_sep", " ")
+        if self.header:
+            _header = 0
+        else:
+            _header = None
+        interaction_df = self.upload_interaction.get_as_data_frame(sep=sep, header=_header)
         interaction = BinaryInteraction(exp.get_data_folder(), str(self.uuid))
         interaction.store_matrix(interaction_df)
 
         interaction.row_units = self.row_units
         interaction.col_units = self.col_units
+        interaction.header = self.header
 
         self.set_out_var("interaction", interaction)
         exp.store_block(self)

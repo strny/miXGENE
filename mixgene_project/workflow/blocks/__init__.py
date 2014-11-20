@@ -9,7 +9,7 @@ from expression_sets_merge import MergeExpressionSets
 from aggregation import SubAggregation, SvdAggregation
 from aggregation import GeneSetAgg
 from classifiers import GaussianNb, DecisionTree, RandomForest, \
-    KnnClassifier, LinearSVM, KernelSvm
+    KnnClassifier, LinearSVM, KernelSvm, WalkForest
 from custom_iterator import CustomIterator
 from filter_by_bi import FilterByInteraction
 from mass_upload import MassUpload

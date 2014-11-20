@@ -124,7 +124,7 @@ class FilterBlock(GenericBlock):
     filter_method = ParamField(
         "filter_method", title="Filter method", order_num=50,
         input_type=InputType.SELECT, field_type=FieldType.STR,
-        init_val="mean",
+        init_val="LOW_VAL",
         options={
             "inline_select_provider": True,
             "select_options": [

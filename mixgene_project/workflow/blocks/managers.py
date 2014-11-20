@@ -178,6 +178,8 @@ class BlockSerializer(object):
                     val = int(raw_val)
                 elif p.field_type == FieldType.STR:
                     val = str(raw_val)
+                elif p.field_type == FieldType.BOOLEAN:
+                    val = bool(raw_val)
                 elif p.field_type == FieldType.RAW:
                     val = raw_val
                 else:

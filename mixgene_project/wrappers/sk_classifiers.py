@@ -9,7 +9,7 @@ from sklearn import tree
 from sklearn import neighbors
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
-
+from walkforest import WalkForestHyperLearner
 from celery import task
 
 from environment.structures import ExpressionSet, ClassifierResult
@@ -27,9 +27,10 @@ classifiers_map = {
     "DT": (tree.DecisionTreeClassifier, None),
     "random_forest": (RandomForestClassifier, None),
     "knn": (neighbors.KNeighborsClassifier, None),
+    "walk_forest" : (WalkForestHyperLearner, None)
 }
 
-
+from django.conf import settings
 def apply_classifier(
     exp, block,
     train_es, test_es,
@@ -40,6 +41,12 @@ def apply_classifier(
         @type train_es: ExpressionSet
         @type test_es: ExpressionSet
     """
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     if not classifier_options:
         classifier_options = {}
     if not fit_options:
@@ -50,9 +57,11 @@ def apply_classifier(
 
     # Unpack data
     x_train = train_es.get_assay_data_frame().as_matrix().transpose()
+    # x_train = train_es.get_assay_data_frame().as_matrix()
     y_train = train_es.get_pheno_data_frame()[target_class_column].as_matrix()
 
     x_test = test_es.get_assay_data_frame().as_matrix().transpose()
+    # x_test = test_es.get_assay_data_frame().as_matrix()
     y_test = test_es.get_pheno_data_frame()[target_class_column].as_matrix()
 
     # Unfortunately svm can't operate with string labels as a target classes

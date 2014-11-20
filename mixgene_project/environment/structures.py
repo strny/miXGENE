@@ -115,6 +115,7 @@ class BinaryInteraction(GenericStoreStructure):
         self.storage = None
         self.row_units = ""
         self.col_units = ""
+        self.header = False
 
     def store_matrix(self, df):
         if self.storage is None:

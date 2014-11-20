@@ -59,7 +59,7 @@ class ComoduleSetView(GenericBlock):
                                    field_type=FieldType.STR, is_a_property=True)
 
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
-        "table_result_view.html"
+        "comodule_set_view.html"
     ])
 
     @property
@@ -110,7 +110,7 @@ class ComoduleSetView(GenericBlock):
                     for title in table_headers
                 ],
                 "rows": [
-                    dict(zip(fields_list, [idx, "[\"" + '", "'.join(value) + "\"]"]))
+                    dict(zip(fields_list, [idx, value]))
                     for idx, value in
                     table.iteritems()  # [:100]
                 ]

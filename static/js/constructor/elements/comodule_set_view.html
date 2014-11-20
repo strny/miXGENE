@@ -1,0 +1,67 @@
+<div ng-controller="TableResultViewCtrl">
+    <div class="col-lg-12 col-md-12">
+    <table ng-table="table_config.tableParams" show-filter="true" class="table">
+        <thead>
+        <tr>
+            <th ng-repeat="column in table_config.columns" ng-show="column.visible"
+                class="header text-center sortable"
+                ng-class="{
+                    'sort-asc': table_config.tableParams.isSortBy(column.field, 'asc'),
+                    'sort-desc': table_config.tableParams.isSortBy(column.field, 'desc')
+                }"
+                ng-click="toggle_sorting(column)"
+                    >
+                {$ column.title $}
+                    <span class="pull-right glyphicon"
+                          ng-class="{
+                            'glyphicon-sort':
+                                !table_config.tableParams.isSortBy(column.field, 'asc') &&
+                                !table_config.tableParams.isSortBy(column.field, 'desc'),
+                            'glyphicon-sort-by-attributes':
+                                table_config.tableParams.isSortBy(column.field, 'asc'),
+                            'glyphicon-sort-by-attributes-alt':
+                                table_config.tableParams.isSortBy(column.field, 'desc'),
+                        }">
+                    </span>
+            </th>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in $data"
+            ng-click="changeSelection(row, $data, $index, $event)"
+            ng-class="{'active': row.$selected}"
+                >
+            <td ng-show="table_config.columns[0].visible" sortable="table_config.columns[0].field">
+                {$ row[table_config.columns[0].field] $}
+            </td>
+            <td ng-show="table_config.columns[1].visible" sortable="table_config.columns[1].field">
+                [
+                <span ng-repeat="pair in row[table_config.columns[1].field] | filter:'!mir'" ng-bind-html="'<a href=\'http://www.ncbi.nlm.nih.gov/gene/?term=' + pair +'\'>' + pair + '</a>, ' | to_trusted">
+                </span>
+                <span ng-repeat="pair in row[table_config.columns[1].field] | filter:'mir'" ng-bind-html="'<a href=\'http://www.mirbase.org/cgi-bin/query.pl?terms=' + pair +'\'>' + pair + '</a>, ' | to_trusted">
+                </span>
+                ]
+            </td>
+            <!--
+            <td ng-show="table_config.columns[2].visible"  sortable="table_config.columns[2].field">
+                [
+                    <span ng-repeat="pair in row[table_config.columns[2].field]" ng-bind-html="'<a href=\' http://www.ncbi.nlm.nih.gov/gene/?term=' + pair +'\'>' + pair + '</a>, ' | to_trusted">
+                    </span>
+                ]
+               <!-- ["{$ row[table_config.columns[2].field].join('", "') $}"]
+            </td>-->
+
+        </tr>
+        </tbody>
+    </table>
+
+    <a href="{$ block.export_raw_results_url $}">
+           Export raw results as .json
+    </a>
+    <br>
+    <a href="{$ block.export_results_csv_url $}">
+           Export raw results as .csv
+    </a>
+    </div>
+</div>
