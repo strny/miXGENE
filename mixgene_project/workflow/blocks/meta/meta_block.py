@@ -17,7 +17,8 @@ from webapp.scope import ScopeRunner, ScopeVar
 from workflow.blocks.blocks_pallet import GroupType
 
 from workflow.blocks.errors import PortError
-from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, InnerOutputField, InputBlockField, InputType, \
+from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, InnerOutputField, InputBlockField, \
+    InputType, \
     ParamField, ActionRecord, ActionsList
 from workflow.blocks.generic import GenericBlock, save_params_actions_list
 from workflow.blocks.managers import IteratedInnerFieldManager
@@ -68,7 +69,8 @@ class UniformMetaBlock(GenericBlock):
 
         ActionRecord("execute", ["ready"], "generating_folds", user_title="Run block"),
 
-        ActionRecord("on_folds_generation_success", ["generating_folds"], "ready_to_run_sub_scope", reload_block_in_client=True),
+        ActionRecord("on_folds_generation_success", ["generating_folds"], "ready_to_run_sub_scope",
+                     reload_block_in_client=True),
         ActionRecord("continue_collecting_sub_scope", ["ready_to_run_sub_scope"],
                      "sub_scope_executing"),
 
@@ -154,7 +156,7 @@ class UniformMetaBlock(GenericBlock):
                 if var is not None:
                     if hasattr(var, "clone"):
                         cell[name] = var.clone("%s_%s" %
-                           (self.uuid, self.inner_output_manager.iterator))
+                                               (self.uuid, self.inner_output_manager.iterator))
                     else:
                         cell[name] = deepcopy(var)
 
@@ -244,6 +246,8 @@ class UniformMetaBlock(GenericBlock):
         self.res_seq.sequence = [{"__label__": label} for label in self.get_fold_labels()]
 
         exp.store_block(self)
+        log.debug("on_folds_generation_success")
+        self.get_sub_scope().remove_temp_vars()
         self.do_action("run_sub_scope", exp)
 
     def success(self, exp, *args, **kwargs):
@@ -310,7 +314,7 @@ class UniformMetaBlock(GenericBlock):
                               block=self, port_name="(results collector)", block_alias=self.base_name)
                 )
                 is_valid = False
-            elif data_types[0]  not in ["ClassifierResult", "ResultsContainer"]:
+            elif data_types[0] not in ["ClassifierResult", "ResultsContainer"]:
                 self.errors.append(
                     PortError(msg="Data type `%s` is not allowed in the output collection" % data_types[0],
                               block=self, port_name="(results collector)", block_alias=self.base_name)

@@ -1,28 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from copy import deepcopy
 import json
 import logging
 
-import redis_lock
 import pandas as pd
 
-
-from mixgene.redis_helper import ExpKeys
-from mixgene.util import get_redis_instance
-from webapp.models import Experiment
-from environment.structures import SequenceContainer
-from webapp.scope import ScopeRunner, ScopeVar
-from webapp.tasks import wrapper_task
-from workflow.blocks.blocks_pallet import GroupType
-from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, InnerOutputField, InputBlockField, InputType, \
-    ParamField, ActionRecord, ActionsList
-from workflow.blocks.managers import IteratedInnerFieldManager
-from workflow.blocks.meta_block import UniformMetaBlock
-from workflow.common_tasks import generate_cv_folds
-from workflow.blocks.generic import GenericBlock, save_params_actions_list
-
+from workflow.blocks.fields import FieldType, BlockField, InnerOutputField, InputBlockField, ActionRecord, ActionsList
+from workflow.blocks.meta.meta_block import UniformMetaBlock
 from environment.structures import prepare_phenotype_for_js_from_es
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

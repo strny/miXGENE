@@ -218,8 +218,11 @@ class GenericBlock(BaseBlock):
         else:
             return None
 
-    def get_inner_out_var(self, name):
-        raise NotImplementedError("Not implemented in the base class")
+    # def get_inner_out_var(self, name):
+    #     raise NotImplementedError("Not implemented in the base class")
+
+    # def set_inner_out_var(self, name, value):
+    #     raise NotImplementedError("Not implemented in the base class")
 
     def set_out_var(self, name, value):
         self._out_data[name] = value

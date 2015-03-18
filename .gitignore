@@ -1,6 +1,7 @@
 ## Django
 local_settings.py
 dump.rdb
+fontconfig
 
 ### Linux ###
 .*

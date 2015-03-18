@@ -215,6 +215,7 @@ class Scope(object):
         self.name = scope_name
 
         self.scope_vars = set()
+        self.temp_vars = dict()
 
     @property
     def vars_by_data_type(self):
@@ -232,10 +233,25 @@ class Scope(object):
 
         key = ExpKeys.get_scope_key(self.exp.pk, scope_name=self.name)
         r.set(key, pickle.dumps(self.scope_vars))
+        self.store_temp()
         log.debug("Scope `%s` was saved to storage", self.name)
 
         #import ipdb; ipdb.set_trace()
         #a = 2
+
+
+    def store_temp(self):
+        from environment.structures import PickleStorage
+        storage = PickleStorage(str(self.exp.get_data_folder()+"/"+self.name+"_temp_vars"))
+        storage.store(self.temp_vars)
+
+    def load_temp(self):
+        try:
+            from environment.structures import PickleStorage
+            storage = PickleStorage(str(self.exp.get_data_folder()+"/"+self.name+"_temp_vars"))
+            self.temp_vars = storage.load()
+        except IOError:
+            self.temp_vars = dict()
 
     def get_parent_scope_list(self, redis_instance=None):
         if self.name == "root":
@@ -265,7 +281,15 @@ class Scope(object):
         key = ExpKeys.get_scope_key(self.exp.pk, scope_name=self.name)
         raw = r.get(key)
         if raw is not None:
-            self.scope_vars = pickle.loads(raw)
+            vars_p = pickle.loads(raw)
+            if isinstance(vars_p, list):
+                self.scope_vars = vars_p[0]
+                self.temp_vars = dict()
+            elif isinstance(vars_p, set):
+                self.scope_vars = vars_p
+                self.load_temp()
+            if isinstance(self.temp_vars, list):
+                self.temp_vars = dict()
             # TODO: set scope name during scope_var creation
             for scope_var in self.scope_vars:
                 scope_var.scope_name = self.name
@@ -278,7 +302,17 @@ class Scope(object):
             if sv.block_uuid == block.uuid:
                 self.scope_vars.remove(sv)
 
+        self.temp_vars = dict()
+
         self.store(r)
+
+    def remove_temp_vars(self):
+        r = get_redis_instance()
+        self.load(r)
+        self.temp_vars = dict()
+        self.store(r)
+
+
 
     def to_dict(self):
         return {
@@ -314,3 +348,22 @@ class Scope(object):
             log.debug("Variable: `%s` was registered in scope: `%s`", scope_var, self.name)
             self.scope_vars.add(scope_var)
             self.vars_by_data_type[scope_var.data_type].add(scope_var)
+
+    def set_temp_var(self, name, value):
+        """
+            @type name: basestring
+        """
+        log.debug("Temp Variable: `%s` was registered in scope: `%s`", name, self.name)
+        self.temp_vars[name] = value
+
+    def get_temp_var(self, name):
+        """
+            @type name: basestring
+        """
+        try:
+            log.debug("Temp Variable: `%s` begin reading scope: `%s`", name, self.name)
+            out = self.temp_vars[name]
+            log.debug("Temp Variable: `%s` end reading scope: `%s`", name, self.name)
+            return out
+        except KeyError:
+            return None

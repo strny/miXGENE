@@ -8,15 +8,10 @@ from fields import ActionsList, ActionRecord, InputBlockField, ParamField, Input
 from generic import GenericBlock, execute_block_actions_list
 from environment.structures import DictionarySet
 from django.conf import settings
-from pandas import merge
-import numpy as np
-import pandas as pd
-from pandas import Series
 from wrappers.snmnmf.evaluation import EnrichmentInGeneSets
-import operator
 
 
-#@task(name="wrappers.filter.enrichment_task")
+
 def enrichment_no_t_task(exp, block,
                      T,
                      gs,
@@ -33,10 +28,7 @@ def enrichment_no_t_task(exp, block,
     cs = cs.load_set()
     e = EnrichmentInGeneSets(cs)
     enrich = e.getModuleEnrichmentInGeneSets(cs, gene_set.genes, pval_threshold=T)
-    # enrich = [(mod, genes, map(lambda x: (x[0], x[1]), terms)) for (mod, (genes, terms)) in enrich.items()]
     enrich = dict((mod, (genes, map(lambda x: (gene_set.description[x[0]], x[0], x[1]), terms))) for (mod, (genes, terms)) in enrich.items())
-    # enrich = [(mod, map(lambda x: (gene_set.description[x[0]], x[1]), terms), genes) for (mod, [terms, genes]) in enrich]
-    # enrich = [z[0] for z in x[1] for x in enrich.items()]
     ds = DictionarySet(exp.get_data_folder(), base_filename)
     ds.store_dict(enrich)
     return [ds], {}

@@ -125,8 +125,9 @@ class BinaryInteraction(GenericStoreStructure):
     def load_matrix(self):
         if self.storage is None:
             raise RuntimeError("Interaction data wasn't stored prior")
-        return self.storage.load()
-
+        matrix = self.storage.load()
+        matrix.set_index(matrix.columns[0], inplace=True, drop=True)
+        return matrix
 
 class ComoduleSet(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
@@ -327,7 +328,6 @@ class GmtStorage(object):
         """
             @rtype  : GS
         """
-
         if self.compression == "gzip":
             with gzip.open(self.filepath) as inp:
                 return GmtStorage.read_inp(inp, self.sep)
@@ -335,8 +335,6 @@ class GmtStorage(object):
             with open(self.filepath) as inp:
                 return GmtStorage.read_inp(inp, self.sep)
 
-
-        return gene_sets
 
     def store(self, gene_sets):
         """

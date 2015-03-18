@@ -5,7 +5,7 @@ import cStringIO as StringIO
 from django.core.urlresolvers import reverse
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField
 
-from workflow.blocks.rc_vizualize import RcVisualizer
+from workflow.blocks.visualizers.rc_visualizer import RcVisualizer
 
 
 log = logging.getLogger(__name__)

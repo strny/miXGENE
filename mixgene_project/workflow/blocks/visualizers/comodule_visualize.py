@@ -30,34 +30,17 @@ class ComoduleSetView(GenericBlock):
     _block_actions = ActionsList([
         ActionRecord("save_params", ["created", "valid_params", "done", "ready", "input_bound"], "validating_params",
                      user_title="Save parameters"),
-
         ActionRecord("on_params_not_valid", ["validating_params"], "created"),
         ActionRecord("on_params_is_valid", ["validating_params"], "valid_params"),
-
-        # ActionRecord("compute_pca", ["valid_params"], "computing_pca", user_title="Compute PCA"),
-        #ActionRecord("pca_done", ["computing_pca"], "done",),
-
-        #ActionRecord("reset_execution", ["*", "done", "execution_error", "ready", "working"], "ready",
-        #             user_title="Reset execution")
-
-        #ActionRecord("update", ["input_bound", "ready"], "ready"),
     ])
 
     input_comodule_set = InputBlockField(name="cs", order_num=10,
                                          required_data_type="ComoduleSet", required=True)
-
     _table_for_js = BlockField(name="table_js", field_type=FieldType.RAW, is_a_property=True)
-
-    # chart_series = BlockField(name="chart_series", field_type=FieldType.RAW, init_val=[])
-    #chart_categories = BlockField(name="chart_categories", field_type=FieldType.SIMPLE_LIST,
-    #                              init_val=[])
-
     _export_raw_results_url = BlockField(name="export_raw_results_url",
                                          field_type=FieldType.STR, is_a_property=True)
-
     _export_results_csv_url = BlockField(name="export_results_csv_url",
                                    field_type=FieldType.STR, is_a_property=True)
-
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
         "comodule_set_view.html"
     ])

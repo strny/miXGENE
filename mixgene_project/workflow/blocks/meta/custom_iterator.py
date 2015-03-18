@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
-from workflow.blocks.blocks_pallet import GroupType
+
 from workflow.blocks.fields import FieldType, BlockField, InnerOutputField, InputBlockField, ActionRecord, ActionsList
-from workflow.blocks.meta_block import UniformMetaBlock
+from workflow.blocks.meta.meta_block import UniformMetaBlock
 
 
 class CellField(object):

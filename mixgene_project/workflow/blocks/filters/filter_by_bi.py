@@ -60,7 +60,7 @@ def filter_by_bi(
 class FilterByInteraction(GenericBlock):
     block_base_name = "FILTER_BY_BI"
     name = "Filter ES by interaction"
-    block_group = GroupType.PROCESSING
+    block_group = GroupType.FILTER
     is_block_supports_auto_execution = True
 
     _block_actions = ActionsList([

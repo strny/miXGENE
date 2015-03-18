@@ -8,15 +8,9 @@ from fields import ActionsList, ActionRecord, InputBlockField, ParamField, Input
 from generic import GenericBlock, execute_block_actions_list
 from environment.structures import DictionarySet
 from django.conf import settings
-from pandas import merge
-import numpy as np
-import pandas as pd
-from pandas import Series
 from wrappers.snmnmf.evaluation import EnrichmentInGeneSets
-import operator
 
 
-#@task(name="wrappers.filter.enrichment_task")
 def enrichment_task(exp, block,
                      gs,
                      H2,

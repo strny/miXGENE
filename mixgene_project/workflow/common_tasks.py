@@ -201,7 +201,7 @@ def generate_cv_folds(
         for input_name, output_names in inner_output_es_names_map.iteritems():
             es_train_name, es_test_name = output_names
             es = es_dict[input_name]
-            assay_df = es.get_assay_data_frame()
+            assay_df = es.get_assay_data_frame().T
 
             # Reorder columns to be compatible to phenotype
             assay_df = assay_df[pheno_df.index]

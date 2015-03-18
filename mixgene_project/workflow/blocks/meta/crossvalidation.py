@@ -1,20 +1,10 @@
-from copy import deepcopy
 import logging
-from mixgene.redis_helper import ExpKeys
 
-from webapp.models import Experiment
-from environment.structures import SequenceContainer
-from webapp.scope import ScopeRunner, ScopeVar
 from webapp.tasks import wrapper_task
-from workflow.blocks.blocks_pallet import GroupType
-from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, InnerOutputField, InputBlockField, InputType, \
+from workflow.blocks.fields import FieldType, BlockField, InnerOutputField, InputBlockField, InputType, \
     ParamField, ActionRecord, ActionsList
-from workflow.blocks.managers import IteratedInnerFieldManager
-from workflow.blocks.meta_block import UniformMetaBlock
+from workflow.blocks.meta.meta_block import UniformMetaBlock
 from workflow.common_tasks import generate_cv_folds
-from workflow.blocks.generic import GenericBlock, save_params_actions_list
-from mixgene.util import get_redis_instance
-import redis_lock
 
 # class CrossValidationForm(forms.Form):
 #     folds_num = forms.IntegerField(min_value=2, max_value=100)

@@ -496,6 +496,7 @@ class UploadedFileWrapper(object):
             res = pd.read_csv(path, header=header, sep=sep)
         return res
 
+
     def to_dict(self, *args, **kwargs):
         return {
             "filename": self.orig_name,
