@@ -60,7 +60,7 @@ OLD_MODULES = ['aggregation', 'box_plot', 'classifiers', 'comodule_visualize',
                'filter_by_bi', 'globaltest', 'mass_upload', 'merge_comodule',
                'merge_gene_set_annotation', 'meta_block', 'multi_features', 'nimfa_snmnmf',
                'pattern_search', 'pca_visualize', 'rc_table', 'rc_vizualize',
-               'table_result_view', 'user_upload']
+               'table_result_view', 'user_upload', 'filter', 'threshold']
 
 import sys
 
