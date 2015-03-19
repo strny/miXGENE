@@ -1,10 +1,10 @@
 __author__ = 'pavel'
 
 from webapp.tasks import wrapper_task
-from blocks_pallet import GroupType
-from fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
+from workflow.blocks.blocks_pallet import GroupType
+from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
     OutputBlockField
-from generic import GenericBlock, execute_block_actions_list
+from workflow.blocks.generic import GenericBlock, execute_block_actions_list
 import wrappers.snmnmf.nimfa_snmnmf as ns
 from django.conf import settings
 
