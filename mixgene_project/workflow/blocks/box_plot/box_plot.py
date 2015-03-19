@@ -8,7 +8,7 @@ from mixgene.util import log_timing
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField
 
-from rc_vizualize import RcVisualizer
+from workflow.blocks.visualizers.rc_visualizer import RcVisualizer
 
 from wrappers.boxplot_stats import boxplot_stats
 

@@ -1,5 +1,8 @@
 __author__ = 'pavel'
 
+from .generic_classifier import GenericClassifier
+from workflow.blocks.fields import InputBlockField, ParamField, InputType, FieldType
+
 
 class WalkForest(GenericClassifier):
     block_base_name = "WALK_FOREST"
@@ -14,7 +17,6 @@ class WalkForest(GenericClassifier):
                                  required_data_type="BinaryInteraction",
                                  required=True)
 
-
     walk_max_length = ParamField(
         name="walk_max_length",
         title="walk_max_length",
@@ -23,7 +25,6 @@ class WalkForest(GenericClassifier):
         init_val="10",
         order_num=41
     )
-
 
     eps = ParamField(
         name="eps",

@@ -9,7 +9,7 @@ from sklearn import tree
 from sklearn import neighbors
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
-from walkforest import WalkForestHyperLearner
+from walkforest.hyperlearner import WalkForestHyperLearner
 from celery import task
 
 from environment.structures import ExpressionSet, ClassifierResult

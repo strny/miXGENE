@@ -1,0 +1,1 @@
+from workflow.blocks.input_data.fetch_bi_gs import *

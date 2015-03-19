@@ -1,5 +1,8 @@
 __author__ = 'pavel'
 
+from .generic_classifier import GenericClassifier
+from workflow.blocks.fields import BlockField, ParamField, InputType, FieldType
+
 
 class KnnClassifier(GenericClassifier):
     block_base_name = "KNN"

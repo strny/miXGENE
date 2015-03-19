@@ -30,10 +30,18 @@ from workflow.blocks.visualizers.comodule_visualize import ComoduleSetView
 from workflow.blocks.visualizers.dictionary_visualize import DictionarySetView
 from workflow.blocks.snmnmf.enrichment_no_t_block import EnrichmentNoTBlock
 from workflow.blocks.filters.merge_comodule import MergeComoduleSets
-# from enrichment_block import EnrichmentBlock
+
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
 from workflow.blocks.meta.pattern_search import PatternSearch
+from workflow.blocks.classifiers.walk_forest import WalkForest
+from workflow.blocks.classifiers.decision_tree import DecisionTree
+from workflow.blocks.classifiers.gaussian_nb import GaussianNb
+from workflow.blocks.classifiers.kernel_svm import KernelSvm
+from workflow.blocks.classifiers.knn_classifier import KnnClassifier
+from workflow.blocks.classifiers.linear_svm import LinearSVM
+from workflow.blocks.classifiers.random_forest import RandomForest
+
 from blocks_pallet import block_classes_by_name, blocks_by_group
 
 
@@ -42,4 +50,36 @@ def get_block_class_by_name(name):
         return block_classes_by_name[name]
     else:
         raise KeyError("No such plugin: %s" % name)
+
+
+# the code below is for compatibility with old mixgene structure!!!
+OLD_MODULES = ['aggregation', 'box_plot', 'classifiers', 'comodule_visualize',
+               'crossvalidation', 'custom_iterator', 'dictionary_visualize',
+               'enrichment_block', 'enrichment_no_t_block', 'enrichment_visualize',
+               'expression_sets_merge', 'feature_selection', 'fetch_bi_gs', 'fetch_gse',
+               'filter_by_bi', 'globaltest', 'mass_upload', 'merge_comodule',
+               'merge_gene_set_annotation', 'meta_block', 'multi_features', 'nimfa_snmnmf',
+               'pattern_search', 'pca_visualize', 'rc_table', 'rc_vizualize',
+               'table_result_view', 'user_upload']
+
+import sys
+
+import importlib
+for old_mod in OLD_MODULES:
+    curr_mod = importlib.import_module("workflow.blocks.obsolete_comp.dep_%s" % old_mod)
+    sys.modules["workflow.blocks.%s" % old_mod] = curr_mod
+
+# OLD_MODULES = ['meta_block', 'pattern_search', 'globaltest']
+# from workflow.blocks.meta import meta_block
+# from workflow.blocks.meta import pattern_search
+# from workflow.blocks.processing import globaltest
+#
+#
+# sys.modules["workflow.blocks.meta_block"] = meta_block
+# sys.modules["workflow.blocks.pattern_search"] = pattern_search
+# sys.modules["workflow.blocks.globaltest"] = globaltest
+
+
+
+
 

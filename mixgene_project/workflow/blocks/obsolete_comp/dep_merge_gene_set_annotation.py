@@ -1,0 +1,1 @@
+from workflow.blocks.processing.merge_gene_set_annotation import *

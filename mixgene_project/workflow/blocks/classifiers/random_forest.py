@@ -1,5 +1,8 @@
 __author__ = 'pavel'
 
+from .generic_classifier import GenericClassifier
+from workflow.blocks.fields import InputBlockField, ParamField, InputType, FieldType
+
 
 class RandomForest(GenericClassifier):
     block_base_name = "RND_FOREST"

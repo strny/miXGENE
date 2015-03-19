@@ -88,73 +88,73 @@ def selphen(univ,phngns):
     return univ & phnset
 
 
-class WalkForestHyperLearner:
-    """ Heuristicky urci delku prochazky po nahodne pasece
-    Parameters
-        ----------
-        gene2gene : DataFrame, or scipy.sparse.matrix-like 
-            protein-protein interaction matrix
-        miRNA2gene : DataFrame, or scipy.sparse.matrix-like 
-            target-miRNA interaction matrix  
-        causgenes : gene-sets-like set of candidate genes
-            for particular disese terms.      
-    """
-
-    def __init__(self,
-                 gene2gene,
-                 causgenes=None,
-                 miRNA2gene=None,
-                 walk_lengths=range(1, 10),
-                 n_estimators=1000,
-                 eps=.01,
-                 criterion="gini",
-                 max_depth=1,
-                 min_samples_split=2,
-                 min_samples_leaf=1,
-                 n_jobs=1,
-                 random_state=None,
-                 max_features='auto',
-                 fsubsets=None,
-                 bootstrap=False,
-                 oob_score=False,
-                 verbose=0
-    ):
-        self.eps = eps
-        self.n_estimators = n_estimators
-        self.learners = []
-        gene2gene = gene2gene.load_matrix()
-        gene2gene = sp.coo_matrix(gene2gene.values)
-        gene2gene = (gene2gene + gene2gene.T).tocoo()
-        gene2gene.data /= gene2gene.data
-        if miRNA2gene is not None:
-            miRNA2gene = miRNA2gene.load_matrix()
-            miRNA2gene = sp.coo_matrix(miRNA2gene.values)
-
-        for k in walk_lengths:
-            self.learners += [WalkForestClassifier(gene2gene, causgenes, mir2gene=miRNA2gene,
-                                                   n_estimators=self.n_estimators, random_state=random_state, K=k,
-                                                   max_features=max_features,
-                                                   max_depth=max_depth, min_samples_leaf=min_samples_leaf,
-                                                   bootstrap=bootstrap)]
-
-
-    def fit(self, X, y):
-
-        self.heur = []
-        for learner in self.learners:
-            learner.fit(X, y)
-            # incidence of underfitted trees
-            I = [sum(y != t[0].predict(X[:, t[1]])) for t in learner.estimators_]
-            self.heur += [sum(np.array(I) > 0) * 1. / self.n_estimators]
-        self.heur = np.array(self.heur)
-
-        converg = np.where(self.heur < self.eps)[0]
-        self.opt_length = np.argmin(self.heur[1:] - self.heur[:-1]) if len(converg) == 0 else converg[0]
-
-        return self
-
-    def predict(self, X):
-        return self.learners[self.opt_length].predict(X)
+# class WalkForestHyperLearner:
+#     """ Heuristicky urci delku prochazky po nahodne pasece
+#     Parameters
+#         ----------
+#         gene2gene : DataFrame, or scipy.sparse.matrix-like
+#             protein-protein interaction matrix
+#         miRNA2gene : DataFrame, or scipy.sparse.matrix-like
+#             target-miRNA interaction matrix
+#         causgenes : gene-sets-like set of candidate genes
+#             for particular disese terms.
+#     """
+#
+#     def __init__(self,
+#                  gene2gene,
+#                  causgenes=None,
+#                  miRNA2gene=None,
+#                  walk_lengths=range(1, 10),
+#                  n_estimators=1000,
+#                  eps=.01,
+#                  criterion="gini",
+#                  max_depth=1,
+#                  min_samples_split=2,
+#                  min_samples_leaf=1,
+#                  n_jobs=1,
+#                  random_state=None,
+#                  max_features='auto',
+#                  fsubsets=None,
+#                  bootstrap=False,
+#                  oob_score=False,
+#                  verbose=0
+#     ):
+#         self.eps = eps
+#         self.n_estimators = n_estimators
+#         self.learners = []
+#         gene2gene = gene2gene.load_matrix()
+#         gene2gene = sp.coo_matrix(gene2gene.values)
+#         gene2gene = (gene2gene + gene2gene.T).tocoo()
+#         gene2gene.data /= gene2gene.data
+#         if miRNA2gene is not None:
+#             miRNA2gene = miRNA2gene.load_matrix()
+#             miRNA2gene = sp.coo_matrix(miRNA2gene.values)
+#
+#         for k in walk_lengths:
+#             self.learners += [WalkForestClassifier(gene2gene, causgenes, mir2gene=miRNA2gene,
+#                                                    n_estimators=self.n_estimators, random_state=random_state, K=k,
+#                                                    max_features=max_features,
+#                                                    max_depth=max_depth, min_samples_leaf=min_samples_leaf,
+#                                                    bootstrap=bootstrap)]
+#
+#
+#     def fit(self, X, y):
+#
+#         self.heur = []
+#         for learner in self.learners:
+#             learner.fit(X, y)
+#             # incidence of underfitted trees
+#             I = [sum(y != t[0].predict(X[:, t[1]])) for t in learner.estimators_]
+#             self.heur += [sum(np.array(I) > 0) * 1. / self.n_estimators]
+#         self.heur = np.array(self.heur)
+#
+#         converg = np.where(self.heur < self.eps)[0]
+#         self.opt_length = np.argmin(self.heur[1:] - self.heur[:-1]) if len(converg) == 0 else converg[0]
+#
+#         return self
+#
+#     def predict(self, X):
+#         return self.learners[self.opt_length].predict(X)
 
 
 
