@@ -68,6 +68,7 @@ class UploadInteraction(GenericBlock):
         else:
             _header = None
         interaction_df = self.upload_interaction.get_as_data_frame(sep=sep, header=_header)
+        sd = None
         if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
             # we have to find a shape of interaction matrix
             if self.bi_data_type in ["pairs", "triples"]:
@@ -86,10 +87,15 @@ class UploadInteraction(GenericBlock):
                     sd[cols[1]][cols[0]] = cols[3]
             sd = sd.to_dense()
             sd.reset_index(level=0, inplace=True)
-            interaction_df = sd
+            # interaction_df = sd
 
         interaction = BinaryInteraction(exp.get_data_folder(), str(self.uuid))
-        interaction.store_matrix(interaction_df)
+        if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
+            interaction.store_pairs(interaction_df)
+            interaction.store_matrix(sd)
+        else:
+            interaction.store_matrix(interaction_df)
+            # todo convert to pairs
 
         interaction.row_units = self.row_units
         interaction.col_units = self.col_units

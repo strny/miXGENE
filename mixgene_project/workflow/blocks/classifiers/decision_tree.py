@@ -26,30 +26,30 @@ class DecisionTree(GenericClassifier):
         }
     )
 
-    max_features_mode = ParamField(
-        name="max_features_mode",
-        title="Max features for split, mode",
-        input_type=InputType.SELECT,
-        field_type=FieldType.STR,
-        options={
-            "inline_select_provider": True,
-            "select_options": [
-                ["int", "Fixed number"],
-                ["float", "Ratio of the features number [0.0 .. 1.0]"],
-                ["sqrt", "sqrt(number of features)"],
-                ["log2", "log2(number of features)"],
-            ]
-        },
-        order_num=20,
-    )
+    # max_features_mode = ParamField(
+    #     name="max_features_mode",
+    #     title="Max features for split, mode",
+    #     input_type=InputType.SELECT,
+    #     field_type=FieldType.STR,
+    #     options={
+    #         "inline_select_provider": True,
+    #         "select_options": [
+    #             ["int", "Fixed number"],
+    #             ["float", "Ratio of the features number [0.0 .. 1.0]"],
+    #             ["sqrt", "sqrt(number of features)"],
+    #             ["log2", "log2(number of features)"],
+    #         ]
+    #     },
+    #     order_num=20,
+    # )
 
-    max_features_value = ParamField(
-        name="max_features_value",
-        title="Value for the chosen max feature mode",
-        input_type=InputType.TEXT,
-        field_type=FieldType.STR,
-        order_num=30,
-    )
+    # max_features_value = ParamField(
+    #     name="max_features_value",
+    #     title="Value for the chosen max feature mode",
+    #     input_type=InputType.TEXT,
+    #     field_type=FieldType.STR,
+    #     order_num=30,
+    # )
 
     max_depth = ParamField(
         name="max_depth",
@@ -76,13 +76,13 @@ class DecisionTree(GenericClassifier):
     )
 
     def collect_options(self):
-        max_features_mode = self.get_option_safe("max_features_mode", str)
-        if max_features_mode in ["sqrt", "log2"]:
-            self.classifier_options["max_features"] = max_features_mode
-        elif max_features_mode == "int":
-            self.collect_option_safe("max_features_value", int, target_name="max_features")
-        elif max_features_mode == "float":
-            self.collect_option_safe("max_features_value", float, target_name="max_features")
+        # max_features_mode = self.get_option_safe("max_features_mode", str)
+        # if max_features_mode in ["sqrt", "log2"]:
+        #     self.classifier_options["max_features"] = max_features_mode
+        # elif max_features_mode == "int":
+        #     self.collect_option_safe("max_features_value", int, target_name="max_features")
+        # elif max_features_mode == "float":
+        #     self.collect_option_safe("max_features_value", float, target_name="max_features")
 
         self.collect_option_safe("max_depth", int)
         self.collect_option_safe("min_samples_split", int)

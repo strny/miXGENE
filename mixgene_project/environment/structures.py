@@ -113,9 +113,20 @@ class BinaryInteraction(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
         super(BinaryInteraction, self).__init__(*args, **kwargs)
         self.storage = None
+        self.storage_pairs = None
         self.row_units = ""
         self.col_units = ""
         self.header = False
+
+    def store_pairs(self, pairs):
+        if self.storage_pairs is None:
+            self.storage_pairs = DataFrameStorage(self.form_filepath("interaction_pairs"))
+        self.storage_pairs.store(pairs)
+
+    def load_pairs(self):
+        if self.storage_pairs is None:
+            raise RuntimeError("Interaction pairs data wasn't stored prior")
+        return self.storage_pairs.load()
 
     def store_matrix(self, df):
         if self.storage is None:

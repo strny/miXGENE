@@ -335,7 +335,7 @@ class Experiment(models.Model):
             r = get_redis_instance()
         else:
             r = redis_instance
-
+        log.debug("getting_blocks: %s", block_uuid_list)
         return [(uuid, pickle.loads(r.get(ExpKeys.get_block_key(uuid))))
                 for uuid in block_uuid_list]
 
