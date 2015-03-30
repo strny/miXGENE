@@ -93,6 +93,7 @@ nosetests.xml
 **/static/bower_components/*
 **/static/common/*
 **/static/node_modules
+static/common
 
 ### Node ###
 lib-cov
@@ -112,3 +113,5 @@ build
 .grunt
 
 node_modules
+mixgene_project.zip
+static.zip
