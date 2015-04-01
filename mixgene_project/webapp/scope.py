@@ -25,6 +25,10 @@ class ScopeVar(object):
         self.block_alias = block_alias
         self.scope_name = scope_name
 
+    # for workflow duplication
+    def change_block(self, block_mapping):
+        self.block_uuid = block_mapping[self.block_uuid]
+
     @property
     def title(self):
         return "%s -> %s" % (self.block_alias or self.block_uuid, self.var_name)

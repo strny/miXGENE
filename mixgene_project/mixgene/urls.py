@@ -18,6 +18,9 @@ urlpatterns = patterns('',
     url(r'^constructor/(?P<exp_id>\d+)', 'webapp.views.constructor', name='constructor'),
     url(r'^experiments/ro/(?P<exp_id>\d+)', 'webapp.views.exp_ro', name='exp_ro'),
 
+    url(r'^experiments/(?P<exp_id>\d+)/duplicate/?$',
+        'webapp.views.duplicate_experiment', name="duplicate_experiment"),
+
     url(r'^experiments/(?P<exp_id>\d+)/sub/(?P<sub>[\w|\d|_]+)?$',
         'webapp.views.exp_sub_resource', name="experiment_sub_resource"),
 

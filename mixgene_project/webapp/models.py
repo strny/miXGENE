@@ -19,7 +19,7 @@ from mixgene.util import get_redis_instance, log_timing
 from mixgene.redis_helper import ExpKeys
 
 from environment.structures import GmtStorage, GeneSets
-from webapp.scope import Scope
+from webapp.scope import Scope, ScopeVar
 from webapp.tasks import auto_exec_task
 
 log = logging.getLogger(__name__)
@@ -341,9 +341,6 @@ class Experiment(models.Model):
 
     def get_all_block_uuids(self, redis_instance=None):
         """
-        @type included_inner_blocks: list of str
-        @param included_inner_blocks: uuids of inner blocks to be included
-
         @param redis_instance: Redis client
 
         @return: list of block uuids
@@ -413,6 +410,34 @@ class Experiment(models.Model):
         s.seek(0)
         result = s.read()
         return result
+
+    def duplicate(self):
+        from os import mkdir
+        blocks = self.get_blocks(self.get_all_block_uuids())
+        self.pk = None
+        self.save()
+        self.post_init()
+        mkdir(self.get_data_folder())
+        mapping = {}
+        mapping['root'] = 'root'
+        for (uuid, bl) in blocks:
+            new_bl = bl.duplicate(self.pk, mapping)
+            self.store_block(new_bl, new_block=True)
+            mapping[uuid] = new_bl.uuid
+        blocks = self.get_blocks(self.get_all_block_uuids())
+        # we need to fix inputs....
+        for (uuid, bl) in blocks:
+            bl.remap_inputs(mapping)
+            scope = bl.get_scope()
+            scope.load()
+            for f_name, f in bl._block_serializer.outputs.iteritems():
+                scope.register_variable(ScopeVar(bl.uuid, f_name, f.provided_data_type))
+            for f_name, f in bl.bound_inputs.iteritems():
+                scope.register_variable(f)
+            from workflow.blocks.meta.meta_block import UniformMetaBlock
+
+            scope.store()
+            self.store_block(bl)
 
 
 def delete_exp(exp):

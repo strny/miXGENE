@@ -119,6 +119,12 @@ class UniformMetaBlock(GenericBlock):
         self.set_out_var("results_container", None)
         self.res_seq = SequenceContainer()
 
+    def remap_inputs(self, mapping):
+        for var in self.bound_inputs.itervalues():
+            var.change_block(mapping)
+        for var in self.collector_spec.bound.itervalues():
+            var.change_block(mapping)
+
     @property
     def is_sub_pages_visible(self):
         if self.state in ['valid_params', 'done', 'ready']:

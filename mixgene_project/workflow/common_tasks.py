@@ -209,10 +209,12 @@ def generate_cv_folds(
             assay_df = assay_df[assay_df.columns[mask]]
 
             train_es = es.clone("%s_%s_train_%s" % (es_0.base_filename, input_name, i))
+            train_es.base_dir = exp.get_data_folder()
             train_es.store_assay_data_frame(assay_df[train_idx])
             train_es.store_pheno_data_frame(masked_pheno_df.iloc[train_idx])
 
             test_es = es.clone("%s_%s_test_%s" % (es_0.base_filename, input_name, i))
+            test_es.base_dir = exp.get_data_folder()
             test_es.store_assay_data_frame(assay_df[test_idx])
             test_es.store_pheno_data_frame(masked_pheno_df.iloc[test_idx])
 

@@ -81,7 +81,7 @@ def apply_classifier(
 
     # Classifier initialization
     fabric, apply_func = classifiers_map[classifier_name]
-    log.debug("Classifier options: %s", classifier_options)
+    # log.debug("Classifier options: %s", classifier_options)
     if apply_func is None:
         cl = get_classifier(fabric, classifier_options, classifier_name, block)
         log.debug("Fitting classifier.")

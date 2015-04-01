@@ -384,3 +384,13 @@ def add_experiment(request):
 
     mkdir(exp.get_data_folder())
     return redirect("/constructor/%s" % exp.pk) # TODO use reverse
+
+@login_required(login_url='/auth/login/')
+@csrf_protect
+@never_cache
+def duplicate_experiment(request, exp_id):
+    exp = Experiment.objects.get(pk=exp_id)
+    exp.duplicate()
+    # exp.pk = None
+    # exp.save()
+    return redirect("/constructor/%s" % exp.pk) # TODO use reverse

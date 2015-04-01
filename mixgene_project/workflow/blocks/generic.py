@@ -114,6 +114,31 @@ class GenericBlock(BaseBlock):
     _warnings = BlockField("warnings", FieldType.SIMPLE_LIST, list())
     _bound_inputs = BlockField("bound_inputs", FieldType.SIMPLE_DICT, defaultdict())
 
+    def duplicate(self, exp_id, mapping):
+        import copy
+        old_uuid = self.uuid
+        new_obj = copy.deepcopy(self)
+        new_obj.uuid = "B" + uuid1().hex[:8]
+        new_obj.exp_id = exp_id
+        if new_obj.scope_name:
+            # little hack, it uses the fact that a scope name has a structure root_uiid1_uuid2....
+            parent_uuids = new_obj.scope_name.split('_')
+            for parent_uuid in parent_uuids:
+                new_obj.scope_name = new_obj.scope_name.replace(parent_uuid, mapping[parent_uuid])
+        scope = new_obj.get_scope()
+        scope.load()
+
+        for f_name, f in new_obj._block_serializer.outputs.iteritems():
+            scope.register_variable(ScopeVar(new_obj.uuid, f_name, f.provided_data_type))
+            # log.debug("Registering normal outputs: %s", f_name)
+            # new_obj.register_provided_objects(scope, ScopeVar(new_obj.uuid, f_name, f.provided_data_type))
+        scope.store()
+        return new_obj
+
+    def remap_inputs(self, mapping):
+        for var in self.bound_inputs.itervalues():
+            var.change_block(mapping)
+
     def __init__(self, exp_id=None, scope_name=None):
         """
             Building block for workflow

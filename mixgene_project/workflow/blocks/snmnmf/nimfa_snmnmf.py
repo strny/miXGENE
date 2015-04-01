@@ -135,7 +135,7 @@ class NIMFASNMNMFBlock(GenericBlock):
             miRNA2gene=miRNA2gene,
             #gene2DNAmethylation = Gene2DNAmethyl,
             params={'l1': self.l1, 'l2': self.l2, 'g1': self.g1, 'g2': self.g2, 'rank': self.rank},
-            base_filename="%s_%s_nimfa_snmnmf" % (self.uuid, self)
+            base_filename="%s_nimfa_snmnmf" % self.uuid
         )
         exp.store_block(self)
         self.celery_task.apply_async()

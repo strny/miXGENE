@@ -14,6 +14,7 @@
                 <a class="btn btn-primary"
                  href="{% url 'webapp.views.alter_exp' exp_id=exp.pk action='execute' %}">Run experiment</a>
                 <a href="{% url 'exp_ro' exp.pk %}">Workflow presentation</a>
+                <a href="{% url 'duplicate_experiment' exp.pk %}">Duplicate experiment</a>
             </div>
             <br />
             <br />
