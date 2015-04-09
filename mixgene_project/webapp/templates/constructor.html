@@ -9,7 +9,21 @@
 
     <div class="col-lg-12">
         <div id="worktable" class="col-xs-12" ng-controller="WorktableCtrl">
-
+            <div class="row pull-left">
+                  Workflow name: <span ng-hide="edit_name">{$ exp.name $}</span>
+                    <span ng-show="edit_name">
+                        <input type="text" name="exp[name]" ng-model="exp.name" ng-init="exp.name='{{ exp.name }}'"> </input>
+                        <button class="btn btn-small"
+                                ng-click="changeName()">
+                            Rename
+                        </button>
+                    </span>
+                    <a ng-hide="edit_name"
+                       ng-if="!access.mode.ro"
+                       class="block-reload glyphicon glyphicon-pencil"
+                       ng-click="toggleEditName()">
+                   </a>
+            </div>
             <div class="row pull-right" ng-if="!access.mode.ro">
                 <a class="btn btn-primary"
                  href="{% url 'webapp.views.alter_exp' exp_id=exp.pk action='execute' %}">Run experiment</a>

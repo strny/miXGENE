@@ -139,6 +139,17 @@ Constructor.factory("blockAccess", function($http, $log){
         })
     };
 
+    access.exp_change_name = function(exp) {
+        $http({
+            method: 'GET',
+            url: '/experiments/' + access.exp_id + '/change_name'
+            ,params: {exp_name: exp.name}
+        }).success(function(data, status, headers, config){
+            $log.debug(data);
+        })
+
+    };
+
     access.send_action = function(block, action_code, do_reload_all, on_success){
         if(typeof(do_reload_all)==='undefined'){ do_reload_all = false };
 

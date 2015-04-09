@@ -124,6 +124,15 @@ def exp_sub_resource(request, exp_id, sub):
     return resp
 
 
+@log_timing
+def exp_change_name(request, exp_id):
+    exp = Experiment.objects.get(pk=exp_id)
+    exp.name = request.GET["exp_name"]
+    exp.save()
+    resp = HttpResponse(content_type="application/json")
+    json.dump({'ok': 'ok'}, resp)
+    return resp
+
 @csrf_protect
 @log_timing
 def blocks_resource(request, exp_id):

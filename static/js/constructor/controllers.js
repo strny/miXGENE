@@ -25,6 +25,15 @@ Constructor.controller('WorktableCtrl', function WorktableCtrl($scope, blockAcce
     $scope.bscope = "root";  // change for sub blocks worktable
     $scope.show_pallet = false;
 
+    $scope.edit_name = false;
+    $scope.toggleEditName = function(){
+        $scope.edit_name =!$scope.edit_name;
+
+    };
+    $scope.changeName = function(){
+        $scope.access.exp_change_name($scope.exp);
+        $scope.edit_name = false;
+    };
 });
 
 Constructor.controller('BlockCtrl', function BlockCtrl($scope, blockAccess){
