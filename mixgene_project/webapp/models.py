@@ -109,6 +109,8 @@ class Experiment(models.Model):
     dt_created = models.DateTimeField(auto_now_add=True)
     dt_updated = models.DateTimeField(auto_now=True)
 
+    name = models.TextField(default="")
+
     def __unicode__(self):
         return u"%s" % self.pk
 

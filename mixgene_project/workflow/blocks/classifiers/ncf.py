@@ -4,11 +4,11 @@ from .generic_classifier import GenericClassifier
 from workflow.blocks.fields import InputBlockField, ParamField, InputType, FieldType
 
 
-class WalkForest(GenericClassifier):
-    block_base_name = "WALK_FOREST"
-    name = "Walk forest classifier"
+class NCF(GenericClassifier):
+    block_base_name = "NCF"
+    name = "NCF classifier"
 
-    classifier_name = "walk_forest"
+    classifier_name = "ncf"
 
     gene2gene = InputBlockField(name="gene2gene", order_num=30,
                                 required_data_type="BinaryInteraction",

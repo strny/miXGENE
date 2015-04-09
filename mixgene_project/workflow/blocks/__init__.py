@@ -33,8 +33,9 @@ from workflow.blocks.filters.merge_comodule import MergeComoduleSets
 
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
-from workflow.blocks.meta.pattern_search import PatternSearch
-from workflow.blocks.classifiers.walk_forest import WalkForest
+# from workflow.blocks.meta.pattern_search import PatternSearch
+from workflow.blocks.processing.pattern_search import PatternSearch
+from workflow.blocks.classifiers.ncf import NCF
 from workflow.blocks.classifiers.decision_tree import DecisionTree
 from workflow.blocks.classifiers.gaussian_nb import GaussianNb
 from workflow.blocks.classifiers.kernel_svm import KernelSvm
@@ -59,7 +60,7 @@ OLD_MODULES = ['aggregation', 'box_plot', 'classifiers', 'comodule_visualize',
                'expression_sets_merge', 'feature_selection', 'fetch_bi_gs', 'fetch_gse',
                'filter_by_bi', 'globaltest', 'mass_upload', 'merge_comodule',
                'merge_gene_set_annotation', 'meta_block', 'multi_features', 'nimfa_snmnmf',
-               'pattern_search', 'pca_visualize', 'rc_table', 'rc_vizualize',
+               'pca_visualize', 'rc_table', 'rc_vizualize',
                'table_result_view', 'user_upload', 'filter', 'threshold']
 
 import sys
