@@ -6,6 +6,10 @@ import logging
 from mixgene.redis_helper import ExpKeys
 from mixgene.util import get_redis_instance
 from webapp.notification import AllUpdated, NotifyMode
+from django.conf import settings
+from environment.structures import PickleStorage
+from os import mkdir
+import os
 
 # TODO: invent magic to correct logging when called outside of celery task
 
@@ -243,16 +247,19 @@ class Scope(object):
         #import ipdb; ipdb.set_trace()
         #a = 2
 
+    @property
+    def temp_path(self):
+        return settings.RAM_DISK
 
     def store_temp(self):
-        from environment.structures import PickleStorage
-        storage = PickleStorage(str(self.exp.get_data_folder()+"/"+self.name+"_temp_vars"))
+        if not os.path.exists(self.temp_path):
+            os.makedirs(settings.RAM_DISK)
+        storage = PickleStorage(str(self.temp_path+"/"+self.name+"_temp_vars"), gzipped=False)
         storage.store(self.temp_vars)
 
     def load_temp(self):
         try:
-            from environment.structures import PickleStorage
-            storage = PickleStorage(str(self.exp.get_data_folder()+"/"+self.name+"_temp_vars"))
+            storage = PickleStorage(str(self.temp_path+"/"+self.name+"_temp_vars"), gzipped=False)
             self.temp_vars = storage.load()
         except IOError:
             self.temp_vars = dict()

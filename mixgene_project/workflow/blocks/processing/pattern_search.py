@@ -56,8 +56,8 @@ def pattern_search(exp, block,
     classes = mData[mData.columns[-1]].values
 
     # inicializace objektu
-    searcher = DifferentialPatternSearcher(nw,radius=d,metric=metric,min_improve=impr,\
-    base_dir="orig_interactions/", verbose=True)
+    searcher = DifferentialPatternSearcher(nw, radius=d, metric=metric, min_improve=impr,
+                                           base_dir="orig_interactions/", verbose=True)
 
     #vlastni search
     res = searcher.search(data, classes)

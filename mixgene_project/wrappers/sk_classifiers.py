@@ -114,15 +114,15 @@ def apply_classifier(
 
 def get_classifier(fabric, classifier_options, name, block):
     log.debug("Begin to get the classifier.")
-    scope = block.get_scope()
-    log.debug("Getting scope.")
-    scope.load()
-    log.debug("Scope loaded.")
     if settings.CELERY_DEBUG:
         import sys
         sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    scope = block.get_scope()
+    log.debug("Getting scope.")
+    scope.load()
+    log.debug("Scope loaded.")
 
     cl = scope.get_temp_var("classifier_%s_%s" % (name, block.uuid))
     log.debug("Variable read.")

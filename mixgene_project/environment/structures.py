@@ -16,17 +16,30 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 class PickleStorage(object):
-    def __init__(self, filepath):
+    def __init__(self, filepath, gzipped=True):
         self.filepath = filepath
+        self.gzipped = gzipped
 
     def load(self):
-        return pickle.loads(gzip.open(self.filepath, "rb").read())
+        try:
+            if self.gzipped:
+                return pickle.loads(gzip.open(self.filepath, "rb").read())
+            else:
+                return pickle.loads(open(self.filepath, "rb").read())
+        except:
+            return pickle.loads(gzip.open(self.filepath, "rb").read())
 
     def store(self, obj):
-        with gzip.open(self.filepath, "wb") as out:
-            pickle.dump(obj, out, 2)
-
-
+        try:
+            if self.gzipped:
+                with gzip.open(self.filepath, "wb") as out:
+                    pickle.dump(obj, out, 2)
+            else:
+                with open(self.filepath, "wb") as out:
+                    pickle.dump(obj, out, 2)
+        except:
+            with gzip.open(self.filepath, "wb") as out:
+                pickle.dump(obj, out, 2)
 
 class DataFrameStorage(object):
     sep = " "
