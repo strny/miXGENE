@@ -158,6 +158,18 @@ Constructor.controller('DataFlowRenderCtrl', function($scope, $sce){
     )
 });
 
+
+Constructor.controller('PatternRenderCtrl', function($scope, $sce){
+    $scope.access.send_action($scope.block,"get_graphviz",
+        function(response){
+//            $scope.viz_placeholder =  $sce.trustAsHtml(Viz(response.data, "svg"));
+            $scope.viz_placeholder =  $sce.trustAsHtml(response.data);
+            document._graph = response.data;
+        }
+    )
+});
+
+
 Constructor.controller('CustomIteratorAddCellFieldCtrl', function($scope){
     $scope.add_cell_field = function(){
         $scope.access.send_action($scope.block, "add_cell_prototype_field", false)

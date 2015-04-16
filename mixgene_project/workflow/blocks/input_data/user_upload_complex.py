@@ -153,7 +153,7 @@ class UserUploadComplex(GenericBlock):
                 m_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
                                         base_filename="%s_m_rna_es" % self.uuid)
                 m_rna_es.store_assay_data_frame(m_rna_assay_df)
-                if pheno_df:
+                if pheno_df is not None:
                     m_rna_es.store_pheno_data_frame(pheno_df)
                 m_rna_es.working_unit = self.m_rna_unit
 

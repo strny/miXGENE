@@ -410,8 +410,8 @@ class DifferentialPatternSearcher(object):
             if self.verbose and c%100 == 0:         
                 print "Searching with seed %s" % str(seed)
                 print np.mean(time_d) 
-                time_d=0
-                
+                time_d = 0
+
             pattern = self.search_method.create_pattern(data, seed)
             pattern.evaluate(data, self.metric, classes)
             st=time.clock()
@@ -436,7 +436,10 @@ class DifferentialPatternSearcher(object):
                         gene_color[self.gene_names[gene]] = scipy.stats.ttest_ind(data[:,-1], GE_profile = data[:,gene])
                     print "Drawing a graph for seed %s" % str(seed)
                     draw_graph(edges_names, self.base_dir + 'greedy_search_pics/test-graph-greedy', seed)    
-                   
+
+            if seed > 550:
+                break
+
         return self.patterns
 
     def transform(self, data, classes=None, threshold=None):

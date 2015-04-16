@@ -25,6 +25,9 @@ def pattern_search(exp, block,
             miRNA2gene,
             gene_platform,
             miRNA_platform,
+            radius,
+            min_imp,
+            metric,
             base_filename):
     """
         @type es_1: ExpressionSet
@@ -35,8 +38,9 @@ def pattern_search(exp, block,
         sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     gene2gene = gene2gene.load_pairs()
-    gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=True)
+    gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
     if miRNA2gene is not None:
         miRNA2gene = miRNA2gene.load_matrix().T
         miRNA2gene = sp.coo_matrix(miRNA2gene.values)
@@ -51,23 +55,30 @@ def pattern_search(exp, block,
     else:
         nw = gene2gene
 
-    data = mData.values[:,:-1]
-    data = zscore(data)
-    classes = mData[mData.columns[-1]].values
 
-    # inicializace objektu
-    searcher = DifferentialPatternSearcher(nw, radius=d, metric=metric, min_improve=impr,
+    # data = mData.ix[1:]
+    data = mData
+    data.set_index(data.columns[0], inplace=True, drop=True)
+
+    data = zscore(data)
+    pheno = m_rna_es.get_pheno_data_frame()
+    classes = pheno['User_class'].values
+
+    # inicializace objektu metric=metric,
+    searcher = DifferentialPatternSearcher(nw, radius=radius, min_improve=min_imp,
                                            base_dir="orig_interactions/", verbose=True)
 
     #vlastni search
     res = searcher.search(data, classes)
     # res ... list patternu,
     # tj. pro nase potreby:
-    comodule_set = map(lambda pattern: pattern.genes, res)
+    comodule_set = map(lambda pattern: [gene_platform[gene] for gene in pattern.genes], res)
 
 
     cs = ComoduleSet(exp.get_data_folder(), base_filename)
-    cs.store_set(comodule_set)
+
+    result = {key: value for key, value in enumerate(comodule_set)}
+    cs.store_set(result)
 
     return [cs], {}
 
@@ -75,7 +86,7 @@ def pattern_search(exp, block,
 class PatternSearch(GenericBlock):
     block_base_name = "PattSearch"
     name = "Pattern search"
-    block_group = GroupType.PROCESSING
+    block_group = GroupType.PATTERN_SEARCH
 
     is_block_supports_auto_execution = True
 
@@ -109,19 +120,23 @@ class PatternSearch(GenericBlock):
                     init_val=0.06)
 
 
-    _statistics = ParamField(
-        "statistics", title="Statistics", order_num=40,
+    _metric = ParamField(
+        "metric", title="Metric", order_num=40,
         input_type=InputType.SELECT, field_type=FieldType.STR,
-        init_val="MI",
+        init_val="mutual_information",
         options={
             "inline_select_provider": True,
             "select_options": [
-                ["MI", "Mutual Information"],
-                ["TTEST", "TTest"]
+                ["mutual_information", "Mutual Information"],
+                ['normed_mutual_information', "Normed Mutual Information"],
+                ['square_error', "Square Error"],
+                ['correlation', "Correlation"],
+                ['t-test', "TTest"],
+                ['wilcoxon', "Wilcoxon"]
             ]
         }
     )
-    pattern = OutputBlockField(name="patterns", provided_data_type="GeneSets")
+    patterns = OutputBlockField(name="patterns", provided_data_type="ComoduleSet")
 
     def __init__(self, *args, **kwargs):
         super(PatternSearch, self).__init__(*args, **kwargs)
@@ -130,13 +145,16 @@ class PatternSearch(GenericBlock):
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
         g_p = self.upload_gene2gene_platform.get_file()
-        m_p = self.upload_mirna_platform.get_file()
+        m_p = None
+        if self.upload_mirna_platform is not None:
+            m_p = self.upload_mirna_platform.get_file()
         with open(g_p.path) as f:
             for line in f:
                 g_p = line.split(',')
-        with open(m_p.path) as f:
-            for line in f:
-                m_p = line.split(',')
+        if self.upload_mirna_platform is not None:
+            with open(m_p.path) as f:
+                for line in f:
+                    m_p = line.split(',')
 
         self.celery_task = wrapper_task.s(
             pattern_search,
@@ -147,6 +165,9 @@ class PatternSearch(GenericBlock):
             miRNA2gene=self.get_input_var("miRNA2gene"),
             gene_platform=g_p,
             miRNA_platform=m_p,
+            radius=self.d,
+            min_imp=self.min_imp,
+            metric=self.get_input_var("metric"),
             base_filename="%s_comodule_sets" % self.uuid,
         )
         exp.store_block(self)

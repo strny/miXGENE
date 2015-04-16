@@ -34,7 +34,8 @@ from workflow.blocks.filters.merge_comodule import MergeComoduleSets
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
 # from workflow.blocks.meta.pattern_search import PatternSearch
-from workflow.blocks.processing.pattern_search import PatternSearch
+from workflow.blocks.pattern_search.pattern_search import PatternSearch
+from workflow.blocks.pattern_search.pattern_filter import PatternFilter
 from workflow.blocks.classifiers.ncf import NCF
 from workflow.blocks.classifiers.decision_tree import DecisionTree
 from workflow.blocks.classifiers.gaussian_nb import GaussianNb
