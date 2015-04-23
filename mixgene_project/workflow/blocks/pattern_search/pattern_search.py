@@ -74,7 +74,6 @@ def pattern_search(exp, block,
     # tj. pro nase potreby:
     comodule_set = map(lambda pattern: [gene_platform[gene] for gene in pattern.genes], res)
 
-
     cs = ComoduleSet(exp.get_data_folder(), base_filename)
 
     result = {key: value for key, value in enumerate(comodule_set)}

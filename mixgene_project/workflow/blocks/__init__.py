@@ -43,6 +43,7 @@ from workflow.blocks.classifiers.kernel_svm import KernelSvm
 from workflow.blocks.classifiers.knn_classifier import KnnClassifier
 from workflow.blocks.classifiers.linear_svm import LinearSVM
 from workflow.blocks.classifiers.random_forest import RandomForest
+from workflow.blocks.visualizers.pattern_visualize import PatternView
 
 from blocks_pallet import block_classes_by_name, blocks_by_group
 

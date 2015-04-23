@@ -82,7 +82,7 @@ def get_patterns(modules, GE, classes, gene2gene):
                 edges.add((genes[i],genes[j]))
         patterns.append(edges)
             
-    return edges    
+    return patterns
     
 def differential_expression(GE, classes):
     """
@@ -92,7 +92,7 @@ def differential_expression(GE, classes):
     de = np.array(map(tstat, GE.values.T))
     Min = de.min()
     Max = de.max()
-    de=de*2/(Max-Min) - 2*Min/(Max-Min) -1
+    de=de*2/(Max-Min) - 2*Min/(Max-Min) - 1
     
     return dict(zip(GE.columns, de))    
     
