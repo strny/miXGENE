@@ -106,7 +106,9 @@ class PatternView(GenericBlock):
                     "label": gene,
                     "x": math.cos(2*i*math.pi/len(com)) + 5*math.cos(2*j*math.pi/len(pattern_set)),
                     "y": math.sin(2*i*math.pi/len(com)) + 5*math.sin(2*j*math.pi/len(pattern_set)),
-                    "color": "rgb(%s, %s, %s)" % (int(math.floor(((diff_expr[gene] + 1) * 128) - 1)), int(math.floor(255-(((diff_expr[gene] + 1)*128) - 1))), 0),
+                    "color": "rgb(%s, %s, %s)" % (int(math.floor(((diff_expr[gene] + 1) * 128) - 1)),
+                                                  int(math.floor(255-(((diff_expr[gene] + 1)*128) - 1))),
+                                                  0),
                     "size": 2 + abs(diff_expr[gene]) * 2 }
                     for j, com in enumerate(pattern_set) for i, gene in enumerate(com)
                 ],
