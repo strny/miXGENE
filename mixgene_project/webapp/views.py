@@ -17,7 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from webapp.models import Experiment, UploadedData, delete_exp, Article
+from webapp.models import Experiment, UploadedData, delete_exp, Article, ExperimentLog
 from webapp.forms import UploadForm
 from webapp.scope import Scope
 from webapp.store import add_block_to_exp_from_dict
@@ -76,6 +76,22 @@ def article(request, article_id):
     })
     return HttpResponse(template.render(context))
 
+def run_detail(request, exp_id):
+    exp = Experiment.objects.get(pk=exp_id)
+
+    context = {
+        "next": "/",
+        "scope": "root",
+        "exp": exp,
+        "exp_json": json.dumps({
+            "exp_id": exp_id,
+        }),
+        "ro_mode": "true"
+    }
+    template = loader.get_template('constructor.html')
+    context = RequestContext(request, context)
+    return HttpResponse(template.render(context))
+
 
 def constructor(request, exp_id):
     exp = Experiment.objects.get(pk=exp_id)
@@ -110,6 +126,34 @@ def exp_ro(request, exp_id):
     context = RequestContext(request, context)
     return HttpResponse(template.render(context))
 
+def exp_log(request, exp_id):
+    import hashlib
+    exp_logs = ExperimentLog.objects.filter(experiment_id=exp_id).order_by('-created')
+    resp = HttpResponse(content_type="application/json")
+    columns = [ "timestamp", "block", "severity", "message"]
+    table_headers = ["#"] + columns
+    column_title_to_code_name = {
+        title: "_" + hashlib.md5(title).hexdigest()[:8]
+        for title in table_headers
+    }
+    fields_list = [column_title_to_code_name[title] for title in table_headers]
+
+    result = {
+        "columns": [
+            {
+                "title": title,
+                "field": column_title_to_code_name[title],
+                "visible": True
+            }
+            for title in table_headers
+        ],
+        "rows": [
+            dict(zip(fields_list, map(str, [e_log.id, e_log.created, e_log.block_uuid, e_log.severity, e_log.message])))
+            for e_log in exp_logs
+        ]
+    }
+    json.dump(result, resp)
+    return resp
 
 def exp_sub_resource(request, exp_id, sub):
     exp = Experiment.objects.get(pk=exp_id)
@@ -349,9 +393,20 @@ def create_user(request):
 def experiments(request):
     template = loader.get_template('experiments.html')
     context = RequestContext(request, {
-        "exps": Experiment.objects.filter(author=request.user),
+        "exps": Experiment.objects.filter(author=request.user, is_run=False),
         "next": "/experiments",
         "exp_page_active": True,
+    })
+    return HttpResponse(template.render(context))
+
+@login_required(login_url='/auth/login/')
+@never_cache
+def runs(request):
+    template = loader.get_template('runs.html')
+    context = RequestContext(request, {
+        "runs": Experiment.objects.filter(author=request.user, is_run=True),
+        "next": "/runs",
+        "runs_page_active": True,
     })
     return HttpResponse(template.render(context))
 

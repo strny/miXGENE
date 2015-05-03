@@ -114,6 +114,9 @@ class GenericBlock(BaseBlock):
     _warnings = BlockField("warnings", FieldType.SIMPLE_LIST, list())
     _bound_inputs = BlockField("bound_inputs", FieldType.SIMPLE_DICT, defaultdict())
 
+    def move_to_exp(self, exp_id):
+        pass
+
     def duplicate(self, exp_id, mapping):
         import copy
         old_uuid = self.uuid
@@ -121,7 +124,7 @@ class GenericBlock(BaseBlock):
         new_obj.uuid = "B" + uuid1().hex[:8]
         new_obj.exp_id = exp_id
         if new_obj.scope_name:
-            # little hack, it uses the fact that a scope name has a structure root_uiid1_uuid2....
+            # little hack, it uses the fact that a scope name has a structure root_uuid1_uuid2....
             parent_uuids = new_obj.scope_name.split('_')
             for parent_uuid in parent_uuids:
                 new_obj.scope_name = new_obj.scope_name.replace(parent_uuid, mapping[parent_uuid])

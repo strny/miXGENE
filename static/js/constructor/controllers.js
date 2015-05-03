@@ -1,3 +1,13 @@
+var ModalLogExperimentCtrl = function($scope, $modalInstance, blockAccess, experiment) {
+    $scope.access = blockAccess;
+    $scope.experiment = experiment;
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+};
+
+Constructor.controller('ModalLogExperimentCtrl', ModalLogExperimentCtrl);
+
 Constructor.controller('MainCtrl', function($scope, blockAccess){
     $scope.show_old_worktable = false;
     $scope.access = blockAccess;
@@ -15,28 +25,124 @@ Constructor.controller('MainCtrl', function($scope, blockAccess){
         }
 //        alert(angular.toJson($scope.mode));
         $scope.access.init(exp_id, $scope.mode);
-    }
+    };
+
 
 
 });
 
-Constructor.controller('WorktableCtrl', function WorktableCtrl($scope, blockAccess){
+Constructor.controller('WorktableCtrl', function WorktableCtrl($scope, $modal, blockAccess) {
     $scope.access = blockAccess;
     $scope.bscope = "root";  // change for sub blocks worktable
     $scope.show_pallet = false;
 
     $scope.edit_name = false;
-    $scope.toggleEditName = function(){
-        $scope.edit_name =!$scope.edit_name;
+    $scope.toggleEditName = function () {
+        $scope.edit_name = !$scope.edit_name;
 
     };
-    $scope.changeName = function(){
+    $scope.changeName = function () {
         $scope.access.exp_change_name($scope.exp);
         $scope.edit_name = false;
     };
+
+    $scope.show_log = function () {
+        $modal.open({
+            templateUrl: '/static/js/constructor/partials/log_exp_modal.html',
+            controller: ModalLogExperimentCtrl,
+            resolve: {
+                experiment: function () {
+                    return $scope.exp;
+                }
+            }
+        });
+
+    };
+
 });
 
-Constructor.controller('BlockCtrl', function BlockCtrl($scope, blockAccess){
+
+Constructor.controller('LogTableExpCtrl', function($scope, $log, blockAccess, ngTableParams, $filter){
+    $scope.access = blockAccess;
+    $scope.access.log_for_exp(function(data){ $scope.t_data = data});
+
+    $scope.reset_table = function() {
+        $scope.table_config = {};
+        $scope.table_config["filter_dict"] = {};
+        $scope.table_config["data"] = [];
+        $scope.table_config["columns"] = [];
+    };
+    $scope.reset_table();
+
+    $scope.$watch('t_data', function(newVal) {
+        if ($scope.t_data) {
+            $scope.render_table($scope.t_data);
+            $scope.init_table();
+        }
+    });
+
+    $scope.render_table = function(table){
+       $scope.reset_table();
+
+       $scope.table_config.columns = table.columns;
+       $scope.table_config.data = table.rows;
+
+    };
+
+    $scope.toggle_sorting = function(column){
+        $log.debug("Sort by: " + column);
+        $scope.table_config.tableParams.sorting(
+            column.field,
+            $scope.table_config.tableParams.isSortBy(column.field, 'asc') ? 'desc' : 'asc'
+        );
+    };
+
+    $scope.init_table = function() {
+        $scope.table_config.tableParams = new ngTableParams({
+            page: 1,            // show first page
+            count: 10          // count per page
+            //        ,debugMode: false
+        }, {
+            total: $scope.table_config.data.length, // length of data
+            getData: function ($defer, params) {
+                debugger;
+                var filteredData = $scope.table_config.data;
+                if($scope.table_config.filter_dict){
+                    var fixed_filter_dict = {};
+                    _.each($scope.table_config.filter_dict, function(value, key){
+                        if(value != ""){
+                            fixed_filter_dict[key] = value;
+                        }
+                    });
+                    filteredData = $filter('filter')($scope.table_config.data, fixed_filter_dict);
+                }
+
+                // use build-in angular filter
+                var orderedData = params.sorting() ?
+                    $filter('orderBy')(filteredData, params.orderBy()) :
+                    filteredData;
+
+                params.total(orderedData.length); // set total for recalc pagination
+                $defer.resolve(orderedData.slice(
+                        (params.page() - 1) * params.count(), params.page() * params.count()
+                ));
+            }
+        });
+    }
+
+});
+
+var ModalLogBlockCtrl = function($scope, $modalInstance, blockAccess, block) {
+    $scope.access = blockAccess;
+    $scope.block = block;
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+};
+
+Constructor.controller('ModalLogBlockCtrl', ModalLogBlockCtrl);
+
+Constructor.controller('BlockCtrl', function BlockCtrl($scope, blockAccess, $modal, $log){
     $scope.access = blockAccess;
     $scope.exp_id = $scope.access.exp_id;
     $scope.has_errors = $scope.block.errors.length > 0;
@@ -74,6 +180,18 @@ Constructor.controller('BlockCtrl', function BlockCtrl($scope, blockAccess){
         $scope.edit_base_name = false;
     };
 
+    $scope.show_log = function(){
+        $modal.open({
+            templateUrl: '/static/js/constructor/partials/log_block_modal.html',
+            controller: ModalLogBlockCtrl,
+            resolve: {
+                block: function () {
+                    return $scope.block;
+                }
+            }
+        });
+
+    };
 });
 
 Constructor.controller('PortGroupCtrl', function PortGroupCtrl($scope){
@@ -161,61 +279,6 @@ Constructor.controller('DataFlowRenderCtrl', function($scope, $sce){
 
 Constructor.controller('PatternRenderCtrl', function($scope, $sce){
     $scope.sigmaGraph = $scope.block.graph_js;
-    //$scope.access.send_action($scope.block, "graph_js",
-    //    function(response){
-    //        $scope.sigmaGraph = response;
-    //    }
-    //);
-//      {
-//  "nodes": [
-//    {
-//      "id": "n0",
-//      "label": "A node",
-//      "x": 0,
-//      "y": 0,
-//      "size": 3
-//    },
-//    {
-//      "id": "n1",
-//      "label": "Another node",
-//      "x": 3,
-//      "y": 1,
-//      "size": 2
-//    },
-//    {
-//      "id": "n2",
-//      "label": "And a last one",
-//      "x": 1,
-//      "y": 3,
-//      "size": 1
-//    }
-//  ],
-//  "edges": [
-//    {
-//      "id": "e0",
-//      "source": "n0",
-//      "target": "n1"
-//    },
-//    {
-//      "id": "e1",
-//      "source": "n1",
-//      "target": "n2"
-//    },
-//    {
-//      "id": "e2",
-//      "source": "n2",
-//      "target": "n0"
-//    }
-//  ]
-//};
-
-//    $scope.access.send_action($scope.block,"get_graphviz",
-//        function(response){
-////            $scope.viz_placeholder =  $sce.trustAsHtml(Viz(response.data, "svg"));
-//            $scope.viz_placeholder =  $sce.trustAsHtml(response.data);
-//            document._graph = response.data;
-//        }
-//    )
 });
 
 
@@ -250,8 +313,8 @@ var ModalInstancePortInputSelectCtrl = function($scope, $modalInstance, blockAcc
         $scope.access.fnFilterVarsByBlockUUID([$scope.block.uuid])
     );
 
-    $scope.blocks_uuid_set = []
-    $scope.scope_keys_by_block_uuids = {}
+    $scope.blocks_uuid_set = [];
+    $scope.scope_keys_by_block_uuids = {};
     _.each($scope.filtered_vars, function(scope_var, index){
         $scope.scope_keys_by_block_uuids[scope_var.block_uuid] = scope_var.pk;
         if( !_.contains($scope.blocks_uuid_set, scope_var.block_uuid)){

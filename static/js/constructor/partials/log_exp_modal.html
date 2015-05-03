@@ -1,0 +1,52 @@
+<div class="modal-header">
+    <h3>
+        Log for {$ experiment.name $}
+    </h3>
+</div>
+<div class="modal-body">
+<div ng-controller="LogTableExpCtrl">
+    <table ng-table="table_config.tableParams" show-filter="true" class="table">
+        <thead>
+        <tr>
+            <th ng-repeat="column in table_config.columns" ng-show="column.visible"
+                class="header text-center sortable"
+                ng-class="{
+                    'sort-asc': table_config.tableParams.isSortBy(column.field, 'asc'),
+                    'sort-desc': table_config.tableParams.isSortBy(column.field, 'desc')
+                }"
+                ng-click="toggle_sorting(column)"
+                    >
+                {$ column.title $}
+                    <span class="pull-right glyphicon"
+                          ng-class="{
+                            'glyphicon-sort':
+                                !table_config.tableParams.isSortBy(column.field, 'asc') &&
+                                !table_config.tableParams.isSortBy(column.field, 'desc'),
+                            'glyphicon-sort-by-attributes':
+                                table_config.tableParams.isSortBy(column.field, 'asc'),
+                            'glyphicon-sort-by-attributes-alt':
+                                table_config.tableParams.isSortBy(column.field, 'desc'),
+                        }">
+                    </span>
+            </th>
+        </tr>
+
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in $data"
+            ng-click="changeSelection(row, $data, $index, $event)"
+            ng-class="{'active': row.$selected}"
+                >
+            <td ng-repeat="column in table_config.columns" data-title="{column}" ng-show="column.visible" sortable="column.field">
+                <span> {$ row[column.field] $} </span>
+                <!--{$ angular.isObject(row[column.field]) ? 'Yes' : 'False'  $}-->
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" ng-click="cancel()">Close</button>
+</div>

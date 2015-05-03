@@ -87,13 +87,15 @@ Constructor.directive('sigmajs', function() {
 
 
 				scope.$watch('graph', function(newVal,oldVal) {
-					s.graph.clear();
-					s.graph.read(scope.graph);
-					s.refresh();
-					if(scope.releativeSizeNode) {
-						//this feature needs the plugin to be added
-						sigma.plugins.relativeSize(s, 2);
-					}
+                    if(scope.graph) {
+                        s.graph.clear();
+                        s.graph.read(scope.graph);
+                        s.refresh();
+                        if (scope.releativeSizeNode) {
+                            //this feature needs the plugin to be added
+                            sigma.plugins.relativeSize(s, 2);
+                        }
+                    }
 				});
 
 				scope.$watch('width', function(newVal,oldVal) {

@@ -1,5 +1,5 @@
 Constructor.factory("blockAccess", function($http, $log){
-    var access = {}
+    var access = {};
 
     access.blocks_uuids = [];
     access.blocks_by_bscope = {};
@@ -18,7 +18,7 @@ Constructor.factory("blockAccess", function($http, $log){
         "BinaryInteraction",
         "TableResult",
         "ComoduleSet"
-    ]
+    ];
 
     var sockjs = new SockJS('/subscribe');
     sockjs.onopen = function(){
@@ -51,13 +51,23 @@ Constructor.factory("blockAccess", function($http, $log){
 
         }
 
-    }
+    };
     access.sockjs = sockjs;
 
     access.exp_sub_resource = function(sub_resource, on_success) {
         $http({
             method: 'GET',
             url: '/experiments/' + access.exp_id + '/sub/' + sub_resource
+        }).success(function (data) {
+            on_success(data);
+        });
+    };
+
+
+    access.log_for_exp = function(on_success) {
+        $http({
+            method: 'GET',
+            url: '/experiments/' + access.exp_id + '/log'
         }).success(function (data) {
             on_success(data);
         });
@@ -85,7 +95,7 @@ Constructor.factory("blockAccess", function($http, $log){
                 access.load_block_by_uuid(uuid);
             });
         })
-    }
+    };
 
     access.add_block = function(bscope, block_name){
         console.log("adding to "+ bscope + " block " + block_name);
@@ -93,7 +103,7 @@ Constructor.factory("blockAccess", function($http, $log){
             "block_name": block_name,
             "scope_name": bscope
         });
-        console.log(request_body)
+        console.log(request_body);
         $http({
             method: 'POST',
             url: '/experiments/' + access.exp_id + '/blocks/',
@@ -134,7 +144,7 @@ Constructor.factory("blockAccess", function($http, $log){
             access.block_bodies[data.uuid] = data;
             if(typeof(on_success) != 'undefined'){
                 on_success(data);
-            };
+            }
             //$log.debug(data);
         })
     };
@@ -183,7 +193,7 @@ Constructor.factory("blockAccess", function($http, $log){
         }).success(function(){
             access.fetch_blocks();
         })
-    }
+    };
 
     access.block_method = function(block, action_code, on_success){
         $http({
@@ -208,7 +218,7 @@ Constructor.factory("blockAccess", function($http, $log){
         }).success(function(data, status, headers, config){
             if(typeof(on_success) != 'undefined'){
                 on_success(data);
-            };
+            }
             access.reload_block(block);
         })
     };
@@ -217,32 +227,32 @@ Constructor.factory("blockAccess", function($http, $log){
         return function(scope_var){
             return _.contains(data_type_list, scope_var.data_type);
         }
-    }
+    };
     access.fnFilterVarsByScope = function(scopes_list){
         return function(scope_var){
             return _.contains(scopes_list, scope_var.scope_name);
         }
-    }
+    };
     access.fnFilterVarsByBlockUUID = function(uuid_list){
         return function(scope_var){
             return !_.contains(uuid_list, scope_var.block_uuid);
         }
-    }
+    };
     access.fnIncludeVarsByBlockUUID = function(uuid_list){
         return function(scope_var){
             return _.contains(uuid_list, scope_var.block_uuid);
         }
-    }
+    };
 
     access.init = function(exp_id, mode){
         access.mode = mode;
         access.exp_id = exp_id;
         access.exp = {
             exp_id: exp_id
-        }
+        };
         access.fetch_blocks();
 
-    }
+    };
     return access;
 });
 
@@ -262,6 +272,5 @@ Constructor.factory('RecursionHelper', ['$compile', function($compile){
             };
         }
     };
-
     return RecursionHelper;
 }]);

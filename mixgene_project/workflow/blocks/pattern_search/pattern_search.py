@@ -39,6 +39,7 @@ def pattern_search(exp, block,
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
+    exp.log(block.uuid, "Initializing data...")
     gene2gene = gene2gene.load_pairs()
     gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
     if miRNA2gene is not None:
@@ -63,6 +64,8 @@ def pattern_search(exp, block,
     data = zscore(data)
     pheno = m_rna_es.get_pheno_data_frame()
     classes = pheno['User_class'].values
+    exp.log(block.uuid, "Data ready. Running Pattern Search")
+
 
     # inicializace objektu metric=metric,
     searcher = DifferentialPatternSearcher(nw, radius=radius, min_improve=min_imp,
@@ -70,6 +73,8 @@ def pattern_search(exp, block,
 
     #vlastni search
     res = searcher.search(data, classes)
+    exp.log(block.uuid, "Pattern search finished.")
+
     # res ... list patternu,
     # tj. pro nase potreby:
     comodule_set = map(lambda pattern: [gene_platform[gene] for gene in pattern.genes], res)
@@ -78,6 +83,7 @@ def pattern_search(exp, block,
 
     result = {key: value for key, value in enumerate(comodule_set)}
     cs.store_set(result)
+    exp.log(block.uuid, "ComoduleSet stored.")
 
     return [cs], {}
 
@@ -143,6 +149,7 @@ class PatternSearch(GenericBlock):
 
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
+        exp.log(self.uuid, "Execute called")
         g_p = self.upload_gene2gene_platform.get_file()
         m_p = None
         if self.upload_mirna_platform is not None:
@@ -173,5 +180,6 @@ class PatternSearch(GenericBlock):
         self.celery_task.apply_async()
 
     def success(self, exp, gs):
+        exp.log(self.uuid, "Success")
         self.set_out_var("patterns", gs)
         exp.store_block(self)

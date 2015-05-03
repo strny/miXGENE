@@ -98,8 +98,6 @@ class PatternView(GenericBlock):
         import random as rnd
         import math
         if edges:
-            # comodule = pattern_set[0]
-            # edges_0 = edges[0]
             res = {
                 "nodes": [
                     {"id": "%s_%s" % (j, gene),
@@ -107,7 +105,7 @@ class PatternView(GenericBlock):
                     "x": math.cos(2*i*math.pi/len(com)) + 5*math.cos(2*j*math.pi/len(pattern_set)),
                     "y": math.sin(2*i*math.pi/len(com)) + 5*math.sin(2*j*math.pi/len(pattern_set)),
                     "color": "rgb(%s, %s, %s)" % (int(math.floor(((diff_expr[gene] + 1) * 128) - 1)),
-                                                  int(math.floor(255-(((diff_expr[gene] + 1)*128) - 1))),
+                                                  int(math.floor(255-(((diff_expr[gene] + 1) * 128) - 1))),
                                                   0),
                     "size": 2 + abs(diff_expr[gene]) * 2 }
                     for j, com in enumerate(pattern_set) for i, gene in enumerate(com)
@@ -120,30 +118,6 @@ class PatternView(GenericBlock):
                 ]
             }
             return res
-            # table_headers = ['key', 'value']
-            #
-            # column_title_to_code_name = {
-            #     title: "_" + hashlib.md5(title).hexdigest()[:8]
-            #     for title in table_headers
-            # }
-            # fields_list = [column_title_to_code_name[title] for title in table_headers]
-            #
-            # return {
-            #     "columns": [
-            #         {
-            #             "title": title,
-            #             "field": column_title_to_code_name[title],
-            #             "visible": True
-            #         }
-            #         for title in table_headers
-            #     ],
-            #     "rows": [
-            #         dict(zip(fields_list, row))
-            #         for row in
-            #         [(k, list(v)) for k, v in table.iteritems()]
-            #         #table.to_records().tolist() #[:100]
-            #     ]
-            # }
         else:
             return None
 

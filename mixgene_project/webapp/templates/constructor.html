@@ -11,6 +11,7 @@
         <div id="worktable" class="col-xs-12" ng-controller="WorktableCtrl">
             <div class="row pull-left">
                   Workflow name: <span ng-hide="edit_name">{$ exp.name $}</span>
+                  <a href="" ng-click="show_log()">Show log<span class="badge">42</span></a>
                     <span ng-show="edit_name">
                         <input type="text" name="exp[name]" ng-model="exp.name" ng-init="exp.name='{{ exp.name }}'"> </input>
                         <button class="btn btn-small"

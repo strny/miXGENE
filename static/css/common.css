@@ -3,6 +3,10 @@ body {
     //padding-bottom: 80px;
 }
 
+.modal-dialog {
+  width: 80%;
+}
+
 .row { margin: 0; padding: 0 }
 
 .bg-gray {

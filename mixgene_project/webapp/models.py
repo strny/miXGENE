@@ -99,17 +99,30 @@ class Article(models.Model):
             "dt_updated": str(self.dt_updated)
         }
 
+class ExperimentLog(models.Model):
+    experiment = models.ForeignKey("Experiment")
+    block_uuid = models.CharField(max_length=31, default="")
+    severity_choice = (
+        ("INFO", "INFO"),
+        ("DEBUG", "DEBUG"),
+        ("CRITICAL", "CRITICAL")
+    )
+    severity = models.CharField(max_length=31, choices=severity_choice, default="INFO")
+    message = models.TextField(default="")
+    created = models.DateTimeField(auto_now_add=True)
+
+
 
 class Experiment(models.Model):
     author = models.ForeignKey(User)
-
-    # Obsolete
     status = models.TextField(default="created")
 
     dt_created = models.DateTimeField(auto_now_add=True)
     dt_updated = models.DateTimeField(auto_now=True)
 
     name = models.TextField(default="")
+    is_run = models.BooleanField(default=False)
+    parent_exp = models.ForeignKey("Experiment", null=True, default=None)
 
     def __unicode__(self):
         return u"%s" % self.pk
@@ -126,7 +139,26 @@ class Experiment(models.Model):
     def get_exp_by_id(_pk):
         return Experiment.objects.get(pk=_pk)
 
+    def working(self):
+        self.status = "working"
+        self.save()
+
+
+    def error(self):
+        self.status = "error"
+        self.save()
+
+    def done(self):
+        self.status = "done"
+        self.save()
+
     def execute(self):
+        exp_id = self.id
+        self.duplicate()
+        self.is_run = True
+        self.parent_exp_id = exp_id
+        self.working()
+        self.log("root", "Experiment started")
         auto_exec_task.s(self, "root", is_init=True).apply_async()
 
     def post_init(self, redis_instance=None):
@@ -440,6 +472,10 @@ class Experiment(models.Model):
 
             scope.store()
             self.store_block(bl)
+
+    def log(self, block_uuid, message, severity="INFO"):
+        self.experimentlog_set.create(block_uuid=block_uuid, message=message, severity=severity)
+        return self
 
 
 def delete_exp(exp):

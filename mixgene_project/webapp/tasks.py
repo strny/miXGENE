@@ -21,7 +21,11 @@ def auto_exec_task(exp, scope_name, is_init=False):
         try:
             sr = ScopeRunner(exp, scope_name)
             sr.execute(is_init)
+            exp.done()
+            exp.log("root", "Scope %s finished" % scope_name, "INFO")
         except Exception, e:
+            exp.error()
+            exp.log("root", e.message, "CRITICAL")
             log.exception(e)
 
 @task(name="webapp.tasks.halt_execution")
@@ -43,7 +47,10 @@ def halt_execution_task(exp, scope_name):
             else:
                 block = exp.get_meta_block_by_sub_scope(scope_name)
                 block.do_action("error", exp)
+
+            exp.error()
         except Exception, e:
+            exp.error()
             log.exception(e)
 
 
@@ -63,3 +70,4 @@ def wrapper_task(func, exp, block,
     except Exception, e:
         log.exception(e)
         block.do_action(error_action, exp, e)
+        exp.error()

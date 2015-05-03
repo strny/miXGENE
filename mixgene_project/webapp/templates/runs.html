@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block inner %}
+
+<div class="row">
+    <div class="col-lg-12 col-lg-offset-0">
+        <!--
+        <center>
+            <a href="{% url 'webapp.views.experiments' %}" class="btn btn-primary"> Reload </a>
+        </center>
+        -->
+        <!-- <h3>Active</h3> -->
+        <table class="table table-stripped">
+            <thead>
+                <tr>
+                    <th>Run</th>
+                    <th>Parent</th>
+                    <th>Name</th>
+                    <th>Created</th>
+                    <th>Updated</th>
+                    <th>Status</th>
+                    <!-- <th>Details</th> -->
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exp in runs %}
+                <tr>
+                    <th>
+                        <a href="{% url 'webapp.views.run_detail' exp.pk %}">
+                            {% url 'webapp.views.run_detail' exp.pk %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="{% url 'webapp.views.constructor' exp.parent_exp_id %}">
+                            {% url 'webapp.views.constructor' exp.parent_exp_id %}
+                        </a>
+                    </th>
+                    <th>
+                        {{ exp.name }}
+                    </th>
+
+                    <!-- <th> {{ exp.pk }}</th> -->
+                    <th> {{ exp.dt_created }}</th>
+                    <th> {{ exp.dt_updated }}</th>
+                    <th> {{ exp.status }}</th>
+
+                    <th>
+                        <form class="navbar-form" action="{% url 'webapp.views.alter_exp'  exp.pk 'delete' %}" method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" >Delete </button>
+                            <input type="hidden" name="next" value="{{ next }}" />
+                        </form>
+                    </th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

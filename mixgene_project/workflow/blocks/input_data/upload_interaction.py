@@ -60,6 +60,10 @@ class UploadInteraction(GenericBlock):
     )
     _interaction = OutputBlockField(name="interaction", provided_data_type="BinaryInteraction")
 
+    def move_to_exp(self, exp_id):
+        interaction = self.get_out_var("interaction")
+
+
     def on_params_is_valid(self, exp, *args, **kwargs):
         # Convert to  BinaryInteraction
         sep = getattr(self, "csv_sep", " ")

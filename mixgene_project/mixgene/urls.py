@@ -28,6 +28,8 @@ urlpatterns = patterns('',
         'webapp.views.exp_sub_resource', name="experiment_sub_resource"),
 
     url(r'^experiments/(?P<exp_id>\d+)/blocks/?$', 'webapp.views.blocks_resource', name="blocks_resource"),
+    url(r'^experiments/(?P<exp_id>\d+)/log/?$', 'webapp.views.exp_log', name="exp_log"),
+
     url(r'^experiments/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)$',
         'webapp.views.block_resource', name="block_resource"),
     url(r'^experiments/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)/actions/(?P<action_code>\w+)$',
@@ -39,6 +41,9 @@ urlpatterns = patterns('',
     url(r'^experiments/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)/(?P<field>\w+)/(?P<format>[\w|\d|_]+)$',
         'webapp.views.block_field_resource', name="block_field_formatted"),
 
+    url(r'^runs$', 'webapp.views.runs', name='runs'),
+
+    url(r'^runs/(?P<exp_id>\d+)$', 'webapp.views.run_detail', name='run_detail'),
 
     url(r'^block_sub_page/(?P<exp_id>\d+)/(?P<block_uuid>[\w|\d]+)/(?P<sub_page>\w+)/',
         'webapp.views.block_sub_page', name="block_sub_page"),
