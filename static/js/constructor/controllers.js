@@ -105,7 +105,6 @@ Constructor.controller('LogTableExpCtrl', function($scope, $log, blockAccess, ng
         }, {
             total: $scope.table_config.data.length, // length of data
             getData: function ($defer, params) {
-                debugger;
                 var filteredData = $scope.table_config.data;
                 if($scope.table_config.filter_dict){
                     var fixed_filter_dict = {};
@@ -640,7 +639,6 @@ Constructor.controller('TableResultViewCtrl', function($scope, $log, ngTablePara
         }, {
             total: $scope.table_config.data.length, // length of data
             getData: function ($defer, params) {
-                debugger;
                 var filteredData = $scope.table_config.data;
                 if($scope.table_config.filter_dict){
                     var fixed_filter_dict = {};

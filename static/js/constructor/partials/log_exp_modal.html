@@ -5,10 +5,22 @@
 </div>
 <div class="modal-body">
 <div ng-controller="LogTableExpCtrl">
+
     <table ng-table="table_config.tableParams" show-filter="true" class="table">
         <thead>
         <tr>
-            <th ng-repeat="column in table_config.columns" ng-show="column.visible"
+            <th>#</th>
+            <th>Timestamp</th>
+            <th>Block</th>
+            <th>Severity</th>
+            <th>Message</th>
+            <!-- <th ng-repeat="col in table_config.columns" class="header text-center sortable" ng-show="col.visible">{$ col.title $}</th>-->
+
+            <!--<th ng-repeat="column in table_config.columns">
+                <span> Ahoj </span>
+            </th>-->
+
+            <!--<th ng-repeat="column in table_config.columns" ng-show="column.visible"
                 class="header text-center sortable"
                 ng-class="{
                     'sort-asc': table_config.tableParams.isSortBy(column.field, 'asc'),
@@ -28,7 +40,7 @@
                                 table_config.tableParams.isSortBy(column.field, 'desc'),
                         }">
                     </span>
-            </th>
+            </th>-->
         </tr>
 
         </thead>
@@ -37,15 +49,14 @@
             ng-click="changeSelection(row, $data, $index, $event)"
             ng-class="{'active': row.$selected}"
                 >
-            <td ng-repeat="column in table_config.columns" data-title="{column}" ng-show="column.visible" sortable="column.field">
+            <td ng-repeat="column in table_config.columns" data-title="'{$ column $}'" ng-show="column.visible" sortable="column.field">
                 <span> {$ row[column.field] $} </span>
                 <!--{$ angular.isObject(row[column.field]) ? 'Yes' : 'False'  $}-->
             </td>
         </tr>
         </tbody>
     </table>
-
-    </div>
+</div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Close</button>

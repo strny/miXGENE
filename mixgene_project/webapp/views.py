@@ -128,7 +128,7 @@ def exp_ro(request, exp_id):
 
 def exp_log(request, exp_id):
     import hashlib
-    exp_logs = ExperimentLog.objects.filter(experiment_id=exp_id).order_by('-created')
+    exp_logs = ExperimentLog.objects.filter(experiment_id=exp_id).order_by('-id')
     resp = HttpResponse(content_type="application/json")
     columns = [ "timestamp", "block", "severity", "message"]
     table_headers = ["#"] + columns

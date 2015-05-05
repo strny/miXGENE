@@ -193,6 +193,7 @@ class ScopeRunner(object):
                     mode=NotifyMode.SUCCESS,
                     silent=False
                 ).send()
+                self.exp.done()
         elif blocks_to_execute:
             # for block in blocks_to_execute:
             #     block.do_action("execute", self.exp

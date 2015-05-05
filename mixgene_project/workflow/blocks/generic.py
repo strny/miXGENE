@@ -328,6 +328,8 @@ class GenericBlock(BaseBlock):
         if next_state is not None:
             log.debug("Do action: %s in block %s from state %s -> %s",
                       action_name, self.base_name, self.state, next_state)
+            exp.log(self.uuid, "Do action: %s in block %s from state %s -> %s" %
+                    (action_name, self.base_name, self.state, next_state))
             self.state = next_state
 
             if old_exec_state != "done" and self.get_exec_status() == "done":
