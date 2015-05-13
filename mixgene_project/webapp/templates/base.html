@@ -11,7 +11,7 @@
         <ul class="nav navbar-nav">
             {% if  user.is_authenticated %}
                 <li {% if exp_page_active %} class="active" {% endif %}>
-                    <a href="{% url 'webapp.views.experiments' %}">Experiments</a>
+                    <a href="{% url 'webapp.views.workflows' %}">Workflows</a>
                 </li>
 
                 <li {% if runs_page_active %} class="active" {% endif %}>

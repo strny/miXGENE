@@ -19,7 +19,7 @@ from workflow.blocks.generic import GenericBlock, save_params_actions_list, exec
 
 from django.core.urlresolvers import reverse
 
-from environment.structures import ComoduleSet
+from environment.structures import Edges, DiffExpr
 from wrappers.pattern_search.pattern_filter import get_patterns
 from wrappers.pattern_search.pattern_filter import differential_expression
 from scipy.stats import zscore
@@ -27,6 +27,9 @@ from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 import traceback
 import sys
+
+from django.conf import settings
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -59,19 +62,16 @@ def compute_edges(exp, block,
     pheno = es.get_pheno_data_frame()
     classes = pheno[es.pheno_metadata['user_class_title']].values
     pattern_set = cs.load_set()
-    scope = self.get_scope()
-    scope.load()
+
     edges = get_patterns(pattern_set.values(), mData, classes, nw)
+    edges_type = Edges(exp.get_data_folder(), base_filename)
+    edges_type.store_edges(edges)
+
     diff_expr = differential_expression(mData, classes)
-    scope.set_temp_var("edges_%s" % self.uuid, edges)
-    scope.set_temp_var("diff_expr_%s" % self.uuid, diff_expr)
-    scope.store()
+    diff_type = DiffExpr(exp.get_data_folder(), base_filename)
+    diff_type.store_expr(diff_expr)
 
-    cs = ComoduleSet(exp.get_data_folder(), base_filename)
-
-    cs.store_set(result)
-
-    return [cs], {}
+    return [edges_type, diff_type], {}
 
 
 class PatternEdges(GenericBlock):
@@ -102,13 +102,9 @@ class PatternEdges(GenericBlock):
                                 required_data_type="BinaryInteraction",
                                 required=True)
 
+    edges = OutputBlockField(name="edges", provided_data_type="Edges")
 
-    edges = OutputBlockField(name="edges", provided_data_type="ComoduleSet")
-
-
-
-
-
+    diff_expr = OutputBlockField(name="diff_expr", provided_data_type="DiffExpr")
 
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
@@ -126,23 +122,23 @@ class PatternEdges(GenericBlock):
                 self.clean_errors()
 
         self.celery_task = wrapper_task.s(
-            pattern_filter_task,
+            compute_edges,
             exp, self,
             m_rna_es = es,
             comodule_set = cs,
             gene2gene = gene2gene,
             gene_platform = gene_platform,
-            base_filename="%s_comodule_sets" % self.uuid
+            base_filename="%s_pattern_edges" % self.uuid
         )
         exp.store_block(self)
         self.celery_task.apply_async()
 
 
 
-    def export_json(self, exp, *args, **kwargs):
-        ds = self.get_input_var("es")
-        dic = ds.load_set()
-        return dic
+    # def export_json(self, exp, *args, **kwargs):
+    #     ds = self.get_input_var("es")
+    #     dic = ds.load_set()
+    #     return dic
 
     def process_upload(self, exp, *args, **kwargs):
         """
@@ -155,7 +151,7 @@ class PatternEdges(GenericBlock):
             traceback.print_tb(tb)
             self.do_action("error", exp, e)
 
-    def success(self, exp, gs):
-        self.set_out_var("edges", gs)
-        self.set_out_var("diff_expr", gs)
+    def success(self, exp, edges, diff_expr):
+        self.set_out_var("edges", edges)
+        self.set_out_var("diff_expr", diff_expr)
         exp.store_block(self)

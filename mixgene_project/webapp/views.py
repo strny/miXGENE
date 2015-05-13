@@ -390,11 +390,11 @@ def create_user(request):
 
 @login_required(login_url='/auth/login/')
 @never_cache
-def experiments(request):
-    template = loader.get_template('experiments.html')
+def workflows(request):
+    template = loader.get_template('workflows.html')
     context = RequestContext(request, {
         "exps": Experiment.objects.filter(author=request.user, is_run=False),
-        "next": "/experiments",
+        "next": "/workflows",
         "exp_page_active": True,
     })
     return HttpResponse(template.render(context))

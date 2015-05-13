@@ -153,6 +153,39 @@ class BinaryInteraction(GenericStoreStructure):
         matrix.set_index(matrix.columns[0], inplace=True, drop=True)
         return matrix
 
+
+class Edges(GenericStoreStructure):
+    def __init__(self, *args, **kwargs):
+        super(Edges, self).__init__(*args, **kwargs)
+        self.storage = None
+
+    def store_edges(self, df):
+        if self.storage is None:
+            self.storage = PickleStorage(self.form_filepath("edges"))
+        self.storage.store(df)
+
+    def load_edges(self):
+        if self.storage is None:
+            raise RuntimeError("Edges data wasn't stored prior")
+        return self.storage.load()
+
+
+class DiffExpr(GenericStoreStructure):
+    def __init__(self, *args, **kwargs):
+        super(DiffExpr, self).__init__(*args, **kwargs)
+        self.storage = None
+
+    def store_expr(self, df):
+        if self.storage is None:
+            self.storage = PickleStorage(self.form_filepath("diff_expr"))
+        self.storage.store(df)
+
+    def load_expr(self):
+        if self.storage is None:
+            raise RuntimeError("Edges data wasn't stored prior")
+        return self.storage.load()
+
+
 class ComoduleSet(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
         super(ComoduleSet, self).__init__(*args, **kwargs)

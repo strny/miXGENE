@@ -31,7 +31,7 @@ FeatureSelector.factory("phenoIO", function($http){
         };
         $http({
             method: "GET",
-            url: "/experiments/" + io.exp_id + "/blocks/" + io.block_uuid + "/phenotype_for_js"
+            url: "/workflows/" + io.exp_id + "/blocks/" + io.block_uuid + "/phenotype_for_js"
         }).success(function(data, status, headers, config){
             io.pheno = data;
             document._io = io;
@@ -43,7 +43,7 @@ FeatureSelector.factory("phenoIO", function($http){
         console.log("SENDING: " + angular.toJson(to_send));
         $http({
             method: "POST",
-            url: "/experiments/" + io.exp_id+ "/blocks/"+
+            url: "/workflows/" + io.exp_id+ "/blocks/"+
                 io.block_uuid +"/actions/" + method_name,
             data: angular.toJson(to_send)
         }).success(function(){

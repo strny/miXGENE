@@ -8,7 +8,7 @@ var ModalLogExperimentCtrl = function($scope, $modalInstance, blockAccess, exper
 
 Constructor.controller('ModalLogExperimentCtrl', ModalLogExperimentCtrl);
 
-Constructor.controller('MainCtrl', function($scope, blockAccess){
+Constructor.controller('MainCtrl', function($scope, $modal, blockAccess){
     $scope.show_old_worktable = false;
     $scope.access = blockAccess;
     $scope.exp_id = $scope.access.exp_id;
@@ -27,6 +27,23 @@ Constructor.controller('MainCtrl', function($scope, blockAccess){
         $scope.access.init(exp_id, $scope.mode);
     };
 
+    // very bad hack used in runs.html
+    $scope.show_log = function (exp_id, exp_name) {
+        $scope.exp = { exp_id: exp_id, name: exp_name };
+        $scope.exp_id = exp_id;
+        $scope.access.exp_id = exp_id;
+        //debugger;
+        $modal.open({
+            templateUrl: '/static/js/constructor/partials/log_exp_modal.html',
+            controller: ModalLogExperimentCtrl,
+            resolve: {
+                experiment: function () {
+                    return $scope.exp;
+                }
+            }
+        });
+
+    };
 
 
 });

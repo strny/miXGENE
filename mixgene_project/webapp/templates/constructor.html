@@ -11,7 +11,7 @@
         <div id="worktable" class="col-xs-12" ng-controller="WorktableCtrl">
             <div class="row pull-left">
                   Workflow name: <span ng-hide="edit_name">{$ exp.name $}</span>
-                  <a href="" ng-click="show_log()">Show log</a><!--<span class="badge">42</span>-->
+                  <!--<span class="badge">42</span>-->
                     <span ng-show="edit_name">
                         <input type="text" name="exp[name]" ng-model="exp.name" ng-init="exp.name='{{ exp.name }}'"> </input>
                         <button class="btn btn-small"
@@ -24,11 +24,12 @@
                        class="block-reload glyphicon glyphicon-pencil"
                        ng-click="toggleEditName()">
                    </a>
+                   <a href="" ng-click="show_log()">Show log</a>
             </div>
             <div class="row pull-right" ng-if="!access.mode.ro">
                 <a class="btn btn-primary"
                  href="{% url 'webapp.views.alter_exp' exp_id=exp.pk action='execute' %}">Run experiment</a>
-                <a class="btn btn-primary" href="{% url 'exp_ro' exp.pk %}">Workflow presentation</a>
+                <!--<a class="btn btn-primary" href="{% url 'exp_ro' exp.pk %}">Workflow presentation</a>-->
                 <a class="btn btn-primary" href="{% url 'duplicate_experiment' exp.pk %}">Duplicate experiment</a>
             </div>
             <br />

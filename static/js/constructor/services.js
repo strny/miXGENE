@@ -17,7 +17,9 @@ Constructor.factory("blockAccess", function($http, $log){
         "GeneSets",
         "BinaryInteraction",
         "TableResult",
-        "ComoduleSet"
+        "ComoduleSet",
+        "Edges",
+        "DiffExpr"
     ];
 
     var sockjs = new SockJS('/subscribe');
@@ -57,7 +59,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.exp_sub_resource = function(sub_resource, on_success) {
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/sub/' + sub_resource
+            url: '/workflows/' + access.exp_id + '/sub/' + sub_resource
         }).success(function (data) {
             on_success(data);
         });
@@ -67,7 +69,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.log_for_exp = function(on_success) {
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/log'
+            url: '/workflows/' + access.exp_id + '/log'
         }).success(function (data) {
             on_success(data);
         });
@@ -77,7 +79,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.fetch_blocks = function(){
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/blocks/'
+            url: '/workflows/' + access.exp_id + '/blocks/'
         }).success(function(data, status, headers, config){
             access.blocks_uuids = data.blocks_uuids;
 
@@ -106,7 +108,7 @@ Constructor.factory("blockAccess", function($http, $log){
         console.log(request_body);
         $http({
             method: 'POST',
-            url: '/experiments/' + access.exp_id + '/blocks/',
+            url: '/workflows/' + access.exp_id + '/blocks/',
             data: request_body
         }).success(function(data, status, headers, config){
             access.blocks_by_bscope = data.blocks_by_bscope;
@@ -126,7 +128,7 @@ Constructor.factory("blockAccess", function($http, $log){
         block.is_block_updating = true;
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/blocks/' + block.uuid
+            url: '/workflows/' + access.exp_id + '/blocks/' + block.uuid
             ,body: angular.toJson(block)
         }).success(function(data, status, headers, config){
             access.block_bodies[data.uuid] = data;
@@ -139,7 +141,7 @@ Constructor.factory("blockAccess", function($http, $log){
         // block.is_block_updating = true;
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/blocks/' + uuid
+            url: '/workflows/' + access.exp_id + '/blocks/' + uuid
         }).success(function(data, status, headers, config){
             access.block_bodies[data.uuid] = data;
             if(typeof(on_success) != 'undefined'){
@@ -152,7 +154,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.exp_change_name = function(exp) {
         $http({
             method: 'GET',
-            url: '/experiments/' + access.exp_id + '/change_name'
+            url: '/workflows/' + access.exp_id + '/change_name'
             ,params: {exp_name: exp.name}
         }).success(function(data, status, headers, config){
             $log.debug(data);
@@ -168,7 +170,7 @@ Constructor.factory("blockAccess", function($http, $log){
         block.is_block_updating = true;
         $http({
             method: 'POST',
-            url: '/experiments/' + access.exp_id +
+            url: '/workflows/' + access.exp_id +
                 '/blocks/' + block.uuid + "/actions/" + action_code,
             data:  angular.toJson(block)
         }).success(function(data, status, headers, config){
@@ -189,7 +191,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.remove_block = function(block){
         $http({
             method: 'DELETE',
-            url: '/experiments/' + access.exp_id + '/blocks/' + block.uuid
+            url: '/workflows/' + access.exp_id + '/blocks/' + block.uuid
         }).success(function(){
             access.fetch_blocks();
         })
@@ -198,7 +200,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.block_method = function(block, action_code, on_success){
         $http({
             method: 'POST',
-            url: '/experiments/' + access.exp_id +
+            url: '/workflows/' + access.exp_id +
                 '/blocks/' + block.uuid + "/actions/" + action_code,
             data:  angular.toJson(block)
         }).success(function(data, status, headers, config){
@@ -212,7 +214,7 @@ Constructor.factory("blockAccess", function($http, $log){
     access.send_method = function(block, method, data, on_success){
         $http({
             method: 'POST',
-            url: '/experiments/' + access.exp_id +
+            url: '/workflows/' + access.exp_id +
                 '/blocks/' + block.uuid + "/invoke/" + method,
             data: angular.toJson(data)
         }).success(function(data, status, headers, config){
