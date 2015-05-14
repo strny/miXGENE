@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField
 
 from workflow.blocks.visualizers.rc_visualizer import RcVisualizer
-
+from webapp.models import Experiment
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -71,6 +71,10 @@ class RenderTable(RcVisualizer):
                 to.html = df.to_html(float_format=pd_float_format_func)
                 to.df = df
             else:
+                if self.exp_id:
+                    exp = Experiment.get_exp_by_id(self.exp_id)
+                    exp.log(self.uuid, "Can't build table slice, header axis `%s`, index axis_list `%s`" %
+                            (header_axis, index_axis_list))
                 log.debug("Can't build table slice, header axis `%s`, index axis_list `%s`",
                           header_axis, index_axis_list)
 

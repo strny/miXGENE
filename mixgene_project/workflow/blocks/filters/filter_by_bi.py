@@ -47,12 +47,14 @@ def filter_by_bi(
     try:
         m_rna_result.store_pheno_data_frame(m_rna_es.get_pheno_data_frame())
     except RuntimeError as re:
+        exp.log(block.uuid, "Phenotype not set")
         log.debug("Phenotype not set")
     mi_rna_result = mi_rna_es.clone(base_filename + "_miRNA")
     mi_rna_result.store_assay_data_frame(mi_rna_df_filtered)
     try:
         mi_rna_result.store_pheno_data_frame(mi_rna_es.get_pheno_data_frame())
     except RuntimeError as re:
+        exp.log(block.uuid, "Phenotype not set")
         log.debug("Phenotype not set")
     return [m_rna_result, mi_rna_result], {}
 

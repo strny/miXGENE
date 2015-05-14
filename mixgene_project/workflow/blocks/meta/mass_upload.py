@@ -230,6 +230,7 @@ class MassUpload(UniformMetaBlock):
             exp.store_block(self)
             self.do_action("processing_done", exp, seq)
         except Exception as e:
+            exp.log(self.uuid, e, severity="CRITICAL")
             log.exception(e)
             self.errors.append(e)
             self.do_action("error_on_processing", exp, e)

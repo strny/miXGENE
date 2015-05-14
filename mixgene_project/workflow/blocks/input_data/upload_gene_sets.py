@@ -46,6 +46,7 @@ class UploadGeneSets(GenericBlock):
             self.set_out_var("gene_sets", gene_sets)
 
         except Exception as e:
+            exp.log(self.uuid, e, severity="CRITICAL")
             log.error(e)
 
         exp.store_block(self)

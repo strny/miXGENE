@@ -39,7 +39,7 @@ def apply_ranking(
     assay_df = es.get_assay_data_frame()
     x = com.convert_to_r_matrix(assay_df)
     y = es.get_pheno_column_as_r_obj(pheno_class_column)
-
+    exp.log(block.uuid, "Computing ranking: `%s` options: `%s`" % (ranking_name, options))
     log.debug("Computing ranking: `%s` options: `%s`", ranking_name, options)
     with stopwatch(name="Computing ranking: `%s` options: `%s`" % (ranking_name, options),
                    threshold=0.01):
@@ -116,6 +116,7 @@ class GenericRankingBlock(GenericBlock):
         )
         exp.store_block(self)
         self.celery_task.apply_async()
+        exp.log(self.uuid, "Sent ranking computation to queue")
         log.debug("Sent ranking computation to queue")
 
     def success(self, exp, result, *args, **kwargs):

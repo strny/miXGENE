@@ -60,6 +60,7 @@ class PcaVisualize(GenericBlock):
         self.do_action("compute_pca", exp)
 
     def compute_pca(self, exp, *args, **kwargs):
+        exp.log(self.uuid, "compute pca invoked")
         log.info("compute pca invoked")
 
         es = self.get_input_var("es")
@@ -90,5 +91,6 @@ class PcaVisualize(GenericBlock):
         self.do_action("pca_done", exp)
 
     def pca_done(self, exp, *args, **kwargs):
+        exp.log(self.uuid, "pca done")
         log.info("pca done")
 

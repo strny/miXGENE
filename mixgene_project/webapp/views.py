@@ -130,7 +130,7 @@ def exp_log(request, exp_id):
     import hashlib
     exp_logs = ExperimentLog.objects.filter(experiment_id=exp_id).order_by('-id')
     resp = HttpResponse(content_type="application/json")
-    columns = [ "timestamp", "block", "severity", "message"]
+    columns = ["timestamp", "block", "severity", "message"]
     table_headers = ["#"] + columns
     column_title_to_code_name = {
         title: "_" + hashlib.md5(title).hexdigest()[:8]
@@ -138,6 +138,12 @@ def exp_log(request, exp_id):
     }
     fields_list = [column_title_to_code_name[title] for title in table_headers]
 
+    from django.conf import settings
+    from pytz import timezone
+
+    settings_time_zone = timezone(settings.TIME_ZONE)
+
+    fmt = '%Y-%m-%d %H:%M:%S %Z'
     result = {
         "columns": [
             {
@@ -148,7 +154,7 @@ def exp_log(request, exp_id):
             for title in table_headers
         ],
         "rows": [
-            dict(zip(fields_list, map(str, [e_log.id, e_log.created, e_log.block_uuid, e_log.severity, e_log.message])))
+            dict(zip(fields_list, map(str, [e_log.id, e_log.created.astimezone(settings_time_zone).strftime(fmt), e_log.block_uuid, e_log.severity, e_log.message])))
             for e_log in exp_logs
         ]
     }
@@ -421,6 +427,7 @@ def alter_exp(request, exp_id, action):
 
     if action == "execute":
         exp.execute()
+        return redirect(request.POST.get("next") or "/runs/%s" % exp.pk) # TODO use reverse
 
     if action == 'delete': # TODO: check that exp state allows deletion
         delete_exp(exp)

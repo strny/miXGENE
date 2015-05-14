@@ -158,6 +158,7 @@ class UniformMetaBlock(GenericBlock):
             cell = self.res_seq.sequence[self.inner_output_manager.iterator]
             for name, scope_var in self.collector_spec.bound.iteritems():
                 var = exp.get_scope_var_value(scope_var)
+                exp.log(self.uuid, "Collected %s from %s" % (var, scope_var.title), severity="CRITICAL")
                 log.debug("Collected %s from %s", var, scope_var.title)
                 if var is not None:
                     if hasattr(var, "clone"):
@@ -252,6 +253,7 @@ class UniformMetaBlock(GenericBlock):
         self.res_seq.sequence = [{"__label__": label} for label in self.get_fold_labels()]
 
         exp.store_block(self)
+        exp.log(self.uuid, "on_folds_generation_success")
         log.debug("on_folds_generation_success")
         self.get_sub_scope().remove_temp_vars()
         self.do_action("run_sub_scope", exp)
@@ -289,6 +291,7 @@ class UniformMetaBlock(GenericBlock):
     def remove_collector_var(self, exp, received_block, *args, **kwargs):
         to_remove = received_block.get("collector_spec", {}).get("to_remove")
         if to_remove:
+            exp.log(self.uuid, "Trying to remove: %s" % to_remove)
             log.debug("Trying to remove: %s", to_remove)
             self.collector_spec.remove(to_remove)
 

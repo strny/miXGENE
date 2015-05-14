@@ -54,6 +54,9 @@ class RcVisualizer(GenericBlock):
                 if metric.produce_single_number
             ]
         except Exception, e:
+            if self.exp_id:
+                    exp = Experiment.get_exp_by_id(self.exp_id)
+                    exp.log(self.uuid, e, severity="CRITICAL")
             log.exception(e)
             return []
 

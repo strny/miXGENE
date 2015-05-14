@@ -153,6 +153,9 @@ class GenericBlock(BaseBlock):
         self.uuid = "B" + uuid1().hex[:8]
 
         self.exp_id = exp_id
+        exp = None
+        if exp_id:
+            exp = Experiment.get_exp_by_id(exp_id)
         self.scope_name = scope_name
         self.base_name = ""
 
@@ -191,6 +194,8 @@ class GenericBlock(BaseBlock):
         scope = self.get_scope()
         scope.load()
         for f_name, f in self._block_serializer.outputs.iteritems():
+            if exp:
+                exp.log(self.uuid, "Registering normal outputs: %s", f_name)
             log.debug("Registering normal outputs: %s", f_name)
             self.register_provided_objects(scope, ScopeVar(self.uuid, f_name, f.provided_data_type))
             # TODO: Use factories for init values
@@ -226,6 +231,11 @@ class GenericBlock(BaseBlock):
         return "not_ready"
 
     def bind_input_var(self, input_name, bound_var):
+        if self.exp_id:
+            exp = Experiment.get_exp_by_id(self.exp_id)
+            exp.log(self.uuid, "bound input %s to %s in block: %s, exp: %s" %
+                    (input_name, bound_var, self.base_name, self.exp_id))
+
         log.debug("bound input %s to %s in block: %s, exp: %s",
                   input_name, bound_var, self.base_name, self.exp_id)
         self.bound_inputs[input_name] = bound_var
@@ -348,10 +358,12 @@ class GenericBlock(BaseBlock):
             if old_exec_state != "done" and self.get_exec_status() == "done" \
                     and ar.propagate_auto_execution \
                     and self.is_block_supports_auto_execution:
+                exp.log(self.uuid, "Propagate execution: %s " % self.base_name)
                 log.debug("Propagate execution: %s ", self.base_name)
                 auto_exec_task.s(exp, self.scope_name).apply_async()
             elif self.state in self.auto_exec_status_error \
                     and self.is_block_supports_auto_execution:
+                exp.log(self.uuid, "Detected error during automated workflow execution")
                 log.debug("Detected error during automated workflow execution")
                 halt_execution_task.s(exp, self.scope_name).apply_async()
 
@@ -386,6 +398,7 @@ class GenericBlock(BaseBlock):
         local_filename = "%s_%s_%s" % (self.uuid[:8], field_name, file_obj.name)
 
         if not multiple:
+            exp.log(self.uuid, "Storing single upload to field: %s" % field_name)
             log.debug("Storing single upload to field: %s", field_name)
             ud, is_created = UploadedData.objects.get_or_create(
                 exp=exp, block_uuid=self.uuid, var_name=field_name)
@@ -399,6 +412,7 @@ class GenericBlock(BaseBlock):
             setattr(self, field_name, ufw)
             exp.store_block(self)
         else:
+            exp.log(self.uuid, "Adding upload to field: %s" % field_name)
             log.debug("Adding upload to field: %s", field_name)
 
             ud, is_created = UploadedData.objects.get_or_create(
@@ -414,13 +428,16 @@ class GenericBlock(BaseBlock):
 
             r = get_redis_instance()
             with redis_lock.Lock(r, ExpKeys.get_block_global_lock_key(self.exp_id, self.uuid)):
+                exp.log(self.uuid, "Enter lock, file: %s" % orig_name)
                 log.debug("Enter lock, file: %s", orig_name)
                 block = exp.get_block(self.uuid)
                 attr = getattr(block, field_name)
 
                 attr[orig_name] = ufw
+                exp.log(self.uuid, "Added upload `%s` to collection: %s" % (orig_name, attr.keys()))
                 log.debug("Added upload `%s` to collection: %s", orig_name, attr.keys())
                 exp.store_block(block)
+                exp.log(self.uuid, "Exit lock, file: %s" % orig_name)
                 log.debug("Exit lock, file: %s", orig_name)
 
     def erase_file_input(self, exp, data):

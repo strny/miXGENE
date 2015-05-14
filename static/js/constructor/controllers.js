@@ -81,7 +81,10 @@ Constructor.controller('WorktableCtrl', function WorktableCtrl($scope, $modal, b
 
 Constructor.controller('LogTableExpCtrl', function($scope, $log, blockAccess, ngTableParams, $filter){
     $scope.access = blockAccess;
-    $scope.access.log_for_exp(function(data){ $scope.t_data = data});
+
+    $scope.reload_table = function(){
+        $scope.access.log_for_exp(function(data) {$scope.t_data = data});
+    };
 
     $scope.reset_table = function() {
         $scope.table_config = {};
@@ -89,7 +92,7 @@ Constructor.controller('LogTableExpCtrl', function($scope, $log, blockAccess, ng
         $scope.table_config["data"] = [];
         $scope.table_config["columns"] = [];
     };
-    $scope.reset_table();
+
 
     $scope.$watch('t_data', function(newVal) {
         if ($scope.t_data) {
@@ -144,7 +147,9 @@ Constructor.controller('LogTableExpCtrl', function($scope, $log, blockAccess, ng
                 ));
             }
         });
-    }
+    };
+    $scope.reset_table();
+    $scope.access.log_for_exp(function(data){ $scope.t_data = data});
 
 });
 
