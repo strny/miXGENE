@@ -437,8 +437,8 @@ class DifferentialPatternSearcher(object):
                     print "Drawing a graph for seed %s" % str(seed)
                     draw_graph(edges_names, self.base_dir + 'greedy_search_pics/test-graph-greedy', seed)    
 
-            if seed > 550:
-                break
+            # if seed > 550:
+            #     break
 
         return self.patterns
 
