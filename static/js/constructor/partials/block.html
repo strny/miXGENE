@@ -46,7 +46,7 @@
                            ng-click='toggleBodyVisibility()'>
                         </a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a class="block-remove text-danger glyphicon glyphicon-trash"
+                        <a ng-if="!access.mode.ro" class="block-remove text-danger glyphicon glyphicon-trash"
                            ng-click="access.remove_block(block)">
 
                         </a>

@@ -193,10 +193,17 @@ class ScopeRunner(object):
                     mode=NotifyMode.SUCCESS,
                     silent=False
                 ).send()
+                self.exp.log("root", "Experiment finished.")
                 self.exp.done()
         elif blocks_to_execute:
             # for block in blocks_to_execute:
-            #     block.do_action("execute", self.exp
+            # block.do_action("execute", self.exp
+            AllUpdated(
+                self.exp.pk,
+                comment=u"Executing Block %s" % blocks_to_execute[0].name,
+                mode=NotifyMode.SUCCESS,
+                silent=False
+            ).send()
             blocks_to_execute[0].do_action("execute", self.exp)
 
     def build_dag(self, block_dependencies):
