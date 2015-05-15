@@ -124,47 +124,5 @@ class PatternView(GenericBlock):
     def process_upload(self, exp, *args, **kwargs):
         pass
 
-    # def process_upload(self, exp, *args, **kwargs):
-    #     """
-    #         @param exp: Experiment
-    #     """
-    #     # TODO: move to celery
-    #     try:
-    #         self.clean_errors()
-    #         cs = self.get_input_var("cs")
-    #         """:type :ComoduleSet"""
-    #         es = self.get_input_var("es")
-    #         """:type :ExpressionSet"""
-    #         gene_platform = self.upload_gene2gene_platform
-    #         gene2gene = self.get_input_var("gene2gene")
-    #         """:type :BinaryInteraction"""
-    #         gene_platform = gene_platform.get_file()
-    #         with open(gene_platform.path) as f:
-    #             for line in f:
-    #                 gene_platform = line.split(',')
-    #
-    #         gene2gene = gene2gene.load_pairs()
-    #         gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
-    #         mData = es.get_assay_data_frame()
-    #         nw = gene2gene
-    #         # data = mData
-    #         mData.set_index(mData.columns[0], inplace=True, drop=True)
-    #         # data = zscore(data)
-    #         pheno = es.get_pheno_data_frame()
-    #         classes = pheno[es.pheno_metadata['user_class_title']].values
-    #         pattern_set = cs.load_set()
-    #         scope = self.get_scope()
-    #         scope.load()
-    #         edges = get_patterns(pattern_set.values(), mData, classes, nw)
-    #         diff_expr = differential_expression(mData, classes)
-    #         scope.set_temp_var("edges_%s" % self.uuid, edges)
-    #         scope.set_temp_var("diff_expr_%s" % self.uuid, diff_expr)
-    #         scope.store()
-    #         self.do_action("success", exp)
-    #     except Exception as e:
-    #         ex_type, ex, tb = sys.exc_info()
-    #         traceback.print_tb(tb)
-    #         self.do_action("error", exp, e)
-
     def success(self, exp, *args, **kwargs):
         pass
