@@ -74,6 +74,20 @@ def geo_folder_name(prefix, uid):
 NCBI_GEO_ROOT = "ftp://ftp.ncbi.nlm.nih.gov/geo"
 NCBI_GEO_SERIES = NCBI_GEO_ROOT + "/series"
 
+def gen_GPL_url(geo_uid):
+    import urllib
+    BASE = "http://www.ncbi.nlm.nih.gov"
+    QUERY = "/geo/query/acc.cgi?acc=%s"%geo_uid
+    filehandle = urllib.urlopen(BASE + QUERY)
+    res = ""
+    for line in filehandle:
+        m = re.search("\"OpenLink\('([^']*)'", line)
+        if m:
+            res = m.group(1)
+    gpl_part_url = res.replace("&amp;", "&")
+    gpl_url = BASE + gpl_part_url
+    return gpl_url
+
 
 def prepare_GEO_ftp_url(geo_uid, file_format):
     """
@@ -96,9 +110,12 @@ def prepare_GEO_ftp_url(geo_uid, file_format):
             url = "%s/soft/%s" % (pre_url, compressed_filename)
         else:
             raise Exception("format %s isn't supported yet" % file_format)
+    elif db_type == "GPL":
+        filename = "%s_gpl" % geo_uid
+        compressed_filename = filename
+        url = gen_GPL_url(geo_uid)
     else:
         raise Exception("db_type %s isn't supported yet" % db_type)
-
     return url, compressed_filename, filename
 
 

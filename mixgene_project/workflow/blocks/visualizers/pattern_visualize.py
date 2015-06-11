@@ -96,8 +96,8 @@ class PatternView(GenericBlock):
                 "nodes": [
                     {"id": "%s_%s" % (j, gene),
                     "label": gene,
-                    "x": math.cos(2*i*math.pi/len(com)) + 5*math.cos(2*j*math.pi/len(pattern_set)),
-                    "y": math.sin(2*i*math.pi/len(com)) + 5*math.sin(2*j*math.pi/len(pattern_set)),
+                    "x": math.cos(2*i*math.pi/len(com)) + math.floor(math.sqrt(len(pattern_set))) * (j % int(math.floor(math.sqrt(len(pattern_set))))),
+                    "y": math.sin(2*i*math.pi/len(com)) + math.floor(math.sqrt(len(pattern_set))) * (j / int(math.floor(math.sqrt(len(pattern_set))))),
                     "color": "rgb(%s, %s, %s)" % (abs(int(math.floor(((diff_expr[gene] + 1) * 128) - 1))),
                                                   abs(int(math.floor(255-(((diff_expr[gene] + 1) * 128) - 1)))),
                                                   0),

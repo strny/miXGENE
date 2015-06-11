@@ -195,7 +195,7 @@ class GenericBlock(BaseBlock):
         scope.load()
         for f_name, f in self._block_serializer.outputs.iteritems():
             if exp:
-                exp.log(self.uuid, "Registering normal outputs: %s", f_name)
+                exp.log(self.uuid, "Registering normal outputs: %s" % f_name)
             log.debug("Registering normal outputs: %s", f_name)
             self.register_provided_objects(scope, ScopeVar(self.uuid, f_name, f.provided_data_type))
             # TODO: Use factories for init values

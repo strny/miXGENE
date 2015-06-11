@@ -8,9 +8,149 @@ from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, ParamField, InputType, FieldType, BlockField, \
     OutputBlockField
 from workflow.blocks.generic import GenericBlock
+from workflow.common_tasks import fetch_geo_gpl
+from webapp.notification import AllUpdated, NotifyMode
+from webapp.tasks import wrapper_task
+import pandas
+import re
+from django.conf import settings
 
 __author__ = 'pavel'
 
+def find_target_column(regex, gpl_data):
+    columns_gpl = list(gpl_data)
+    freqs = {column: len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x)), gpl_data[column].values[:1000])))
+             for column in columns_gpl}
+    max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
+    return max_key
+
+def convert_ids(gpl_file, assay_df):
+    import StringIO
+    output = StringIO.StringIO()
+    with open(gpl_file.filepath, "r") as f_in:
+        for line in f_in:
+            if not line.startswith("#"):
+                output.write(line)
+    output.seek(0)
+    gpl_data = pandas.read_csv(output, delimiter="\t")
+    # gpl header
+    columns_target = list(gpl_data)
+    # features of dataset
+    columns_source = set(list(assay_df))
+
+    freqs = {c_t: len(set(gpl_data[c_t].values).intersection(columns_source))
+            for c_t in columns_target}
+    #find max key
+    max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
+    target_column = find_target_column("^[A-Z][A-Z]_[a-zA-z0-9.]*", gpl_data)
+    new_names = {old_name: new_name
+                 for old_name, new_name in gpl_data[[max_key, target_column]].values}
+    assay_df.rename(columns=new_names, inplace=True)
+    return assay_df, freqs[max_key]
+
+
+def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
+    # if matrix is bad oriented, then do transposition
+    if ori == "GxS":
+        df = df.T
+        df.columns = df.iloc[0]
+        df = df.drop(df.index[0])
+    gpl_file = None
+    if platform:
+        AllUpdated(
+            exp.pk,
+            comment=u"Fetching platform %s" % platform,
+            silent=False,
+            mode=NotifyMode.INFO
+        ).send()
+        gpl_file = fetch_geo_gpl(exp, block, platform)
+        df, matched = convert_ids(gpl_file, df)
+        AllUpdated(
+            exp.pk,
+            comment=u"Matched %s features for %s dataset" % (matched, data_type),
+            silent=False,
+            mode=NotifyMode.INFO
+        ).send()
+    es = ExpressionSet(base_dir=exp.get_data_folder(),
+                       base_filename="%s_%s_es" % (block.uuid, data_type))
+    es.store_assay_data_frame(df)
+    return es, df, gpl_file
+
+
+
+def user_upload_complex_task(exp,
+                             block
+                             ):
+    sep_m_rna = getattr(block, "csv_sep_m_rna", " ")
+    sep_mi_rna = getattr(block, "csv_sep_mi_rna", " ")
+    sep_methyl = getattr(block, "csv_sep_methyl", " ")
+    sep_pheno = getattr(block, "csv_sep_pheno", " ")
+
+    AllUpdated(
+        exp.pk,
+        comment=u"Starting processing UserUploadComplex",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
+    if not block.pheno_matrix:
+        block.warnings.append(Exception("Phenotype is undefined"))
+        AllUpdated(
+            exp.pk,
+            comment=u"Phenotype is undefined",
+            silent=False,
+            mode=NotifyMode.INFO
+        ).send()
+
+        pheno_df = None
+    else:
+        pheno_df = block.pheno_matrix.get_as_data_frame(sep_pheno)
+        pheno_df.set_index(pheno_df.columns[0])
+
+        # TODO: solve somehow better: Here we add empty column with user class assignment
+        pheno_df[ExpressionSet(None, None).pheno_metadata["user_class_title"]] = ""
+
+    m_rna_es = None
+    mi_rna_es = None
+    methyl_es = None
+    if block.m_rna_matrix is not None:
+        m_rna_assay_df = block.m_rna_matrix.get_as_data_frame(sep_m_rna)
+        m_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, m_rna_assay_df, block.m_rna_matrix_ori,
+                                                                 block.m_rna_platform, "m_rna")
+        block.m_rna_gpl_file = gpl_file
+
+        if pheno_df is not None:
+            m_rna_es.store_pheno_data_frame(pheno_df)
+        m_rna_es.working_unit = block.m_rna_unit
+
+    if block.mi_rna_matrix is not None:
+        mi_rna_assay_df = block.methyl_matrix.get_as_data_frame(sep_mi_rna)
+        mi_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, mi_rna_assay_df, block.mi_rna_matrix_ori,
+                                                                  block.mi_rna_platform, "mi_rna")
+        block.mi_rna_gpl_file = gpl_file
+
+        if pheno_df is not None:
+            mi_rna_es.store_pheno_data_frame(pheno_df)
+        mi_rna_es.working_unit = block.mi_rna_unit
+
+    if block.methyl_matrix is not None:
+        methyl_assay_df = block.methyl_matrix.get_as_data_frame(sep_methyl)
+        methyl_es, methyl_assay_df, gpl_file = process_data_frame(exp, block, methyl_assay_df, block.methyl_matrix_ori,
+                                                                  block.methyl_platform, "methyl")
+        block.methyl_gpl_file = gpl_file
+
+        if pheno_df is not None:
+            methyl_es.store_pheno_data_frame(pheno_df)
+        methyl_es.working_unit = block.methyl_unit
+
+    return [m_rna_es, mi_rna_es, methyl_es
+            ], {}
 
 class UserUploadComplex(GenericBlock):
     block_base_name = "UPLOAD_CMPLX"
@@ -48,13 +188,31 @@ class UserUploadComplex(GenericBlock):
             ]
         }
     )
-
+    csv_sep_m_rna = ParamField(
+        "csv_sep_m_rna", title="CSV separator symbol", order_num=14,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
+            ]
+        }
+    )
 
     mi_rna_matrix = ParamField("mi_rna_matrix", title=u"μRNA expression", order_num=20,
                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
+    mi_rna_platform = ParamField("mi_rna_platform", title="Platform ID", order_num=21,
+                               input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    mi_rna_unit = ParamField("mi_rna_unit", title="Working unit [used when platform is unknown]", init_val=None,
+                           order_num=22, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+
     mi_rna_matrix_ori = ParamField(
-        "mi_rna_matrix_ori", title="Matrix orientation", order_num=21,
+        "mi_rna_matrix_ori", title="Matrix orientation", order_num=23,
         input_type=InputType.SELECT, field_type=FieldType.STR,
         init_val="SxG",
         options={
@@ -65,11 +223,31 @@ class UserUploadComplex(GenericBlock):
             ]
         }
     )
+    csv_sep_mi_rna = ParamField(
+        "csv_sep_mi_rna", title="CSV separator symbol", order_num=24,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
+            ]
+        }
+    )
+
     methyl_matrix = ParamField("methyl_matrix", title="Methylation expression", order_num=30,
                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
+    methyl_platform = ParamField("methyl_platform", title="Platform ID", order_num=31,
+                               input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    methyl_unit = ParamField("methyl_unit", title="Working unit [used when platform is unknown]", init_val=None,
+                           order_num=32, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+
     methyl_matrix_ori = ParamField(
-        "methyl_matrix_ori", title="Matrix orientation", order_num=31,
+        "methyl_matrix_ori", title="Matrix orientation", order_num=33,
         input_type=InputType.SELECT, field_type=FieldType.STR,
         init_val="SxG",
         options={
@@ -77,6 +255,21 @@ class UserUploadComplex(GenericBlock):
             "select_options": [
                 ["SxG", "Samples x Genes"],
                 ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
+
+    csv_sep_methyl = ParamField(
+        "csv_sep_methyl", title="CSV separator symbol", order_num=34,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
             ]
         }
     )
@@ -84,8 +277,8 @@ class UserUploadComplex(GenericBlock):
     pheno_matrix = ParamField("pheno_matrix", title="Phenotype matrix", order_num=40,
                               input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
-    csv_sep = ParamField(
-        "csv_sep", title="CSV separator symbol", order_num=50,
+    csv_sep_pheno = ParamField(
+        "csv_sep_pheno", title="CSV separator symbol", order_num=50,
         input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
         options={
             "inline_select_provider": True,
@@ -110,6 +303,10 @@ class UserUploadComplex(GenericBlock):
     _methyl_es = OutputBlockField(name="methyl_es", field_type=FieldType.HIDDEN,
                                  provided_data_type="ExpressionSet")
 
+    mrna_gpl_file = BlockField("mrna_gpl_file", FieldType.CUSTOM, None)
+    mirna_gpl_file = BlockField("mirna_gpl_file", FieldType.CUSTOM, None)
+    methyl_gpl_file = BlockField("methyl_gpl_file", FieldType.CUSTOM, None)
+
     pages = BlockField("pages", FieldType.RAW, init_val={
         "assign_phenotype_classes": {
             "title": "Assign phenotype classes",
@@ -124,81 +321,20 @@ class UserUploadComplex(GenericBlock):
             return True
         return False
 
+    def __init__(self, *args, **kwargs):
+        super(UserUploadComplex, self).__init__(*args, **kwargs)
+        self.celery_task = None
+
     def process_upload(self, exp, *args, **kwargs):
-        """
-            @param exp: Experiment
-        """
-        # TODO: move to celery
         self.clean_errors()
-        sep = getattr(self, "csv_sep", " ")
+        self.celery_task = wrapper_task.s(
+            user_upload_complex_task,
+            exp,
+            self
+        )
+        exp.store_block(self)
+        self.celery_task.apply_async()
 
-        try:
-            if not self.pheno_matrix:
-                self.warnings.append(Exception("Phenotype is undefined"))
-                pheno_df = None
-            else:
-                pheno_df = self.pheno_matrix.get_as_data_frame(sep)
-                pheno_df.set_index(pheno_df.columns[0])
-
-                # TODO: solve somehow better: Here we add empty column with user class assignment
-                pheno_df[ExpressionSet(None, None).pheno_metadata["user_class_title"]] = ""
-
-            if self.m_rna_matrix is not None:
-                m_rna_assay_df = self.m_rna_matrix.get_as_data_frame(sep)
-
-                # if matrix is bad oriented, then do transposition
-                if self.m_rna_matrix_ori == "GxS":
-                    m_rna_assay_df = m_rna_assay_df.T
-
-                m_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
-                                        base_filename="%s_m_rna_es" % self.uuid)
-                m_rna_es.store_assay_data_frame(m_rna_assay_df)
-                if pheno_df is not None:
-                    m_rna_es.store_pheno_data_frame(pheno_df)
-                m_rna_es.working_unit = self.m_rna_unit
-
-                self.set_out_var("m_rna_es", m_rna_es)
-
-                # TODO: fetch GPL annotation if GPL id was provided
-
-            if self.mi_rna_matrix is not None:
-                mi_rna_assay_df = self.mi_rna_matrix.get_as_data_frame(sep)
-
-                # if matrix is bad oriented, then do transposition
-                if self.mi_rna_matrix_ori == "GxS":
-                    mi_rna_assay_df = mi_rna_assay_df.T
-
-                mi_rna_es = ExpressionSet(base_dir=exp.get_data_folder(),
-                                        base_filename="%s_mi_rna_es" % self.uuid)
-                mi_rna_es.store_assay_data_frame(mi_rna_assay_df)
-
-                if pheno_df:
-                    mi_rna_es.store_pheno_data_frame(pheno_df)
-
-                self.set_out_var("mi_rna_es", mi_rna_es)
-
-            if self.methyl_matrix is not None:
-
-                methyl_assay_df = self.methyl_matrix.get_as_data_frame(sep)
-
-                # if matrix is bad oriented, then do transposition
-                if self.mi_rna_matrix_ori == "GxS":
-                    methyl_assay_df = methyl_assay_df.T
-
-                methyl_es = ExpressionSet(base_dir=exp.get_data_folder(),
-                                          base_filename="%s_methyl_es" % self.uuid)
-                methyl_es.store_assay_data_frame(methyl_assay_df)
-                if pheno_df:
-                    methyl_es.store_pheno_data_frame(pheno_df)
-
-                self.set_out_var("methyl_es", methyl_es)
-
-            self.do_action("success", exp)
-        except Exception as e:
-            ex_type, ex, tb = sys.exc_info()
-            traceback.print_tb(tb)
-            self.do_action("error", exp, e)
-        # self.celery_task_fetch.apply_async()
 
     def phenotype_for_js(self, exp, *args, **kwargs):
         m_rna_es = self.get_out_var("m_rna_es")
@@ -211,11 +347,11 @@ class UserUploadComplex(GenericBlock):
             es = mi_rna_es
         elif methyl_es is not None:
             es = methyl_es
-
         if es is None:
             raise Exception("No data was stored before")
 
         return prepare_phenotype_for_js_from_es(es)
+
 
     def update_user_classes_assignment(self, exp, request, *args, **kwargs):
         m_rna_es = self.get_out_var("m_rna_es")
@@ -246,5 +382,11 @@ class UserUploadComplex(GenericBlock):
         # import ipdb; ipdb.set_trace()
         exp.store_block(self)
 
-    def success(self, exp, *args, **kwargs):
-        pass
+    def success(self, exp, m_rna_es, mi_rna_es, methyl_es):
+        if m_rna_es:
+            self.set_out_var("m_rna_es", m_rna_es)
+        if mi_rna_es:
+            self.set_out_var("mi_rna_es", mi_rna_es)
+        if methyl_es:
+            self.set_out_var("methyl_es", methyl_es)
+        exp.store_block(self)

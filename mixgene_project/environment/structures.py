@@ -89,12 +89,6 @@ class DataFrameStorage(object):
                     index_col=self.index_col,
                 )
 
-    # def to_r_obj(self):
-    #     """
-    #         @rtype  : R data frame
-    #         @return : Stored matrix converted to R object
-    #     """
-    #     return R.r["read.table"](self.filepath, sep=self.sep, header=self.header)
 
 
 class GenericStoreStructure(object):

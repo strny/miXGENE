@@ -18,9 +18,6 @@
                     <a href="{% url 'webapp.views.runs' %}">Runs</a>
                 </li>
 
-                <li {% if exp_add_page_active %} class="active" {% endif %}>
-                    <a href="{% url 'webapp.views.add_experiment' %}">New</a>
-                </li>
             {% endif %}
             <li {% if articles_page_active %} class="active" {% endif %}>
 

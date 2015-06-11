@@ -22,6 +22,40 @@ from itertools import repeat, chain
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+# TODO: merge fetch_geo_gpl and fetch_geo_gse
+
+def fetch_geo_gpl(exp, block, gpl_uid, ignore_cache=False):
+    gpl_uid = gpl_uid.upper()
+    file_format = "txt"
+    url, compressed_filename, filename = prepare_GEO_ftp_url(gpl_uid, file_format)
+
+    fi = FileInputVar("%s/%s_gpl.txt" % (exp.get_data_folder(), block.uuid), title="", description="")
+    fi.is_done = True
+    fi.is_being_fetched = False
+    fi.file_extension = "txt"
+    fi.is_gzipped = True
+    fi.filename = filename
+
+    fi.filepath = exp.get_data_file_path(fi.filename, fi.file_extension)
+    fi.geo_uid = gpl_uid
+    fi.geo_type = gpl_uid[:3]
+
+    fi.file_format = "txt"
+    fi.set_file_type("ncbi_geo")
+
+    mb_cached = CachedFile.look_up(url)
+    if mb_cached is None or ignore_cache:
+        #FIME: grrrrrr...
+        dir_path = exp.get_data_folder()
+        fetch_file_from_url(url, "%s/%s" % (dir_path, filename + ".txt"))
+
+        CachedFile.update_cache(url, fi.filepath)
+    else:
+        shutil.copy(mb_cached.get_file_path(), fi.filepath)
+        log.debug("File for %s was copied file from cache", url)
+
+    return fi
+
 
 def fetch_geo_gse(exp, block, geo_uid, ignore_cache=False):
     file_format = "soft"
@@ -220,8 +254,6 @@ def generate_cv_folds(
 
             cell[es_train_name] = train_es
             cell[es_test_name] = test_es
-
-
         sequence.append(cell)
         i += 1
 

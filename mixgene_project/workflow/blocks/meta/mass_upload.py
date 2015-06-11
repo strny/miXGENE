@@ -12,6 +12,8 @@ from workflow.blocks.meta.meta_block import UniformMetaBlock
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+def bunch_upload_task()
+
 class DataInfo(object):
     def __init__(self, label):
         self.label = label
