@@ -96,7 +96,7 @@ def user_upload_complex_task(exp,
 
     AllUpdated(
         exp.pk,
-        comment=u"Starting processing UserUploadComplex",
+        comment=u"Processing UserUploadComplex block",
         silent=False,
         mode=NotifyMode.INFO
     ).send()
@@ -150,6 +150,13 @@ def user_upload_complex_task(exp,
         if pheno_df is not None:
             methyl_es.store_pheno_data_frame(pheno_df)
         methyl_es.working_unit = block.methyl_unit
+
+    AllUpdated(
+        exp.pk,
+        comment=u"Finished processing of UserUploadComplex",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
 
     return [m_rna_es, mi_rna_es, methyl_es
             ], {}

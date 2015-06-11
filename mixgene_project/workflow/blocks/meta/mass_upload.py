@@ -3,7 +3,7 @@
 import json
 import logging
 
-from environment.structures import ExpressionSet
+# from environment.structures import ExpressionSet
 from workflow.blocks.fields import MultiUploadField, FieldType, BlockField, InnerOutputField, \
     InputType, ParamField, ActionRecord, ActionsList
 from workflow.blocks.meta.meta_block import UniformMetaBlock
@@ -13,6 +13,7 @@ from webapp.notification import AllUpdated, NotifyMode
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
+
 
 def bunch_upload_task(exp, block, sep):
     seq = []
@@ -58,12 +59,12 @@ def bunch_upload_task(exp, block, sep):
     block.seq = seq
     return [block], {}
 
+
 class DataInfo(object):
     def __init__(self, label):
         self.label = label
         self.from_index = None
         self.to_index = None
-
 
     def set_indices(self, from_index, to_index):
         self.from_index = from_index
@@ -106,6 +107,7 @@ class DataInfoList(object):
             "list": [cell.to_dict() for cell in self.cells]
         }
 
+
 class MassUpload(UniformMetaBlock):
     block_base_name = "BunchUpload"
     name = "Mass upload expression sets"
@@ -142,8 +144,7 @@ class MassUpload(UniformMetaBlock):
     )
 
     platform = ParamField("platform", title="Platform ID", order_num=12,
-                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-
+                          input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
     pheno_matrices = ParamField(
         "pheno_matrices", title="Phenotypes", order_num=40,
@@ -172,7 +173,6 @@ class MassUpload(UniformMetaBlock):
         "mass_upload/data_spec.html"
     ])
 
-
     def __init__(self, *args, **kwargs):
         super(MassUpload, self).__init__(*args, **kwargs)
         self.es_matrices = MultiUploadField()
@@ -192,7 +192,6 @@ class MassUpload(UniformMetaBlock):
         if self.state in ['source_was_preprocessed', 'sample_classes_assigned', 'ready', 'done']:
             return True
         return False
-
 
     def add_cell(self, exp, received_block, *args, **kwargs):
         new_cell_dict = received_block.get("cells", {}).get("new")
