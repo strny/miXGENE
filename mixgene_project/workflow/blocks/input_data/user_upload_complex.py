@@ -85,7 +85,6 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
     return es, df, gpl_file
 
 
-
 def user_upload_complex_task(exp,
                              block
                              ):
@@ -344,7 +343,6 @@ class UserUploadComplex(GenericBlock):
         exp.store_block(self)
         self.celery_task.apply_async()
 
-
     def phenotype_for_js(self, exp, *args, **kwargs):
         m_rna_es = self.get_out_var("m_rna_es")
         mi_rna_es = self.get_out_var("mi_rna_es")
@@ -360,7 +358,6 @@ class UserUploadComplex(GenericBlock):
             raise Exception("No data was stored before")
 
         return prepare_phenotype_for_js_from_es(es)
-
 
     def update_user_classes_assignment(self, exp, request, *args, **kwargs):
         m_rna_es = self.get_out_var("m_rna_es")

@@ -39,7 +39,7 @@ class UploadGeneSets(GenericBlock):
     def on_params_is_valid(self, exp, *args, **kwargs):
         try:
             gmt_file = self.upload_gs.get_file()
-            gs = GmtStorage.read_inp(gmt_file, "\t")
+            gs = read_inp(gmt_file, "\t")
             gene_sets = GeneSets(exp.get_data_folder(), str(self.uuid))
             gene_sets.store_gs(gs)
 

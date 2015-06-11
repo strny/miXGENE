@@ -15,6 +15,7 @@ from wrappers.scoring import metrics
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+
 class PickleStorage(object):
     def __init__(self, filepath, gzipped=True):
         self.filepath = filepath
@@ -40,6 +41,7 @@ class PickleStorage(object):
         except:
             with gzip.open(self.filepath, "wb") as out:
                 pickle.dump(obj, out, 2)
+
 
 class DataFrameStorage(object):
     sep = " "
@@ -88,7 +90,6 @@ class DataFrameStorage(object):
                     sep=self.sep,
                     index_col=self.index_col,
                 )
-
 
 
 class GenericStoreStructure(object):
@@ -334,10 +335,10 @@ class GS(object):
 
     def to_r_obj(self):
         gene_sets = R.ListVector(dict([
-            (k, R.StrVector(list(v)))
-            for k, v in self.genes.iteritems()
-            if len(v)
-        ]))
+                                          (k, R.StrVector(list(v)))
+                                          for k, v in self.genes.iteritems()
+                                          if len(v)
+                                          ]))
         return gene_sets
 
 
@@ -364,6 +365,13 @@ class GmtStorage(object):
             self.sep = "\t"
 
     @staticmethod
+    def convert_to_refseqs(gene_sets):
+        from wrappers.input.utils import expand_geneset
+
+        for key in gene_sets.genes.keys():
+            gene_sets.genes[key] = expand_geneset(gene_sets.genes[key])
+        return gene_sets
+
     def read_inp(inp, sep):
         gene_sets = GS(dict(), dict())
         for line in inp:
@@ -373,7 +381,7 @@ class GmtStorage(object):
             key = split[0]
             gene_sets.description[key] = split[1]
             gene_sets.genes[key] = split[2:]
-        return gene_sets
+        return GmtStorage.convert_to_refseqs(gene_sets)
 
     def load(self):
         """
@@ -386,12 +394,12 @@ class GmtStorage(object):
             with open(self.filepath) as inp:
                 return GmtStorage.read_inp(inp, self.sep)
 
-
     def store(self, gene_sets):
         """
             @type gene_sets: GS
             @return: None
         """
+
         def write_out(out):
             for key in gene_sets.description.keys():
                 description = gene_sets.description[key]
@@ -399,6 +407,7 @@ class GmtStorage(object):
                 out.write("%s\t%s\t%s\n" % (
                     (key, description, "\t".join(elements))
                 ))
+
         if self.compression == "gzip":
             with gzip.open(self.filepath, "w") as output:
                 write_out(output)
@@ -433,7 +442,6 @@ class GeneSets(GenericStoreStructure):
         if self.storage is None:
             raise RuntimeError("No gene sets was stored")
         return self.storage.load()
-
 
 
 class PlatformAnnotation(object):
@@ -488,9 +496,9 @@ class SequenceContainer(object):
         if self.iterator >= len(self.sequence):
             raise StopIteration()
 
-        # el = self.sequence[self.iterator]
-        # for field in self.fields:
-        #     setattr(block, field, getattr(el, field))
+            # el = self.sequence[self.iterator]
+            # for field in self.fields:
+            #     setattr(block, field, getattr(el, field))
 
     def get_field(self, field):
         return self.sequence[self.iterator][field]
@@ -543,7 +551,7 @@ class ClassifierResult(GenericStoreStructure):
         scores_dict = {}
         for metric in metrics:
             if metric.name in self.scores:
-                scores_dict[metric.name] =\
+                scores_dict[metric.name] = \
                     metric.to_dict(self.scores[metric.name])
 
         return {
@@ -604,7 +612,7 @@ class mixML(object):
 
 
 class FileInputVar(AbsInputVar):
-    #TODO: rework into storage + variable
+    # TODO: rework into storage + variable
     def __init__(self, *args, **kwargs):
         super(FileInputVar, self).__init__(*args, **kwargs)
         self.input_type = "file"
@@ -670,7 +678,7 @@ def prepare_phenotype_for_js_from_es(es, headers_option=None):
     column_title_to_code_name = {
         val: "_" + hashlib.md5(val).hexdigest()[:8]
         for val in pheno_headers_list
-    }
+        }
 
     # Here we reorder pheno columns according to `headers_option.order`
     pheno_headers_fixed_list = []
@@ -681,9 +689,9 @@ def prepare_phenotype_for_js_from_es(es, headers_option=None):
 
     pheno_headers_fixed_set = set(pheno_headers_fixed_list)
     pheno_headers_fixed_list.extend([
-        header for header in pheno_headers_list
-        if header not in pheno_headers_fixed_set
-    ])
+                                        header for header in pheno_headers_list
+                                        if header not in pheno_headers_fixed_set
+                                        ])
 
     def prefix_rename(value):
         prefix_map = headers_option["custom_title_prefix_map"]
@@ -702,22 +710,22 @@ def prepare_phenotype_for_js_from_es(es, headers_option=None):
             "displayName": prefix_rename(val),
             "minWidth": 150,
             "visible": all([
-                not val.startswith(prefix) for prefix in
-                headers_option["prefix_hide"]
-            ])
+                               not val.startswith(prefix) for prefix in
+                               headers_option["prefix_hide"]
+                               ])
         }
         for val in pheno_headers_fixed_list
-    ]
+        ]
     log.debug(pheno_headers_fixed_list)
-    #pheno_table = json.loads(pheno_df.to_json(orient="records"))
+    # pheno_table = json.loads(pheno_df.to_json(orient="records"))
     # again ng-grid specific
     pheno_table = []
     for record in pheno_df.to_records():
         pheno_table.append({
-            str(column_title_to_code_name[title]): fix_val(value)
-            for (title, value)
-            in zip(pheno_headers_list, list(record)[skip_index:])
-        })
+                               str(column_title_to_code_name[title]): fix_val(value)
+                               for (title, value)
+                               in zip(pheno_headers_list, list(record)[skip_index:])
+                               })
 
     return {
         "headers": pheno_headers,
