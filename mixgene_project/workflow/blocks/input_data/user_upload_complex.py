@@ -61,6 +61,8 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
         df = df.T
         df.columns = df.iloc[0]
         df = df.drop(df.index[0])
+    df.set_index(df.columns[0], inplace=True)
+
     gpl_file = None
     if platform:
         AllUpdated(
