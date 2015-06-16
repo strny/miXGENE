@@ -19,12 +19,12 @@ __author__ = 'pavel'
 
 def find_target_column(regex, gpl_data):
     columns_gpl = list(gpl_data)
-    freqs = {column: len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x)), gpl_data[column].values[:1000])))
+    freqs = {column: len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x), re.IGNORECASE), gpl_data[column].values[:1000])))
              for column in columns_gpl}
     max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
     return max_key
 
-def convert_ids(gpl_file, assay_df):
+def convert_ids(gpl_file, assay_df, data_type):
     import StringIO
     output = StringIO.StringIO()
     with open(gpl_file.filepath, "r") as f_in:
@@ -42,6 +42,9 @@ def convert_ids(gpl_file, assay_df):
             for c_t in columns_target}
     #find max key
     max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
+    regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
+    if data_type=="mi_rna":
+        regex = "^(.*-mir)|(.*-.*-.*)"
     target_column = find_target_column("^[A-Z][A-Z]_[a-zA-z0-9.]*", gpl_data)
     new_names = {old_name: new_name
                  for old_name, new_name in gpl_data[[max_key, target_column]].values}
@@ -72,7 +75,7 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
             mode=NotifyMode.INFO
         ).send()
         gpl_file = fetch_geo_gpl(exp, block, platform)
-        df, matched = convert_ids(gpl_file, df)
+        df, matched = convert_ids(gpl_file, df, data_type)
         AllUpdated(
             exp.pk,
             comment=u"Matched %s features for %s dataset" % (matched, data_type),
@@ -304,8 +307,8 @@ class UserUploadComplex(GenericBlock):
 
     _m_rna_es = OutputBlockField(name="m_rna_es", field_type=FieldType.HIDDEN,
         provided_data_type="ExpressionSet")
-    _m_rna_annotation = OutputBlockField(name="m_rna_annotation", field_type=FieldType.HIDDEN,
-        provided_data_type="PlatformAnnotation")
+    # _m_rna_annotation = OutputBlockField(name="m_rna_annotation", field_type=FieldType.HIDDEN,
+    #     provided_data_type="PlatformAnnotation")
     _mi_rna_es = OutputBlockField(name="mi_rna_es", field_type=FieldType.HIDDEN,
                                 provided_data_type="ExpressionSet")
     _methyl_es = OutputBlockField(name="methyl_es", field_type=FieldType.HIDDEN,

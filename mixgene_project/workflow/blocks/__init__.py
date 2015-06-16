@@ -1,7 +1,7 @@
 from workflow.blocks.input_data.fetch_gse import FetchGSE
 from workflow.blocks.input_data.fetch_bi_gs import GetBroadInstituteGeneSet
 from workflow.blocks.meta.crossvalidation import CrossValidation
-from workflow.blocks.processing.merge_gene_set_annotation import MergeGeneSetWithPlatformAnnotation
+# from workflow.blocks.processing.merge_gene_set_annotation import MergeGeneSetWithPlatformAnnotation
 
 from workflow.blocks.processing.globaltest import GlobalTest
 from workflow.blocks.input_data.upload_gene_sets import UploadGeneSets
