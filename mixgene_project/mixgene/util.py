@@ -82,8 +82,12 @@ def gen_GPL_url(geo_uid):
     res = ""
     for line in filehandle:
         m = re.search("\"OpenLink\('([^']*)'", line)
+        m1 = re.search("\"window.open\('([^']*)'", line)
+        if m1:
+            res = m1.group(1)
         if m:
             res = m.group(1)
+
     gpl_part_url = res.replace("&amp;", "&")
     gpl_url = BASE + gpl_part_url
     return gpl_url

@@ -16,6 +16,7 @@ from environment.structures import ExpressionSet, PlatformAnnotation, \
     GS, FileInputVar
 
 from itertools import repeat, chain
+from django.conf import settings
 
 # TODO: invent magic to correct logging when called outside of celery task
 
@@ -111,7 +112,11 @@ def preprocess_soft(exp, block, source_file):
     pl = soft[2].table_rows
     id_idx = pl[0].index('ID')
     # entrez_idx = pl[0].index('ENTREZ_GENE_ID')
-    refseq_idx = [i for i, item in enumerate(pl[0]) if re.search('.*refseq.*', item, re.IGNORECASE)][0]
+    refseq_idx = [i for i, item in enumerate(pl[0]) if re.search('.*refseq.*', item, re.IGNORECASE)]
+    if refseq_idx == []:
+        refseq_idx = [i for i, item in enumerate(pl[0]) if re.search('.*mirna.*', item, re.IGNORECASE)][0]
+    else:
+        refseq_idx = refseq_idx[0]
 
     #TODO bug here
     probe_to_genes_GS = GS()
@@ -205,7 +210,7 @@ def preprocess_soft(exp, block, source_file):
 
     return [expression_set], {}
 
-from django.conf import settings
+
 
 def generate_cv_folds(
         exp, block,

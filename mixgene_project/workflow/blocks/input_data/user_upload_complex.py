@@ -11,25 +11,23 @@ from workflow.blocks.generic import GenericBlock
 from workflow.common_tasks import fetch_geo_gpl
 from webapp.notification import AllUpdated, NotifyMode
 from webapp.tasks import wrapper_task
+from wrappers.input.utils import find_target_column
 import pandas
 import re
 from django.conf import settings
 
 __author__ = 'pavel'
 
-def find_target_column(regex, gpl_data):
-    columns_gpl = list(gpl_data)
-    freqs = {column: len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x), re.IGNORECASE), gpl_data[column].values[:1000])))
-             for column in columns_gpl}
-    max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
-    return max_key
 
 def convert_ids(gpl_file, assay_df, data_type):
     import StringIO
     output = StringIO.StringIO()
     with open(gpl_file.filepath, "r") as f_in:
+        parse = False
         for line in f_in:
-            if not line.startswith("#"):
+            if line.startswith("#"):
+                parse = True
+            if (not line.startswith("#")) and parse:
                 output.write(line)
     output.seek(0)
     gpl_data = pandas.read_csv(output, delimiter="\t")
@@ -64,6 +62,7 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
         df = df.T
         df.columns = df.iloc[0]
         df = df.drop(df.index[0])
+    # if isinstance(df.columns[0][0], basestring):
     df.set_index(df.columns[0], inplace=True)
 
     gpl_file = None
@@ -134,7 +133,7 @@ def user_upload_complex_task(exp,
         m_rna_es.working_unit = block.m_rna_unit
 
     if block.mi_rna_matrix is not None:
-        mi_rna_assay_df = block.methyl_matrix.get_as_data_frame(sep_mi_rna)
+        mi_rna_assay_df = block.mi_rna_matrix.get_as_data_frame(sep_mi_rna)
         mi_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, mi_rna_assay_df, block.mi_rna_matrix_ori,
                                                                   block.mi_rna_platform, "mi_rna")
         block.mi_rna_gpl_file = gpl_file
