@@ -79,7 +79,7 @@ def fetch_geo_gse(exp, block, geo_uid, ignore_cache=False):
 
     mb_cached = CachedFile.look_up(url)
     if mb_cached is None or ignore_cache:
-        #FIME: grrrrrr...
+        # FIME: grrrrrr...
         dir_path = exp.get_data_folder()
         fetch_file_from_url(url, "%s/%s" % (dir_path, compressed_filename))
 
@@ -90,7 +90,15 @@ def fetch_geo_gse(exp, block, geo_uid, ignore_cache=False):
 
     return [fi], {}
 
+def map_probes_to_refseqs(probes_to_refseq, probes_values):
+    out = []
+    for (probe, value) in probes_values:
+        if probes_to_refseq[probe] != [""]:
+            for refseq in probes_to_refseq[probe]:
+                out.append((refseq, value))
+    return out
 
+import re
 def preprocess_soft(exp, block, source_file):
     #TODO: now we assume that we get GSE file
     try:
@@ -102,30 +110,39 @@ def preprocess_soft(exp, block, source_file):
 
     pl = soft[2].table_rows
     id_idx = pl[0].index('ID')
-    entrez_idx = pl[0].index('ENTREZ_GENE_ID')
+    # entrez_idx = pl[0].index('ENTREZ_GENE_ID')
+    refseq_idx = [i for i, item in enumerate(pl[0]) if re.search('.*refseq.*', item, re.IGNORECASE)][0]
 
     #TODO bug here
     probe_to_genes_GS = GS()
     for row in pl[1:]:
         probe_to_genes_GS.description[row[id_idx]] = ""
-        probe_to_genes_GS.genes[row[id_idx]] = row[entrez_idx].split(" /// ")
+        probe_to_genes_GS.genes[row[id_idx]] = row[refseq_idx].split(" /// ")
 
-    platform_annotation = PlatformAnnotation(
-        "TODO:GET NAME FROM SOFT",
-        base_dir=exp.get_data_folder(),
-        base_filename="%s_annotation" % block.uuid
-    )
+    # platform_annotation = PlatformAnnotation(
+    #     "TODO:GET NAME FROM SOFT",
+    #     base_dir=exp.get_data_folder(),
+    #     base_filename="%s_annotation" % block.uuid
+    # )
+    #
+    # platform_annotation.gene_sets.metadata["gene_units"] = GeneUnits.ENTREZ_ID
+    # platform_annotation.gene_sets.metadata["set_units"] = GeneUnits.PROBE_ID
+    # platform_annotation.gene_sets.store_gs(probe_to_genes_GS)
 
-    platform_annotation.gene_sets.metadata["gene_units"] = GeneUnits.ENTREZ_ID
-    platform_annotation.gene_sets.metadata["set_units"] = GeneUnits.PROBE_ID
-    platform_annotation.gene_sets.store_gs(probe_to_genes_GS)
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     id_ref_idx = soft[3].table_rows[0].index("ID_REF")
     value_idx = soft[3].table_rows[0].index("VALUE")
     assay_df = DataFrame(dict([
         (
             soft[i].entity_attributes['Sample_geo_accession'],
-            Series(dict([(row[id_ref_idx], row[value_idx]) for row in soft[i].table_rows[1:]]))
+            Series(dict(
+                map_probes_to_refseqs(probe_to_genes_GS.genes, [(row[id_ref_idx], row[value_idx]) for row in soft[i].table_rows[1:]])
+            ))
         )
         for i in range(3, len(soft))
     ]))
@@ -186,7 +203,7 @@ def preprocess_soft(exp, block, source_file):
     pheno_df.index.name = 'Sample_geo_accession'
     expression_set.store_pheno_data_frame(pheno_df)
 
-    return [expression_set, platform_annotation], {}
+    return [expression_set], {}
 
 from django.conf import settings
 

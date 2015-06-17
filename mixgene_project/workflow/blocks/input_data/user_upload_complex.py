@@ -45,7 +45,7 @@ def convert_ids(gpl_file, assay_df, data_type):
     regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
     if data_type=="mi_rna":
         regex = "^(.*-mir)|(.*-.*-.*)"
-    target_column = find_target_column("^[A-Z][A-Z]_[a-zA-z0-9.]*", gpl_data)
+    target_column = find_target_column(regex, gpl_data)
     new_names = {old_name: new_name
                  for old_name, new_name in gpl_data[[max_key, target_column]].values}
     assay_df.rename(columns=new_names, inplace=True)

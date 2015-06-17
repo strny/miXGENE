@@ -157,7 +157,7 @@ class FetchGSE(GenericBlock):
     def error_during_preprocess(self, exp, *args, **kwargs):
         exp.store_block(self)
 
-    def successful_preprocess(self, exp, es, ann, *args, **kwargs):
+    def successful_preprocess(self, exp, es, *args, **kwargs):
         """
             @type es: ExpressionSet
             @type ann: PlatformAnnotation

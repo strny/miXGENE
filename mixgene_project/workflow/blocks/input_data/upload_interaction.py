@@ -3,6 +3,7 @@ from environment.structures import BinaryInteraction
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, ParamField, InputType, FieldType, OutputBlockField
 from workflow.blocks.generic import GenericBlock
+from wrappers.input.utils import expand_geneset, expand_inters
 
 __author__ = 'pavel'
 
@@ -35,7 +36,7 @@ class UploadInteraction(GenericBlock):
         options={
             "inline_select_provider": True,
             "select_options": [
-                ["matrix", "Matrix"],
+                # ["matrix", "Matrix"],
                 ["pairs", "Pairs"],
                 ["pairs_diff", "Pairs - different units in interaction"],
                 ["triples", "Triples with values"],
@@ -75,13 +76,27 @@ class UploadInteraction(GenericBlock):
         sd = None
         if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
             # we have to find a shape of interaction matrix
+            features_1 = interaction_df[interaction_df.columns[0]].tolist()
+            features_2 = interaction_df[interaction_df.columns[1]].tolist()
+            interactions = []
+            if self.bi_data_type in ["triples", "triples_diff"]:
+                interactions = zip(features_1, features_2, interaction_df[interaction_df.columns[2]].tolist())
+            else:
+                interactions = zip(features_1, features_2, [1] * len(features_1))
+            new_inters = [expand_inters(inters_a, inters_b, value) for (inters_a, inters_b, value) in interactions]
+            new_inters = [item for sublist in new_inters for item in sublist] # flatten
+            features_1 = [a for [a, _, _] in new_inters]
+            features_2 = [b for [_, b, _] in new_inters]
+            values = [c for [_, _, c] in new_inters]
+            interaction_df = pd.DataFrame()
+            interaction_df[0] = features_1
+            interaction_df[1] = features_1
+            interaction_df[2] = values
             if self.bi_data_type in ["pairs", "triples"]:
-                features = list(set(interaction_df[interaction_df.columns[0]].tolist() + interaction_df[interaction_df.columns[1]].tolist()))
+                features = list(set(features_1 + features_2))
                 sd = pd.DataFrame(index=features, columns=features).to_sparse(fill_value=0)
             else:
-                features_1 = list(set(interaction_df[interaction_df.columns[0]].tolist()))
-                features_2 = list(set(interaction_df[interaction_df.columns[1]].tolist()))
-                sd = pd.DataFrame(index=features_1, columns=features_2).to_sparse(fill_value=0)
+                sd = pd.DataFrame(index=list(set(features_1)), columns=list(set(features_2))).to_sparse(fill_value=0)
             # optimization
             if self.bi_data_type in ["pairs", "pairs_diff"]:
                 for index, cols in interaction_df.iterrows():
