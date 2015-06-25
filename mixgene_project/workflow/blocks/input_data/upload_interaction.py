@@ -64,7 +64,6 @@ class UploadInteraction(GenericBlock):
     def move_to_exp(self, exp_id):
         interaction = self.get_out_var("interaction")
 
-
     def on_params_is_valid(self, exp, *args, **kwargs):
         # Convert to  BinaryInteraction
         sep = getattr(self, "csv_sep", " ")
@@ -92,30 +91,8 @@ class UploadInteraction(GenericBlock):
             interaction_df[0] = features_1
             interaction_df[1] = features_1
             interaction_df[2] = values
-            if self.bi_data_type in ["pairs", "triples"]:
-                features = list(set(features_1 + features_2))
-                sd = pd.DataFrame(index=features, columns=features).to_sparse(fill_value=0)
-            else:
-                sd = pd.DataFrame(index=list(set(features_1)), columns=list(set(features_2))).to_sparse(fill_value=0)
-            # optimization
-            if self.bi_data_type in ["pairs", "pairs_diff"]:
-                for index, cols in interaction_df.iterrows():
-                    sd[cols[1]][cols[0]] = 1
-            else:
-                for index, cols in interaction_df.iterrows():
-                    sd[cols[1]][cols[0]] = cols[3]
-            sd = sd.to_dense()
-            sd.reset_index(level=0, inplace=True)
-            # interaction_df = sd
-
         interaction = BinaryInteraction(exp.get_data_folder(), str(self.uuid))
-        if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
-            interaction.store_pairs(interaction_df)
-            interaction.store_matrix(sd)
-        else:
-            interaction.store_matrix(interaction_df)
-            # todo convert to pairs
-
+        interaction.store_pairs(interaction_df, self.bi_data_type)
         interaction.row_units = self.row_units
         interaction.col_units = self.col_units
         interaction.header = self.header

@@ -120,15 +120,17 @@ class PcaResult(GenericStoreStructure):
 class BinaryInteraction(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
         super(BinaryInteraction, self).__init__(*args, **kwargs)
-        self.storage = None
+        # self.storage = None
         self.storage_pairs = None
         self.row_units = ""
         self.col_units = ""
         self.header = False
+        self.bi_data_type = ""
 
-    def store_pairs(self, pairs):
+    def store_pairs(self, pairs, bi_data_type):
         if self.storage_pairs is None:
             self.storage_pairs = DataFrameStorage(self.form_filepath("interaction_pairs"))
+        self.bi_data_type = bi_data_type
         self.storage_pairs.store(pairs)
 
     def load_pairs(self):
@@ -137,16 +139,38 @@ class BinaryInteraction(GenericStoreStructure):
         return self.storage_pairs.load()
 
     def store_matrix(self, df):
-        if self.storage is None:
-            self.storage = DataFrameStorage(self.form_filepath("interaction"))
-        self.storage.store(df)
+        # deprecated
+        pass
+        # if self.storage is None:
+        #     self.storage = DataFrameStorage(self.form_filepath("interaction"))
+        # self.storage.store(df)
+
 
     def load_matrix(self):
         if self.storage is None:
             raise RuntimeError("Interaction data wasn't stored prior")
-        matrix = self.storage.load()
-        matrix.set_index(matrix.columns[0], inplace=True, drop=True)
-        return matrix
+        interaction_df = self.storage.load()
+        features_1 = interaction_df[0]
+        features_2 = interaction_df[1]
+        values = interaction_df[2]
+
+        if self.bi_data_type in ["pairs", "triples"]:
+            features = list(set(features_1 + features_2))
+            sd = pd.DataFrame(index=features, columns=features).to_sparse(fill_value=0)
+        else:
+            sd = pd.DataFrame(index=list(set(features_1)), columns=list(set(features_2))).to_sparse(fill_value=0)
+        # optimization
+        if self.bi_data_type in ["pairs", "pairs_diff"]:
+            for index, cols in interaction_df.iterrows():
+                sd[cols[1]][cols[0]] = 1
+        else:
+            for index, cols in interaction_df.iterrows():
+                sd[cols[1]][cols[0]] = cols[3]
+        sd = sd.to_dense()
+
+
+        # matrix.set_index(matrix.columns[0], inplace=True, drop=True)
+        return sd
 
 
 class Edges(GenericStoreStructure):

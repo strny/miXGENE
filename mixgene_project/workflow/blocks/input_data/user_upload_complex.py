@@ -27,6 +27,8 @@ def convert_ids(gpl_file, assay_df, data_type):
         for line in f_in:
             if line.startswith("#"):
                 parse = True
+            if line.startswith("<br>"):
+                parse = False
             if (not line.startswith("#")) and parse:
                 output.write(line)
     output.seek(0)
