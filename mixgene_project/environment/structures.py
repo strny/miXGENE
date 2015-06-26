@@ -396,6 +396,7 @@ class GmtStorage(object):
             gene_sets.genes[key] = expand_geneset(gene_sets.genes[key])
         return gene_sets
 
+    @staticmethod
     def read_inp(inp, sep):
         gene_sets = GS(dict(), dict())
         for line in inp:

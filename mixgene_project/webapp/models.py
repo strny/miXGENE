@@ -613,3 +613,4 @@ class ArbitraryUpload(models.Model):
     @property
     def url(self):
         return "/media" + self.data.path.replace(MEDIA_ROOT, '')
+

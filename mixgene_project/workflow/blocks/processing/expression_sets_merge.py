@@ -60,7 +60,7 @@ class MergeExpressionSets(GenericBlock):
     _es_2 = InputBlockField(name="es_2", title="Set 2", order_num=20,
                             required_data_type="ExpressionSet", required=True)
     _es_matrix_con = ParamField(
-        "es_matrix_con", title="Concatenation", order_num=30,
+        "_es_matrix_con", title="Concatenation", order_num=30,
         input_type=InputType.SELECT, field_type=FieldType.STR,
         init_val="CR",
         options={
@@ -79,13 +79,14 @@ class MergeExpressionSets(GenericBlock):
 
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
+        con = getattr(self, "_es_matrix_con", "CR")
         # import ipdb; ipdb.set_trace()
         self.celery_task = wrapper_task.s(
             merge_two_es,
             exp, self,
             es_1 = self.get_input_var("es_1"),
             es_2 = self.get_input_var("es_2"),
-            con = self._es_matrix_con,
+            con = con,
             base_filename="%s_merged" % self.uuid,
         )
         exp.store_block(self)

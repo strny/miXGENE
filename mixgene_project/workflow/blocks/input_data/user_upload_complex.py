@@ -38,12 +38,13 @@ def convert_ids(gpl_file, assay_df, data_type):
     # features of dataset
     columns_source = set(list(assay_df))
 
-    freqs = {c_t: len(set(gpl_data[c_t].values).intersection(columns_source))
+    freqs = {c_t: len(set(map(lambda x: str(x).lower(), gpl_data[c_t].values)).intersection(
+        map(lambda x: str(x).lower(), columns_source)))
             for c_t in columns_target}
     #find max key
     max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
     regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
-    if data_type=="mi_rna":
+    if data_type == "mi_rna":
         regex = "^(.*-mir)|(.*-.*-.*)"
     target_column = find_target_column(regex, gpl_data)
     new_names = {old_name: new_name
@@ -59,13 +60,14 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
+    df.set_index(df.columns[0], inplace=True)
+
     # if matrix is bad oriented, then do transposition
     if ori == "GxS":
         df = df.T
-        df.columns = df.iloc[0]
-        df = df.drop(df.index[0])
+        # df.columns = df.iloc[0]
+        # df = df.drop(df.index[0])
     # if isinstance(df.columns[0][0], basestring):
-    df.set_index(df.columns[0], inplace=True)
 
     gpl_file = None
     if platform:

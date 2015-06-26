@@ -26,16 +26,28 @@ def expand_inters(protein_refseq1, protein_refseq2, value):
             exp_inters.append([trans1, trans2, value])
     return exp_inters
 
-
+gene_cache = {}
 def expand_geneset(gene_set):
     mg = mygene.MyGeneInfo()
-    return frozenset().union(*[mg.query(str(gene), species='human', fields='refseq')['hits'][0]['refseq']['rna']
-                               for gene in gene_set])
+    out = []
+    for gene in gene_set:
+        if gene in gene_cache:
+            out.append(gene_cache[gene])
+        else:
+            exp = mg.query(str(gene), species='human', fields='refseq')['hits']
+            if len(exp) > 0:
+                try:
+                    out.append(exp[0]['refseq']['rna'])
+                    gene_cache[gene] = exp[0]['refseq']['rna']
+                except KeyError:
+                    pass
+    return frozenset().union(*out)
 
 
 def find_target_column(regex, gpl_data):
     columns_gpl = list(gpl_data)
-    freqs = {column: len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x), re.IGNORECASE), gpl_data[column].values[:1000])))
+    freqs = {column: len(filter(lambda x: x is not None,
+                                map(lambda x: re.match(regex, str(x), re.IGNORECASE), gpl_data[column].values[:1000])))
              for column in columns_gpl}
     max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
     return max_key

@@ -8,6 +8,7 @@ from environment.structures import TableResult
 
 import sys
 import traceback
+from django.conf import settings
 
 
 class GlobalTest(object):
@@ -33,12 +34,44 @@ class GlobalTest(object):
             @param pheno_class_column: Column name of target classes in phenotype table
             @type pheno_class_column: string or None
         """
+        if settings.CELERY_DEBUG:
+            import sys
+            sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+            import pydevd
+            pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+        src_gs = gene_sets.get_gs()
         GlobalTest.gt_init()
+        df = es.get_assay_data_frame()
+        cols = df.columns
 
-        dataset = com.convert_to_r_matrix(es.get_assay_data_frame())
+        # We must rename cols to be unique for R
+        out_genes = {}
+        out_cols = []
+        for i, g in enumerate(cols):
+            if g in out_genes:
+                new_g = g + '__' + str(i)
+                out_genes[g].append(new_g)
+                out_cols.append(new_g)
+            else:
+                out_genes[g] = [g]
+                out_cols.append(g)
+        df.columns = out_cols
+
+        dataset = com.convert_to_r_matrix(df)
         response = es.get_pheno_column_as_r_obj(pheno_class_column)
 
-        genes_in_es = es.get_assay_data_frame().index.tolist()
+        genes_in_es = df.columns
+
+        # We must appropriately rename genes in genesets
+        for k, gene_set in src_gs.genes.iteritems():
+            out_gs = []
+            for gene in gene_set:
+                if gene in out_genes:
+                    out_gs = out_gs + out_genes[g]
+                else:
+                    out_gs.append(g)
+            src_gs.genes[k] = out_gs
+
         gs_filtered = filter_gs_by_genes(gene_sets.get_gs(), genes_in_es)
 
         gt_instance = GlobalTest.gt(

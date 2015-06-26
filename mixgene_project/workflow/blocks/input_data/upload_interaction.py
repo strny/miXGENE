@@ -73,24 +73,24 @@ class UploadInteraction(GenericBlock):
             _header = None
         interaction_df = self.upload_interaction.get_as_data_frame(sep=sep, header=_header)
         sd = None
-        if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
-            # we have to find a shape of interaction matrix
-            features_1 = interaction_df[interaction_df.columns[0]].tolist()
-            features_2 = interaction_df[interaction_df.columns[1]].tolist()
-            interactions = []
-            if self.bi_data_type in ["triples", "triples_diff"]:
-                interactions = zip(features_1, features_2, interaction_df[interaction_df.columns[2]].tolist())
-            else:
-                interactions = zip(features_1, features_2, [1] * len(features_1))
-            new_inters = [expand_inters(inters_a, inters_b, value) for (inters_a, inters_b, value) in interactions]
-            new_inters = [item for sublist in new_inters for item in sublist] # flatten
-            features_1 = [a for [a, _, _] in new_inters]
-            features_2 = [b for [_, b, _] in new_inters]
-            values = [c for [_, _, c] in new_inters]
-            interaction_df = pd.DataFrame()
-            interaction_df[0] = features_1
-            interaction_df[1] = features_1
-            interaction_df[2] = values
+        # if self.bi_data_type in ["pairs", "triples", "pairs_diff", "triples_diff"]:
+        # we have to find a shape of interaction matrix
+        features_1 = interaction_df[interaction_df.columns[0]].tolist()
+        features_2 = interaction_df[interaction_df.columns[1]].tolist()
+        interactions = []
+        if self.bi_data_type in ["triples", "triples_diff"]:
+            interactions = zip(features_1, features_2, interaction_df[interaction_df.columns[2]].tolist())
+        else:
+            interactions = zip(features_1, features_2, [1] * len(features_1))
+        new_inters = [expand_inters(inters_a, inters_b, value) for (inters_a, inters_b, value) in interactions]
+        new_inters = [item for sublist in new_inters for item in sublist] # flatten
+        features_1 = [a for [a, _, _] in new_inters]
+        features_2 = [b for [_, b, _] in new_inters]
+        values = [c for [_, _, c] in new_inters]
+        interaction_df = pd.DataFrame()
+        interaction_df[0] = features_1
+        interaction_df[1] = features_2
+        interaction_df[2] = values
         interaction = BinaryInteraction(exp.get_data_folder(), str(self.uuid))
         interaction.store_pairs(interaction_df, self.bi_data_type)
         interaction.row_units = self.row_units
