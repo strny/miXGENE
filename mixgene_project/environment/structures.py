@@ -391,9 +391,18 @@ class GmtStorage(object):
     @staticmethod
     def convert_to_refseqs(gene_sets):
         from wrappers.input.utils import expand_geneset
+        from webapp.models import GEOTerm
+        import json
 
         for key in gene_sets.genes.keys():
-            gene_sets.genes[key] = expand_geneset(gene_sets.genes[key])
+            term, created = GEOTerm.objects.get_or_create(term_name=key)
+            if created:
+                genes = expand_geneset(gene_sets.genes[key])
+                term.term_genes = json.dumps(list(genes))
+                term.save()
+            else:
+                genes = set(json.loads(term.term_genes))
+            gene_sets.genes[key] = genes
         return gene_sets
 
     @staticmethod

@@ -614,3 +614,17 @@ class ArbitraryUpload(models.Model):
     def url(self):
         return "/media" + self.data.path.replace(MEDIA_ROOT, '')
 
+
+class GeneIdentifier(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class Refseq(models.Model):
+    gene_identifier_name = models.ForeignKey(GeneIdentifier)
+    refseq = models.CharField(max_length=128)
+
+
+class GEOTerm(models.Model):
+    term_name = models.CharField(max_length=512)
+    term_genes = models.TextField()
+

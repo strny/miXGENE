@@ -2,6 +2,7 @@ __author__ = 'pavel'
 
 import mygene
 import re
+from webapp.models import GeneIdentifier, Refseq, GEOTerm
 
 def expand_inters(protein_refseq1, protein_refseq2, value):
     """ Called for each original interaction
@@ -28,20 +29,44 @@ def expand_inters(protein_refseq1, protein_refseq2, value):
 
 gene_cache = {}
 def expand_geneset(gene_set):
+
     mg = mygene.MyGeneInfo()
-    out = []
-    for gene in gene_set:
+    out = set()
+    res = Refseq.objects.filter(gene_identifier_name__name__in=gene_set)
+
+    # out.append(res)
+    found_genes = set()
+    for refseq in res:
+        found_genes.add(refseq.gene_identifier_name.name)
+        out.add(refseq.refseq)
+        if refseq.gene_identifier_name.name in gene_cache:
+            gene_cache[refseq.gene_identifier_name.name].add(refseq.refseq)
+        else:
+            gene_cache[refseq.gene_identifier_name.name] = set([refseq.refseq])
+    for i, gene in enumerate(set(gene_set) - set(found_genes)):
         if gene in gene_cache:
-            out.append(gene_cache[gene])
+            out.add(gene_cache[gene])
         else:
             exp = mg.query(str(gene), species='human', fields='refseq')['hits']
             if len(exp) > 0:
                 try:
-                    out.append(exp[0]['refseq']['rna'])
-                    gene_cache[gene] = exp[0]['refseq']['rna']
+                    refseqs = exp[0]['refseq']['rna']
+                    gene_cache[gene] = set()
+                    if not isinstance(refseqs, basestring):
+                        for refseq in refseqs:
+                            entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
+                            entrez.refseq_set.create(refseq=refseq)
+                            gene_cache[gene].add(refseq)
+                            out.add(refseq)
+                    else:
+                        entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
+                        entrez.refseq_set.create(refseq=refseqs)
+                        gene_cache[gene].add(refseqs)
+                        out.add(refseq)
                 except KeyError:
                     pass
-    return frozenset().union(*out)
+    return out
+    # return frozenset().union(*out)
 
 
 def find_target_column(regex, gpl_data):
