@@ -35,8 +35,30 @@ def apply_ranking(
 
     R.r['source'](R_LIB_CUSTOM_PATH + '/ranking.Methods.r')
     func = R.r[ranking_name]
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     assay_df = es.get_assay_data_frame()
+    cols = assay_df.columns
+
+    # We must rename cols to be unique for R
+    out_genes = {}
+    out_cols = []
+    for i, g in enumerate(cols):
+        g = g.split('.')[0]
+        if g in out_genes:
+            new_g = g + '__' + str(i)
+            out_genes[g].append(new_g)
+            out_cols.append(new_g)
+        else:
+            out_genes[g] = [g]
+            out_cols.append(g)
+    assay_df.columns = out_cols
+    assay_df = assay_df.T
+
     x = com.convert_to_r_matrix(assay_df)
     y = es.get_pheno_column_as_r_obj(pheno_class_column)
     exp.log(block.uuid, "Computing ranking: `%s` options: `%s`" % (ranking_name, options))

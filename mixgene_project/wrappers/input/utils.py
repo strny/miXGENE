@@ -4,30 +4,61 @@ import mygene
 import re
 from webapp.models import GeneIdentifier, Refseq, GEOTerm
 
+
+gene_cache = {}
+
 def expand_inters(protein_refseq1, protein_refseq2, value):
     """ Called for each original interaction
         (protein_refseq1, protein_refseq2) and returns partial list of
         new interactions, which is used in the next call :-)
     """
-    exp_inters = []
     mg = mygene.MyGeneInfo()
-    exp_transcripts1 = mg.query(str(protein_refseq1), species='human', fields='refseq')['hits']
-    if len(exp_transcripts1) == 0:
-        exp_transcripts1 = [protein_refseq1]
+    res1 = Refseq.objects.filter(gene_identifier_name__name__in=[protein_refseq1])
+    res2 = Refseq.objects.filter(gene_identifier_name__name__in=[protein_refseq1])
+    exp_inters = []
+
+    for refseq in res1:
+        if refseq.gene_identifier_name.name in gene_cache:
+            gene_cache[refseq.gene_identifier_name.name].add(refseq.refseq)
+        else:
+            gene_cache[refseq.gene_identifier_name.name] = set([refseq.refseq])
+
+    for refseq in res2:
+        if refseq.gene_identifier_name.name in gene_cache:
+            gene_cache[refseq.gene_identifier_name.name].add(refseq.refseq)
+        else:
+            gene_cache[refseq.gene_identifier_name.name] = set([refseq.refseq])
+
+    if protein_refseq1 in gene_cache:
+        exp_transcripts1 = list(gene_cache[protein_refseq1])
     else:
-        exp_transcripts1 = exp_transcripts1[0]['refseq']['rna']
-    exp_transcripts2 = mg.query(str(protein_refseq2), species='human', fields='refseq')['hits']
-    if len(exp_transcripts2) == 0:
-        exp_transcripts2 = [protein_refseq2]
+        try:
+            exp_transcripts1 = mg.query(str(protein_refseq1), species='human', fields='refseq')['hits']
+            if len(exp_transcripts1) == 0:
+                exp_transcripts1 = [protein_refseq1]
+            else:
+                exp_transcripts1 = exp_transcripts1[0]['refseq']['rna']
+        except:
+            exp_transcripts1 = [protein_refseq1]
+
+    if protein_refseq2 in gene_cache:
+        exp_transcripts2 = list(gene_cache[protein_refseq2])
     else:
-        exp_transcripts2 = exp_transcripts2[0]['refseq']['rna']
+        try:
+            exp_transcripts2 = mg.query(str(protein_refseq2), species='human', fields='refseq')['hits']
+            if len(exp_transcripts2) == 0:
+                exp_transcripts2 = [protein_refseq2]
+            else:
+                exp_transcripts2 = exp_transcripts2[0]['refseq']['rna']
+        except:
+            exp_transcripts2 = [protein_refseq2]
 
     for trans1 in exp_transcripts1:
         for trans2 in exp_transcripts2:
             exp_inters.append([trans1, trans2, value])
     return exp_inters
 
-gene_cache = {}
+
 def expand_geneset(gene_set):
 
     mg = mygene.MyGeneInfo()

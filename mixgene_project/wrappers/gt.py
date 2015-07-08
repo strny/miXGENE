@@ -48,6 +48,7 @@ class GlobalTest(object):
         out_genes = {}
         out_cols = []
         for i, g in enumerate(cols):
+            g = g.split('.')[0]
             if g in out_genes:
                 new_g = g + '__' + str(i)
                 out_genes[g].append(new_g)
@@ -56,8 +57,6 @@ class GlobalTest(object):
                 out_genes[g] = [g]
                 out_cols.append(g)
         df.columns = out_cols
-
-
 
         genes_in_es = df.columns
 
@@ -73,7 +72,7 @@ class GlobalTest(object):
 
         gs_filtered = filter_gs_by_genes(src_gs, genes_in_es)
 
-        dataset = com.convert_to_r_matrix(df)
+        dataset = com.convert_to_r_matrix(df.T)
         response = es.get_pheno_column_as_r_obj(pheno_class_column)
 
         gt_instance = GlobalTest.gt(

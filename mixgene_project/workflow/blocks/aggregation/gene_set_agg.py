@@ -21,7 +21,7 @@ def do_gs_agg(
     result_es.store_pheno_data_frame(es.get_pheno_data_frame())
     gene_sets = gs.get_gs()
 
-    df = es.get_assay_data_frame()
+    df = es.get_assay_data_frame().T
 
     df_list = []
     df_index_set = set(df.index)
@@ -32,6 +32,7 @@ def do_gs_agg(
             sub_df = df.loc[fixed_gene_ids]
             if method == "mean":
                 row = sub_df.mean()
+            # TODO: median != mean
             if method == "median":
                 row = sub_df.mean()
 

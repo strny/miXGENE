@@ -23,15 +23,19 @@ def pattern_search(exp, block,
             mi_rna_es,
             gene2gene,
             miRNA2gene,
-            gene_platform,
-            miRNA_platform,
+            # gene_platform,
+            # miRNA_platform,
             radius,
             min_imp,
             metric,
             base_filename):
     """
-        @type es_1: ExpressionSet
-        @type es_2: ExpressionSet
+        @type m_rna_es: ExpressionSet
+        @type mi_rna_es: ExpressionSet
+        @type gene2gene: BinaryInteraction
+        @type miRNA2gene: BinaryInteraction
+        @type radius: int
+        @type min_imp: double
     """
     if settings.CELERY_DEBUG:
         import sys
@@ -40,13 +44,14 @@ def pattern_search(exp, block,
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     exp.log(block.uuid, "Initializing data...")
+    mData = m_rna_es.get_assay_data_frame()
     gene2gene = gene2gene.load_pairs()
+    gene_platform = list(mData.columns)
     gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
     if miRNA2gene is not None:
         miRNA2gene = miRNA2gene.load_matrix().T
         miRNA2gene = sp.coo_matrix(miRNA2gene.values)
 
-    mData = m_rna_es.get_assay_data_frame()
 
     if mi_rna_es is not None:
         miData = mi_rna_es.get_assay_data_frame()
@@ -55,8 +60,6 @@ def pattern_search(exp, block,
         nw = mergeNetworks(gene2gene, mir2gene)
     else:
         nw = gene2gene
-
-
     # data = mData.ix[1:]
     data = mData
     data.set_index(data.columns[0], inplace=True, drop=True)
@@ -65,7 +68,6 @@ def pattern_search(exp, block,
     pheno = m_rna_es.get_pheno_data_frame()
     classes = pheno['User_class'].values
     exp.log(block.uuid, "Data ready. Running Pattern Search")
-
 
     # inicializace objektu metric=metric,
     searcher = DifferentialPatternSearcher(nw, radius=radius, min_improve=min_imp,
@@ -113,17 +115,16 @@ class PatternSearch(GenericBlock):
                                  required_data_type="BinaryInteraction",
                                  required=False)
 
-    upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=32,
-                                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
+    # upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=32,
+    #                                        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
-    upload_mirna_platform = ParamField("upload_mirna_platform", title="miRNA platform", order_num=33,
-                                       input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
+    # upload_mirna_platform = ParamField("upload_mirna_platform", title="miRNA platform", order_num=33,
+    #                                    input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
     d = ParamField(name="d", order_num=70, title="d", input_type=InputType.TEXT, field_type=FieldType.INT,
                     init_val=2)
     min_imp = ParamField(name="min_imp", order_num=80, title="Minimal improvement", input_type=InputType.TEXT, field_type=FieldType.FLOAT,
                     init_val=0.06)
-
 
     _metric = ParamField(
         "metric", title="Metric", order_num=40,
@@ -150,17 +151,17 @@ class PatternSearch(GenericBlock):
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
         exp.log(self.uuid, "Execute called")
-        g_p = self.upload_gene2gene_platform.get_file()
-        m_p = None
-        if self.upload_mirna_platform is not None:
-            m_p = self.upload_mirna_platform.get_file()
-        with open(g_p.path) as f:
-            for line in f:
-                g_p = line.split(',')
-        if self.upload_mirna_platform is not None:
-            with open(m_p.path) as f:
-                for line in f:
-                    m_p = line.split(',')
+        # g_p = self.upload_gene2gene_platform.get_file()
+        # m_p = None
+        # if self.upload_mirna_platform is not None:
+        #     m_p = self.upload_mirna_platform.get_file()
+        # with open(g_p.path) as f:
+        #     for line in f:
+        #         g_p = line.split(',')
+        # if self.upload_mirna_platform is not None:
+        #     with open(m_p.path) as f:
+        #         for line in f:
+        #             m_p = line.split(',')
 
         self.celery_task = wrapper_task.s(
             pattern_search,
@@ -169,8 +170,8 @@ class PatternSearch(GenericBlock):
             mi_rna_es = self.get_input_var("miRNA"),
             gene2gene=self.get_input_var("gene2gene"),
             miRNA2gene=self.get_input_var("miRNA2gene"),
-            gene_platform=g_p,
-            miRNA_platform=m_p,
+            # gene_platform=g_p,
+            # miRNA_platform=m_p,
             radius=self.d,
             min_imp=self.min_imp,
             metric=self.get_input_var("metric"),
