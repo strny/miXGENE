@@ -1,5 +1,6 @@
 #!/bin/bash
 SESSION=$USER
+source ~/mixgene_env_2_7/bin/activate
 
 ### mysql
 # system
@@ -26,6 +27,7 @@ tmux send-keys "" C-m
 # Setup a Celery window
 tmux split-window -h
 tmux select-pane -t 0
+tmux send-keys "source ~/mixgene_env_2_7/bin/activate" C-m
 tmux send-keys "python mixgene_project/manage.py runserver 127.0.0.1:9431" C-m
 #tmux send-keys "cd mixgene_project/ && gunicorn -b 127.0.0.1:9431 mixgene.wsgi:application" C-m
 tmux split-window -v

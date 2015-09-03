@@ -6,6 +6,7 @@ from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, B
     InputType, OutputBlockField
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
 from operator import ge, gt, lt, le
+from django.conf import settings
 
 
 def cmp_func(direction):
@@ -31,6 +32,11 @@ def feature_selection_by_cut(
 
         @param cut_direction: either {"<", "<=", ">=", ">"}
     """
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     df = src_es.get_assay_data_frame()
     es = src_es.clone(base_filename)
@@ -40,7 +46,7 @@ def feature_selection_by_cut(
 
     selection = rank_df[cut_property]
     mask = cmp_func(cut_direction)(selection, threshold)
-    new_df = df[mask]
+    new_df = df[list(mask.select(lambda x: mask[x]).index)]
 
     es.store_assay_data_frame(new_df)
 

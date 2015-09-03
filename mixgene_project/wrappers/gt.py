@@ -9,7 +9,10 @@ from environment.structures import TableResult
 import sys
 import traceback
 from django.conf import settings
-
+from converters.gene_set_tools import preprocess_df_gs
+import logging
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 class GlobalTest(object):
     gt = None
@@ -40,49 +43,30 @@ class GlobalTest(object):
             import pydevd
             pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
         src_gs = gene_sets.get_gs()
-        GlobalTest.gt_init()
+        # GlobalTest.gt_init()
         df = es.get_assay_data_frame()
-        cols = df.columns
 
-        # We must rename cols to be unique for R
-        out_genes = {}
-        out_cols = []
-        for i, g in enumerate(cols):
-            g = g.split('.')[0]
-            if g in out_genes:
-                new_g = g + '__' + str(i)
-                out_genes[g].append(new_g)
-                out_cols.append(new_g)
-            else:
-                out_genes[g] = [g]
-                out_cols.append(g)
-        df.columns = out_cols
-
-        genes_in_es = df.columns
-
-        # We must appropriately rename genes in genesets
-        for k, gene_set in src_gs.genes.iteritems():
-            out_gs = []
-            for gene in gene_set:
-                if gene in out_genes:
-                    out_gs = out_gs + out_genes[gene]
-                else:
-                    out_gs.append(gene)
-            src_gs.genes[k] = out_gs
-
-        gs_filtered = filter_gs_by_genes(src_gs, genes_in_es)
+        df, gs_filtered = preprocess_df_gs(df, src_gs)
 
         dataset = com.convert_to_r_matrix(df.T)
         response = es.get_pheno_column_as_r_obj(pheno_class_column)
 
-        gt_instance = GlobalTest.gt(
-            response,
-            R.r['t'](dataset),
-            subsets=gs_filtered.to_r_obj(),
-            model=model,
-            permutations=permutations,
-        )
-
+        ds_r = R.r['t'](dataset)
+        gs_r = gs_filtered.to_r_obj()
+        try:
+            R.r['library']("globaltest")
+            gt = R.r['gt']
+            gt_instance = gt(
+                response,
+                ds_r,
+                subsets=gs_r,
+              #  model=model,
+              #  permutations=permutations
+            )
+        except:
+            import sys
+            log.error("Unexpected error: %s" % sys.exc_info()[0])
+            raise
         result = gt_instance.do_slot('result')
         result_df = com.convert_robj(result)
         return result_df

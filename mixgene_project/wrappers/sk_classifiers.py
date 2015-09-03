@@ -48,11 +48,11 @@ def apply_classifier(
         @type exp: Experiment
         @type block: GenericBlock
     """
-    # if settings.CELERY_DEBUG:
-    #     import sys
-    #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    #     import pydevd
-    #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     if not classifier_options:
         classifier_options = {}
@@ -60,15 +60,18 @@ def apply_classifier(
         fit_options = {}
 
     target_class_column = train_es.pheno_metadata["user_class_title"]
+    tr_es = train_es.get_assay_data_frame()
+    cols = tr_es.columns
 
+    te_es = test_es.get_assay_data_frame()[list(cols)]
 
     # Unpack data
-    x_train = train_es.get_assay_data_frame().as_matrix().transpose()
-    # x_train = train_es.get_assay_data_frame().as_matrix()
+    x_train = tr_es.as_matrix()
+    # x_train = train_es.get_assay_data_frame().as_matrix().transpose()
     y_train = train_es.get_pheno_data_frame()[target_class_column].as_matrix()
 
-    x_test = test_es.get_assay_data_frame().as_matrix().transpose()
-    # x_test = test_es.get_assay_data_frame().as_matrix()
+    x_test = te_es.as_matrix()
+    # x_test = test_es.get_assay_data_frame().as_matrix().transpose()
     y_test = test_es.get_pheno_data_frame()[target_class_column].as_matrix()
 
     # Unfortunately svm can't operate with string labels as a target classes
@@ -114,11 +117,6 @@ def apply_classifier(
 
 def get_classifier(fabric, classifier_options, name, block):
     log.debug("Begin to get the classifier.")
-    if settings.CELERY_DEBUG:
-        import sys
-        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-        import pydevd
-        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
     scope = block.get_scope()
     log.debug("Getting scope.")
     scope.load()

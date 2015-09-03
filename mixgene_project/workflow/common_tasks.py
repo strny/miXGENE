@@ -153,7 +153,7 @@ def preprocess_soft(exp, block, source_file):
     ]))
 
     expression_set = ExpressionSet(exp.get_data_folder(), "%s_es" % block.uuid)
-    expression_set.store_assay_data_frame(assay_df)
+    expression_set.store_assay_data_frame(assay_df.T)
 
     raw_factors = [soft[i].entity_attributes
                for i in range(3, len(soft))]
@@ -255,6 +255,11 @@ def generate_cv_folds(
     ), repeats_num)):
         cell = {}
         for input_name, output_names in inner_output_es_names_map.iteritems():
+            # if settings.CELERY_DEBUG:
+            #     import sys
+            #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+            #     import pydevd
+            #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
             es_train_name, es_test_name = output_names
             es = es_dict[input_name]
             assay_df = es.get_assay_data_frame().T
@@ -266,12 +271,12 @@ def generate_cv_folds(
 
             train_es = es.clone("%s_%s_train_%s" % (es_0.base_filename, input_name, i))
             train_es.base_dir = exp.get_data_folder()
-            train_es.store_assay_data_frame(assay_df[train_idx])
+            train_es.store_assay_data_frame(assay_df[train_idx].T)
             train_es.store_pheno_data_frame(masked_pheno_df.iloc[train_idx])
 
             test_es = es.clone("%s_%s_test_%s" % (es_0.base_filename, input_name, i))
             test_es.base_dir = exp.get_data_folder()
-            test_es.store_assay_data_frame(assay_df[test_idx])
+            test_es.store_assay_data_frame(assay_df[test_idx].T)
             test_es.store_pheno_data_frame(masked_pheno_df.iloc[test_idx])
 
             cell[es_train_name] = train_es

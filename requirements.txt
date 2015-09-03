@@ -35,3 +35,4 @@ ipython==1.1.0
 amqp==1.4.4
 anyjson==0.3.3
 mygene==2.2.0
+nimfa==1.1

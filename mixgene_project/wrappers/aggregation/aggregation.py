@@ -4,8 +4,12 @@ from celery import task
 
 import numpy as np
 import pandas as pd
+from sklearn.decomposition import PCA
+
+from converters.gene_set_tools import preprocess_df_gs
 
 from pandas import DataFrame, Series, Index
+from django.conf import settings
 
 # load csv data
 # mRNA
@@ -31,7 +35,7 @@ def aggregation_task(exp, block,
         @type interaction_matrix: BinaryInteraction
 
     """
-
+    agg_func = svd_agg
     if mode == "SVD":
         agg_func = svd_agg
     elif mode == "SUB":
@@ -126,6 +130,101 @@ def svd_agg_train(m_rna, mi_rna, targets_matrix, hide_columns=Index([])):
         new_rep.index = aggregate_data.index
         aggregate_data.ix[:, mRNA[0]] = new_rep
     return aggregate_data
+
+
+#@task(name="wrappers.aggregation.aggregation.pca_agg_task")
+def pca_agg_task(exp, block,
+                     es, gene_sets,
+                     base_filename,
+    ):
+    """
+        @type es: ExpressionSet
+        @type gene_sets: GeneSets
+
+    """
+    df = es.get_assay_data_frame()
+    src_gs = gene_sets.get_gs()
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    df, src_gs = preprocess_df_gs(df, src_gs)
+
+    result_df = pca_agg(df, src_gs.genes)
+    result = es.clone(base_filename)
+    result.store_assay_data_frame(result_df)
+    result.store_pheno_data_frame(es.get_pheno_data_frame())
+    return [result], {}
+
+#@task(name="wrappers.aggregation.aggregation.pca_agg_task_cv")
+def pca_agg_task_cv(exp, block,
+                     train_es, test_es, gene_sets,
+                     base_filename,
+    ):
+    """
+        @type train_es, test_es: ExpressionSet
+        @type gene_sets: GeneSets
+
+    """
+    df_train = train_es.get_assay_data_frame()
+    df_test = test_es.get_assay_data_frame()
+    src_gs = gene_sets.get_gs()
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    df_train, src_gs_train = preprocess_df_gs(df_train, src_gs)
+    df_test, src_gs_test = preprocess_df_gs(df_test, src_gs)
+
+    result_df_train, result_df_test = pca_agg_cv(df_train, df_test, src_gs_train.genes)
+
+    result_train = train_es.clone(base_filename + "_train")
+    result_train.store_assay_data_frame(result_df_train)
+    result_train.store_pheno_data_frame(train_es.get_pheno_data_frame())
+
+    result_test = test_es.clone(base_filename + "_test")
+    result_test.store_assay_data_frame(result_df_test)
+    result_test.store_pheno_data_frame(test_es.get_pheno_data_frame())
+
+    return [result_train, result_test], {}
+
+def pca_agg_cv(train_data, test_data, gene_sets):
+    """
+    train_data      DataFrame
+    test_data       DataFrame
+    gene_sets       dict of term: set
+        Output
+    trans_train_data    DataFrame
+    trans_test_data     DataFrame
+    """
+    pca = PCA(n_components=1)
+    trans_train = dict()
+    trans_test = dict()
+    for term in gene_sets.keys():
+        trans_train.update({term: pca.fit_transform(train_data[list(gene_sets[term])].values).T[0]})
+        trans_test.update({term: pca.fit_transform(test_data[list(gene_sets[term])].values).T[0]})
+
+    trans_train_data = pd.DataFrame(trans_train, columns=gene_sets.keys(), index=train_data.index)
+    trans_test_data = pd.DataFrame(trans_test, columns=gene_sets.keys(), index=test_data.index)
+
+    return trans_train_data, trans_test_data
+
+from converters.gene_set_tools import filter_gs_by_genes
+
+def pca_agg(df, gene_sets):
+    """
+    df       DataFrame
+    gene_sets       dict of term: set
+        Output DataFrame
+    """
+    pca = PCA(n_components=1)
+    trans = dict()
+    for term in gene_sets.keys():
+        trans.update({term: pca.fit_transform(df[list(gene_sets[term])].values).T[0]})
+    trans_df = pd.DataFrame(trans, columns=gene_sets.keys(), index=df.index)
+    return trans_df
 
 
 # print(sub_agg(m_rna, mi_rna, targets_matrix))

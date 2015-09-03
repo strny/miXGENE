@@ -52,7 +52,7 @@ class PcaVisualize(GenericBlock):
     ])
 
     def __init__(self, *args, **kwargs):
-        super(PcaVisualize, self).__init__("PCA visualise", *args, **kwargs)
+        super(PcaVisualize, self).__init__(*args, **kwargs)
 
     def on_params_is_valid(self, exp, *args, **kwargs):
         super(PcaVisualize, self).on_params_is_valid(exp, *args, **kwargs)

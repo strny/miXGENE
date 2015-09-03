@@ -11,6 +11,38 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 
+def preprocess_df_gs(df, src_gs):
+    cols = df.columns
+
+    # We must rename cols to be unique for R
+    out_genes = {}
+    out_cols = []
+    for i, g in enumerate(cols):
+        g = g.split('.')[0]
+        if g in out_genes:
+            new_g = g + '__' + str(i)
+            out_genes[g].append(new_g)
+            out_cols.append(new_g)
+        else:
+            out_genes[g] = [g]
+            out_cols.append(g)
+    df.columns = out_cols
+
+    genes_in_es = df.columns
+
+    # We must appropriately rename genes in genesets
+    for k, gene_set in src_gs.genes.iteritems():
+        out_gs = []
+        for gene in gene_set:
+            if gene in out_genes:
+                out_gs = out_gs + out_genes[gene]
+            else:
+                out_gs.append(gene)
+        src_gs.genes[k] = out_gs
+
+    gs_filtered = filter_gs_by_genes(src_gs, genes_in_es)
+    return df, gs_filtered
+
 def map_gene_sets_to_probes(exp, block,
                             base_dir, base_filename, ann_gene_sets, src_gene_sets):
     """

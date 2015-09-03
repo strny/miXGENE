@@ -7,6 +7,7 @@ from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
     OutputBlockField
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
+from wrappers.aggregation.aggregation import pca_agg_task
 
 
 def do_gs_agg(
@@ -17,6 +18,9 @@ def do_gs_agg(
     """
         @type es: ExpressionSet
     """
+    if method == "pca":
+        return pca_agg_task(exp, block, es, gs, base_filename)
+
     result_es = es.clone(base_filename)
     result_es.store_pheno_data_frame(es.get_pheno_data_frame())
     gene_sets = gs.get_gs()
@@ -73,7 +77,8 @@ class GeneSetAgg(GenericBlock):
             "inline_select_provider": True,
             "select_options": [
                 ["mean", "Mean"],
-                ["media", "Median"]
+                ["median", "Median"],
+                ["pca", "PCA"]
             ]
         }
     )
