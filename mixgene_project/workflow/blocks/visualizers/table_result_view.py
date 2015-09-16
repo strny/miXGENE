@@ -13,7 +13,8 @@ from webapp.tasks import wrapper_task
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField, ActionsList, ActionRecord, \
     InputBlockField
-from workflow.blocks.generic import GenericBlock
+from workflow.blocks.generic import GenericBlock, execute_block_actions_list
+
 from django.core.urlresolvers import reverse
 
 log = logging.getLogger(__name__)

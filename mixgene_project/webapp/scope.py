@@ -174,7 +174,7 @@ class ScopeRunner(object):
                 block.do_action("reset_execution", self.exp)
 
             if block.get_exec_status() == "ready" and \
-                    self.is_block_inputs_are_satisfied(block_uuid, blocks_dict):
+                    self.is_block_inputs_are_satisfied(block_uuid, blocks_dict) and block.is_block_supports_auto_execution:
                 blocks_to_execute.append(block)
             if block.get_exec_status() == "working" and \
                     self.is_block_inputs_are_satisfied(block_uuid, blocks_dict):

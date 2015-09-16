@@ -101,7 +101,6 @@ def gene_low_val_filter(expr_data, q = 60):
     q:          given percetage for the percentile"""
     expr_data = expr_data.copy()
     perval = np.percentile(expr_data, q)
-    #
     index_lowVal = expr_data <= perval
     index_remove =  index_lowVal.apply(lambda x: x.all(), axis=0)
     return expr_data[expr_data.columns[~index_remove]]
@@ -112,7 +111,6 @@ def gene_var_filter(expr_data, q = 30):
     than the percentile specified by another cutoff (30% is used here)
 
     * We expect samples in rows and features in columns\\
-
     * q given percetage for the percentile"""
     expr_data = expr_data.copy()
     data_var = expr_data.apply(lambda x: np.var(x), axis = 0)

@@ -204,7 +204,7 @@ def pca_agg_cv(train_data, test_data, gene_sets):
     trans_test = dict()
     for term in gene_sets.keys():
         trans_train.update({term: pca.fit_transform(train_data[list(gene_sets[term])].values).T[0]})
-        trans_test.update({term: pca.fit_transform(test_data[list(gene_sets[term])].values).T[0]})
+        trans_test.update({term: pca.transform(test_data[list(gene_sets[term])].values).T[0]})
 
     trans_train_data = pd.DataFrame(trans_train, columns=gene_sets.keys(), index=train_data.index)
     trans_test_data = pd.DataFrame(trans_test, columns=gene_sets.keys(), index=test_data.index)

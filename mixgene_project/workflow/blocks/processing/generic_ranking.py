@@ -22,6 +22,7 @@ log.setLevel(logging.DEBUG)
 
 R_LIB_CUSTOM_PATH = settings.R_LIB_CUSTOM_PATH
 
+
 def apply_ranking(
         exp, block,
         es, ranking_name,
