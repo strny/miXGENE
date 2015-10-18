@@ -92,7 +92,7 @@ def pattern_search(exp, block,
 
 class PatternSearch(GenericBlock):
     block_base_name = "PattSearch"
-    name = "Pattern search"
+    name = "Pattern Search"
     block_group = GroupType.PATTERN_SEARCH
 
     is_block_supports_auto_execution = True
@@ -151,17 +151,6 @@ class PatternSearch(GenericBlock):
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
         exp.log(self.uuid, "Execute called")
-        # g_p = self.upload_gene2gene_platform.get_file()
-        # m_p = None
-        # if self.upload_mirna_platform is not None:
-        #     m_p = self.upload_mirna_platform.get_file()
-        # with open(g_p.path) as f:
-        #     for line in f:
-        #         g_p = line.split(',')
-        # if self.upload_mirna_platform is not None:
-        #     with open(m_p.path) as f:
-        #         for line in f:
-        #             m_p = line.split(',')
 
         self.celery_task = wrapper_task.s(
             pattern_search,
@@ -170,8 +159,6 @@ class PatternSearch(GenericBlock):
             mi_rna_es = self.get_input_var("miRNA"),
             gene2gene=self.get_input_var("gene2gene"),
             miRNA2gene=self.get_input_var("miRNA2gene"),
-            # gene_platform=g_p,
-            # miRNA_platform=m_p,
             radius=self.d,
             min_imp=self.min_imp,
             metric=self.get_input_var("metric"),

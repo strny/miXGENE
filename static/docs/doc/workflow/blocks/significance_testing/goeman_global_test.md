@@ -7,8 +7,8 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
-* gs [[GeneSets](../../../data_types.html#genesets)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *gs [[GeneSets](../../../data_types.html#genesets)]*
 
 ## Parameters
 
@@ -16,7 +16,7 @@
 
 ## Outputs
 
-* result [[TableResult](../../../data_types.html#tableresult)]
+* *result [[TableResult](../../../data_types.html#tableresult)]*
 
 ## Description
 

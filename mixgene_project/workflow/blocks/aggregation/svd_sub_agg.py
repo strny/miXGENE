@@ -11,7 +11,7 @@ from wrappers.aggregation.aggregation import aggregation_task
 
 class SvdSubAgg(GenericBlock):
     is_abstract = True
-    block_group = GroupType.PROCESSING
+    block_group = GroupType.AGGREGATION
 
     is_block_supports_auto_execution = True
 
@@ -67,11 +67,11 @@ class SvdSubAgg(GenericBlock):
 
 class SubAggregation(SvdSubAgg):
     block_base_name = "SUB_AGG"
-    name = "Subtractive aggregation"
+    name = "Subtractive miRNA-aggregation"
     mode = "SUB"
 
 
 class SvdAggregation(SvdSubAgg):
     block_base_name = "SVD_AGG"
-    name = "Svd aggregation"
+    name = "SVD-based miRNA-aggregation"
     mode = "SVD"

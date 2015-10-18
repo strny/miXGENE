@@ -55,7 +55,7 @@ def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map):
 
 class MultiFeature(UniformMetaBlock):
     block_base_name = "MULTI_FEATURE"
-    name = "Multi feature validation"
+    name = "Multi Feature Validation"
 
     _mf_block_actions = ActionsList([
         ActionRecord("on_feature_selection_updated", ["valid_params", "ready", "done"], "ready"),

@@ -50,8 +50,8 @@ def do_gs_agg(
 
 class GeneSetAgg(GenericBlock):
     block_base_name = "GENE_SET_AGG"
-    name = "Gene sets aggregation"
-    block_group = GroupType.PROCESSING
+    name = "Gene Sets Aggregation"
+    block_group = GroupType.AGGREGATION
 
     is_block_supports_auto_execution = True
 

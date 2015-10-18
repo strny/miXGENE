@@ -7,15 +7,15 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Threshold
+* *Threshold* - the minimum intensity value of the basis matrix which determines a feature as belonging to the respective module (factor)
 
 ## Outputs
 
-* comodule_set[[ComoduleSet](../../../data_types.html#comoduleset)]
+* *comodule_set[[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Description
 

@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* Iterator cell field
+* *Iterator cell field*
 
 ## Parameters
 
@@ -15,7 +15,7 @@
 
 ## Outputs
 
-* results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]
+* *results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]*
 
 ## Description
 

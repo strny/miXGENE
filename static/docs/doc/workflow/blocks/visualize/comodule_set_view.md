@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* cs [[ComoduleSet](../../../data_types.html#comoduleset)]
+* *cs [[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Parameters
 

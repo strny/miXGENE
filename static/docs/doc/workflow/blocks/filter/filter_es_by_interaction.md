@@ -7,9 +7,9 @@
 
 ## Inputs
 
-* mRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* miRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* interaction [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *mRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *miRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *interaction [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
@@ -17,7 +17,8 @@
 
 ## Outputs
 
-* mi_rna_filtered_es[[ExpressionSet](../../../data_types.html#expressionset)] m_rna_filtered_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *mi_rna_filtered_es[[ExpressionSet](../../../data_types.html#expressionset)]*
+* *m_rna_filtered_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

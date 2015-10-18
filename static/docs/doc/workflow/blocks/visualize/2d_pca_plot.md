@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 

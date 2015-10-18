@@ -8,11 +8,11 @@ __author__ = 'pavel'
 
 
 class ZScoreBlock(GenericBlock):
-    block_base_name = "ZSCORE_FILTER"
-    name = "z-score"
+    block_base_name = "ZSCORE_NORM"
+    name = "Z-score Normalization"
 
     is_abstract = False
-    block_group = GroupType.FILTER
+    block_group = GroupType.NORMALIZATION
 
     is_block_supports_auto_execution = True
 

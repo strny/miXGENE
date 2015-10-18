@@ -11,16 +11,16 @@
 
 ## Parameters
 
-* Expression sets
-* Matrices orientation
-* Platform ID
-* Phenotypes
-* CSV separator symbol
-* Expression Set Feature Type
+* *Expression sets* - expression data-files
+* *Matrices orientation
+* *Platform ID* - NCBI platform identidfier
+* *Phenotypes* - phenotype data-file
+* *CSV separator symbol* - data entry delimiter
+* *Expression Set Feature Type
 
 ## Outputs
 
-* results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]
+* *results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]*
 
 ## Description
 

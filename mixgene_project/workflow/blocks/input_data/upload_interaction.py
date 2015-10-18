@@ -11,7 +11,7 @@ __author__ = 'pavel'
 class UploadInteraction(GenericBlock):
     block_base_name = "GENE_INTERACTION"
     block_group = GroupType.INPUT_DATA
-    name = "Upload gene interaction"
+    name = "Upload Gene Interaction"
 
     _block_actions = ActionsList([
         ActionRecord("save_params", ["created", "valid_params", "done", "ready"], "validating_params",

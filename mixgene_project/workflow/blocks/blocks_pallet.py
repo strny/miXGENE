@@ -21,11 +21,17 @@ def register_block(code_name, human_title, group, cls):
 
 
 class GroupType(object):
-    INPUT_DATA = "Input data"
-    META_PLUGIN = "Meta block"
-    VISUALIZE = "Visualize"
-    CLASSIFIER = "Classifier"
-    PROCESSING = "Data processing"
-    PATTERN_SEARCH = "Pattern search"
-    SNMNMF = "SNMNMF"
-    FILTER = "Filter"
+    INPUT_DATA = "01 Input data"
+    META_PLUGIN = "02 Meta block"
+    PROCESSING = "03 Data processing"
+    AGGREGATION = "04 Feature Aggregation"
+    TESTING = "05 Significance Testing"
+    NORMALIZATION = "06 Data Normalization"
+    FILTER = "07 Filter"
+    PATTERN_SEARCH = "08 Pattern search"
+    SNMNMF = "09 SNMNMF"
+    VISUALIZE = "10 Visualize"
+    CLASSIFIER = "11 Classifier"
+
+
+

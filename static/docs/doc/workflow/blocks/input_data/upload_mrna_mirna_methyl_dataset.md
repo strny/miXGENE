@@ -11,27 +11,30 @@
 
 ## Parameters
 
-* mRNA expression
-* Platform ID
-* Working unit [used when platform is unknown]
-* Matrix orientation
-* CSV separator symbol
-* μRNA expression
-* Platform ID
-* Working unit [used when platform is unknown]
-* Matrix orientation
-* CSV separator symbol
-* Methylation Expression
-* Platform ID
-* Working unit [used when platform is unknown]
-* Matrix orientation
-* CSV separator symbol
+* *mRNA expression* - mRNA expression data-file
+* *Platform ID* - NCBI platform identifier
+* *Working unit* -  [used when platform is unknown]
+* *Matrix orientation* - whether to consider the rows as samples and columns as features\
+* *or vice versa
+* *CSV separator symbol* - data entry delimiter
+* *μRNA expression* - miRNA expression data-file
+* *Platform ID* - NCBI platform identifier
+* *Working unit * - [used when platform is unknown]
+* *Matrix orientation* - whether to consider the rows as samples and columns as features\
+* *or vice versa
+* *CSV separator symboldata entry delimiter
+* *Methylation Expression* - methylation data-file
+* *Platform ID* - NCBI platform identifier
+* *Working unit* -  [used when platform is unknown]
+* *Matrix orientation* - whether to consider the rows as samples and columns as features\
+* *or vice versa
+* *CSV separator symbol* - data entry delimiter
 
 ## Outputs
 
-* mi_rna_es[[ExpressionSet](../../../data_types.html#expressionset)]
-* m_rna_es[[ExpressionSet](../../../data_types.html#expressionset)]
-* methyl_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *mi_rna_es[[ExpressionSet](../../../data_types.html#expressionset)]*
+* *m_rna_es[[ExpressionSet](../../../data_types.html#expressionset)]*
+* *methyl_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

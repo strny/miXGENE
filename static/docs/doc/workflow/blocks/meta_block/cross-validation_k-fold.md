@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* New input field [[ExpressionSet](../../../data_types.html#expressionset)]
+* *New input field [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Folds number
-* Repeats number
+* *Folds number* - the number of disjoint subsets the data are split into
+* *Repeats number* - the number cross-validation runs on differently splitted data
 
 ## Outputs
 
-* results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]
+* *results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]*
 
 ## Description
 

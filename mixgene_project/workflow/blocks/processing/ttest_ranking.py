@@ -5,7 +5,7 @@ __author__ = 'pavel'
 
 class TTestRanking(GenericRankingBlock):
     block_base_name = "TTEST_RANK"
-    name = "TTest ranking"
+    name = "Ranking"
 
     def __init__(self, *args, **kwargs):
         super(TTestRanking, self).__init__(*args, **kwargs)

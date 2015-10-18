@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* gs [[GeneSets](../../../data_types.html#genesets)]
-* cs [[ComoduleSet](../../../data_types.html#comoduleset)]
+* *gs [[GeneSets](../../../data_types.html#genesets)]*
+* *cs [[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Parameters
 
-* Enrichment threshold
+* *Enrichment threshold* - determines the specificity of a commodule to the particular gene set
 
 ## Outputs
 
-* dictionary_set[[DictionarySet](../../../data_types.html#dictionaryset)]
+* *dictionary_set[[DictionarySet](../../../data_types.html#dictionaryset)]*
 
 ## Description
 

@@ -42,7 +42,7 @@ def merge_two_es(exp, block,
 
 class MergeExpressionSets(GenericBlock):
     block_base_name = "MergeES"
-    name = "Merge ES by concatenation"
+    name = "Concatenate Expression"
     block_group = GroupType.PROCESSING
 
     is_block_supports_auto_execution = True

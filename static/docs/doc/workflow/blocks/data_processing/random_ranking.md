@@ -7,15 +7,15 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Consider only best
+* *Consider only best* - crops only the N best features when intending to select only N features
 
 ## Outputs
 
-* result [[TableResult](../../../data_types.html#tableresult)]
+* *result [[TableResult](../../../data_types.html#tableresult)]*
 
 ## Description
 

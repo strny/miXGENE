@@ -11,13 +11,13 @@
 
 ## Parameters
 
-* Gene sets in .gm format
-* Set units
-* Gene units
+* *Gene sets in .gm format* - user defined gene-set file
+* *Set units* - 
+* *Gene units* - gene identifier nomenclature
 
 ## Outputs
 
-* gene_sets[[GeneSets](../../../data_types.html#genesets)]
+* *gene_sets[[GeneSets](../../../data_types.html#genesets)]*
 
 ## Description
 

@@ -53,7 +53,7 @@ class ThresholdBlock(GenericBlock):
     name = "Threshold"
 
     is_abstract = False
-    block_group = GroupType.FILTER
+    block_group = GroupType.SNMNMF
 
     is_block_supports_auto_execution = True
 

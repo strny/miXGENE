@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *4*
 
 ## Parameters
 
@@ -15,7 +15,7 @@
 
 ## Outputs
 
-* flt_quantile_norm_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *flt_quantile_norm_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

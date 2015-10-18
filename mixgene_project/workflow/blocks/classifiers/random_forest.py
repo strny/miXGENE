@@ -6,7 +6,7 @@ from workflow.blocks.fields import InputBlockField, ParamField, InputType, Field
 
 class RandomForest(GenericClassifier):
     block_base_name = "RND_FOREST"
-    name = "Random forest"
+    name = "Random Forest"
 
     classifier_name = "random_forest"
 

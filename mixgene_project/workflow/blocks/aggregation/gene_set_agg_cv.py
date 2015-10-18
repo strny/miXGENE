@@ -9,11 +9,11 @@ from workflow.blocks.generic import GenericBlock, execute_block_actions_list
 from wrappers.aggregation.aggregation import pca_agg_task_cv
 
 
-class PCAAgg(GenericBlock):
+class GeneSetAggCV(GenericBlock):
 
-    block_group = GroupType.PROCESSING
-    block_base_name = "PCA_AGG_CV"
-    name = "PCA aggregation for CV"
+    block_group = GroupType.AGGREGATION
+    block_base_name = "CV_GS_A"
+    name = "CV Gene Sets Aggregation"
     is_block_supports_auto_execution = True
 
     _block_actions = ActionsList([
@@ -32,12 +32,26 @@ class PCAAgg(GenericBlock):
     _input_gs = InputBlockField(name="gs", order_num=30,
                                 required_data_type="GeneSets", required=True)
 
+    agg_method = ParamField(
+        "agg_method", title="Aggregate method", order_num=50,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="mean",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["mean", "Mean"],
+                ["median", "Median"],
+                ["pca", "PCA"]
+            ]
+        }
+    )
+
     out_train_es = OutputBlockField(name="out_train_es", provided_data_type="ExpressionSet")
     out_test_es = OutputBlockField(name="out_test_es", provided_data_type="ExpressionSet")
 
 
     def __init__(self, *args, **kwargs):
-        super(PCAAgg, self).__init__(*args, **kwargs)
+        super(GeneSetAggCV, self).__init__(*args, **kwargs)
         self.celery_task = None
 
     def execute(self, exp, *args, **kwargs):

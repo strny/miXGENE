@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
-* gs [[GeneSets](../../../data_types.html#genesets)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *gs [[GeneSets](../../../data_types.html#genesets)]*
 
 ## Parameters
 
-* Aggregate method
+* *Aggregate method* - statistic for constructing the metafeatures
 
 ## Outputs
 
-* agg_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *agg_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

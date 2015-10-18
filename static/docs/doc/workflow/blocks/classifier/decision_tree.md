@@ -7,19 +7,19 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* The function to measure the quality of a split
-* The maximum depth of the tree
-* The minimum number of samples to split an internal node
-* The minimum number of samples to be at a leaf node
+* *The function to measure the quality of a splitclass-correlation statistic
+* *The maximum depth of the tree* - phenotype-correlation statistic
+* *The minimum number of samples to split an internal node* - determines how much to shatter the data
+* *The minimum number of samples to be at a leaf node* - determines how much to shatter the data
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

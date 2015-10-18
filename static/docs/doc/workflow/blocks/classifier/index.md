@@ -6,11 +6,11 @@
 
 ## Available Blocks
 
-* [NCF classifier](ncf_classifier.html)
-* [Decision tree](decision_tree.html)
-* [Gaussian Naive Bayes](gaussian_naive_bayes.html)
-* [Kernel SVM classifier](kernel_svm_classifier.html)
-* [KNN classifier](knn_classifier.html)
-* [Linear SVM classifier](linear_svm_classifier.html)
-* [Random forest](random_forest.html)
+* *[NCF classifier](ncf_classifier.html)*
+* *[Decision tree](decision_tree.html)*
+* *[Gaussian Naive Bayes](gaussian_naive_bayes.html)*
+* *[Kernel SVM classifier](kernel_svm_classifier.html)*
+* *[KNN classifier](knn_classifier.html)*
+* *[Linear SVM classifier](linear_svm_classifier.html)*
+* *[Random forest](random_forest.html)*
 

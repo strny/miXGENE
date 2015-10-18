@@ -38,7 +38,7 @@ def enrichment_task(exp, block,
 
 class EnrichmentBlock(GenericBlock):
     block_base_name = "ENRICHMENT"
-    name = "Enrichment"
+    name = "mRNA Enrichment"
 
     is_abstract = False
     block_group = GroupType.SNMNMF

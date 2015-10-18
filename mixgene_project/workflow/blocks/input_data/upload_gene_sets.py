@@ -15,7 +15,7 @@ log.setLevel(logging.DEBUG)
 class UploadGeneSets(GenericBlock):
     block_base_name = "GENE_SETS_UPLOAD"
     block_group = GroupType.INPUT_DATA
-    name = "Upload gene sets"
+    name = "Upload Gene Sets"
 
     _block_actions = ActionsList([
         ActionRecord("save_params", ["created", "valid_params", "done", "ready"], "validating_params",
@@ -28,11 +28,6 @@ class UploadGeneSets(GenericBlock):
         "upload_gs", title="Gene sets in .gmt format", order_num=10,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM
     )
-
-    set_units = ParamField("set_units", title="Set units",
-                           order_num=11, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    gen_units = ParamField("gen_units", title="Gene units",
-                           order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
     _gene_sets = OutputBlockField(name="gene_sets", provided_data_type="GeneSets")
 

@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* ds [[DictionarySet](../../../data_types.html#dictionaryset)]
+* *ds [[DictionarySet](../../../data_types.html#dictionaryset)]*
 
 ## Parameters
 

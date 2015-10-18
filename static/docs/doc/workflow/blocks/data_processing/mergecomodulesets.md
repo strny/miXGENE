@@ -7,17 +7,17 @@
 
 ## Inputs
 
-* cs_1 [[ComoduleSet](../../../data_types.html#comoduleset)]
-* cs_2 [[ComoduleSet](../../../data_types.html#comoduleset)]
+* *cs_1 [[ComoduleSet](../../../data_types.html#comoduleset)]*
+* *cs_2 [[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Parameters
 
-* Comodule 1 name
-* Comodule 2 name
+* *Comodule 1 name* - mRNA comodule
+* *Comodule 2 name* - miRNA comodule
 
 ## Outputs
 
-* comodule_set[[ComoduleSet](../../../data_types.html#comoduleset)]
+* *comodule_set[[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Description
 

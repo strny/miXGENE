@@ -6,6 +6,6 @@
 
 ## Available Blocks
 
-* [Pattern search](pattern_search.html)
-* [Pattern edges](pattern_edges.html)
+* *[Pattern search](pattern_search.html)*
+* *[Pattern edges](pattern_edges.html)*
 

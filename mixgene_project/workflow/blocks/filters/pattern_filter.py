@@ -63,7 +63,7 @@ def pattern_filter_task(exp, block,
 class PatternFilter(GenericBlock):
     block_base_name = "PattFilter"
     name = "Pattern Filter"
-    block_group = GroupType.PATTERN_SEARCH
+    block_group = GroupType.FILTER
 
     is_block_supports_auto_execution = True
 

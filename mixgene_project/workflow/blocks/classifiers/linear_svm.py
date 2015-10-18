@@ -7,7 +7,7 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inpu
 
 class LinearSVM(GenericClassifier):
     block_base_name = "LIN_SVM"
-    name = "Linear SVM Classifier"
+    name = "Linear SVM"
 
     classifier_name = "linear_svm"
 

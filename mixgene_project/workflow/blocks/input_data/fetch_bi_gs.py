@@ -19,7 +19,7 @@ from workflow.blocks.generic import GenericBlock, save_params_actions_list, exec
 class GetBroadInstituteGeneSet(GenericBlock):
     block_base_name = "BI_GENE_SET"
     block_group = GroupType.INPUT_DATA
-    name = "Get MSigDB gene set"
+    name = "Get MSigDB Gene Set"
 
     _block_actions = ActionsList([
         ActionRecord("save_params", ["created", "valid_params", "done"], "validating_params",

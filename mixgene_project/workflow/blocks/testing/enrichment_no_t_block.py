@@ -34,11 +34,11 @@ def enrichment_no_t_task(exp, block,
     return [ds], {}
 
 class EnrichmentNoTBlock(GenericBlock):
-    block_base_name = "ENRICHMENT_CONT"
-    name = "Contingency Enrichment"
+    block_base_name = "ENRICHMENT_COM"
+    name = "Comodule Enrichment"
 
     is_abstract = False
-    block_group = GroupType.SNMNMF
+    block_group = GroupType.TESTING
 
     is_block_supports_auto_execution = True
 

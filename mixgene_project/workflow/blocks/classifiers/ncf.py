@@ -6,7 +6,7 @@ from workflow.blocks.fields import InputBlockField, ParamField, InputType, Field
 
 class NCF(GenericClassifier):
     block_base_name = "NCF"
-    name = "NCF classifier"
+    name = "Network-Constrained Forest"
 
     classifier_name = "ncf"
 

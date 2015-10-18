@@ -6,9 +6,9 @@
 
 ## Available Blocks
 
-* [Fetch from NCBI GEO](fetch_from_ncbi_geo.html)
-* [Get MSigDB gene set](get_msigdb_gene_set.html)
-* [Upload gene sets](upload_gene_sets.html)
-* [Upload gene interaction](upload_gene_interaction.html)
-* [Upload mRna/miRna/methyl dataset](upload_mrna_mirna_methyl_dataset.html)
+* *[Fetch from NCBI GEO](fetch_from_ncbi_geo.html)*
+* *[Get MSigDB gene set](get_msigdb_gene_set.html)*
+* *[Upload gene sets](upload_gene_sets.html)*
+* *[Upload gene interaction](upload_gene_interaction.html)*
+* *[Upload mRna/miRna/methyl dataset](upload_mrna_mirna_methyl_dataset.html)*
 

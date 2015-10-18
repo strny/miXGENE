@@ -7,9 +7,9 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
-* cs [[ComoduleSet](../../../data_types.html#comoduleset)]
-* gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *cs [[ComoduleSet](../../../data_types.html#comoduleset)]*
+* *gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
@@ -17,7 +17,7 @@
 
 ## Outputs
 
-* edges[[Edges](../../../data_types.html#edges)] diff_expr[[DiffExpr](../../../data_types.html#diffexpr)]
+* *edges[[Edges](../../../data_types.html#edges)] diff_expr[[DiffExpr](../../../data_types.html#diffexpr)]*
 
 ## Description
 

@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
@@ -15,7 +15,7 @@
 
 ## Outputs
 
-* flt_zscore_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *flt_zscore_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

@@ -6,7 +6,7 @@ from workflow.blocks.fields import BlockField, ParamField, InputType, FieldType
 
 class KnnClassifier(GenericClassifier):
     block_base_name = "KNN"
-    name = "Knn classifier"
+    name = "K-Nearest Neighbor"
 
     classifier_name = "knn"
 

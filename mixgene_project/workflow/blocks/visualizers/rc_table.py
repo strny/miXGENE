@@ -27,7 +27,7 @@ class TableObj(object):
 
 class RenderTable(RcVisualizer):
     block_base_name = "RENDER_TABLE"
-    name = "Results container as table"
+    name = "Results Container as Table"
 
     _table = BlockField(name="table", field_type=FieldType.CUSTOM, is_a_property=True)
     _export_table_url = BlockField(name="export_table_url",

@@ -38,7 +38,7 @@ def compute_edges(exp, block,
             m_rna_es,
             comodule_set,
             gene2gene,
-            gene_platform,
+            # gene_platform,
             base_filename):
     """
         @type m_rna_es: ExpressionSet
@@ -54,9 +54,10 @@ def compute_edges(exp, block,
 
     es = m_rna_es
     cs = comodule_set
+    mData = es.get_assay_data_frame()
+    gene_platform = mData.columns.values.tolist()
     gene2gene = gene2gene.load_pairs()
     gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
-    mData = es.get_assay_data_frame()
     nw = gene2gene
     mData.set_index(mData.columns[0], inplace=True, drop=True)
     pheno = es.get_pheno_data_frame()
@@ -92,8 +93,8 @@ class PatternEdges(GenericBlock):
     _input_es = InputBlockField(name="es", order_num=10,
         required_data_type="ExpressionSet", required=True)
 
-    _upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=12,
-                                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
+    # _upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=12,
+    #                                        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
     _input_comodule_set = InputBlockField(name="cs", order_num=20,
                                          required_data_type="ComoduleSet", required=True)
@@ -112,7 +113,7 @@ class PatternEdges(GenericBlock):
         """:type :ComoduleSet"""
         es = self.get_input_var("es")
         """:type :ExpressionSet"""
-        gene_platform = self.upload_gene2gene_platform
+        # gene_platform = self.upload_gene2gene_platform
         gene2gene = self.get_input_var("gene2gene")
         """:type :BinaryInteraction"""
         gene_platform = gene_platform.get_file()
@@ -127,7 +128,7 @@ class PatternEdges(GenericBlock):
             m_rna_es = es,
             comodule_set = cs,
             gene2gene = gene2gene,
-            gene_platform = gene_platform,
+            # gene_platform = gene_platform,
             base_filename="%s_pattern_edges" % self.uuid
         )
         exp.store_block(self)

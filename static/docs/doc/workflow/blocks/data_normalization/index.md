@@ -6,6 +6,6 @@
 
 ## Available Blocks
 
-* [Quantile normalization](quantile_normalization.html)
-* [z-score](z-score.html)
+* *[Quantile normalization](quantile_normalization.html)*
+* *[z-score](z-score.html)*
 

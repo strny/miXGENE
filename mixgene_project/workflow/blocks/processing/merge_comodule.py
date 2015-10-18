@@ -41,10 +41,10 @@ def merge_comodules_task(exp, block,
 
 class MergeComoduleSets(GenericBlock):
     block_base_name = "MERGE_COMODULE_SETS"
-    name = "MergeComoduleSets"
+    name = "Merge Comodule Sets"
 
     is_abstract = False
-    block_group = GroupType.FILTER
+    block_group = GroupType.PROCESSING
 
     is_block_supports_auto_execution = True
 

@@ -7,8 +7,8 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
@@ -16,7 +16,7 @@
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

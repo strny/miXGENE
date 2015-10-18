@@ -7,17 +7,17 @@
 
 ## Inputs
 
-* mRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* miRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* interaction [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *mRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *miRNA_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *interaction [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
-* Constant c
+* *Constant c* - the general strength of miRNA-mRNA interactions
 
 ## Outputs
 
-* agg_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *agg_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

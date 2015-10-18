@@ -7,18 +7,18 @@
 
 ## Inputs
 
-* mRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* miRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* cs [[ComoduleSet](../../../data_types.html#comoduleset)]
+* *mRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *miRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *cs [[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Parameters
 
-* Metric
-* # of best
+* *Metric* - phenotype-correlated for selecting the best patterns
+* *# of best* - number of the best selected patterns
 
 ## Outputs
 
-* patterns[[ComoduleSet](../../../data_types.html#comoduleset)]
+* *patterns[[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Description
 

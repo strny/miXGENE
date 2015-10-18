@@ -11,11 +11,11 @@
 
 ## Parameters
 
-* Geo accession id
+* *Geo accession id* - identifier of the stored dataset
 
 ## Outputs
 
-* expression_set[[ExpressionSet](../../../data_types.html#expressionset)]
+* *expression_set[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

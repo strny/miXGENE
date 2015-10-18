@@ -169,7 +169,7 @@ def user_upload_complex_task(exp,
 class UserUploadComplex(GenericBlock):
     block_base_name = "UPLOAD_CMPLX"
     block_group = GroupType.INPUT_DATA
-    name = "Upload mRna/miRna/methyl dataset"
+    name = "Upload mRna/miRna/methyl"
 
     _block_actions = ActionsList([
         ActionRecord("save_params", ["created", "valid_params", "done", "ready"], "validating_params",

@@ -7,18 +7,18 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
-* rank_table [[TableResult](../../../data_types.html#tableresult)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *rank_table [[TableResult](../../../data_types.html#tableresult)]*
 
 ## Parameters
 
-* Ranking property to use
-* Threshold for cut
-* Direction of cut
+* *Ranking property to use* - sets the variable which will be used to rank the features
+* *Threshold for cut* - the feature value used to filter
+* *Direction of cut* - whether cut down the lower valued features or the higher valued ones
 
 ## Outputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

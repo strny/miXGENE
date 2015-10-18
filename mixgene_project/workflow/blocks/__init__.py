@@ -13,32 +13,32 @@ from workflow.blocks.meta.mass_upload import MassUpload
 from workflow.blocks.meta.multi_features import MultiFeature
 # from workflow.blocks.meta.pattern_search import PatternSearch
 
-from workflow.blocks.processing.globaltest import GlobalTest
-from workflow.blocks.processing.feature_selection_by_cut import FeatureSelectionByCut
+from workflow.blocks.testing.globaltest import GlobalTest
+from workflow.blocks.filters.feature_selection_by_cut import FeatureSelectionByCut
 from workflow.blocks.processing.random_ranking import RandomRanking
 from workflow.blocks.processing.ttest_ranking import TTestRanking
 from workflow.blocks.processing.svmrfe_restricted_ranking import SvmrfeRestrictedRanking
 from workflow.blocks.processing.svmrfe_ranking import SvmrfeRanking
 from workflow.blocks.processing.expression_sets_merge import MergeExpressionSets
 
-from workflow.blocks.aggregation.pca_agg import PCAAgg
+from workflow.blocks.aggregation.gene_set_agg_cv import GeneSetAggCV
 from workflow.blocks.aggregation.svd_sub_agg import SubAggregation
 from workflow.blocks.aggregation.svd_sub_agg import SvdAggregation
 from workflow.blocks.aggregation.gene_set_agg import GeneSetAgg
 
 
 from workflow.blocks.filters.filter import FilterBlock
-from workflow.blocks.filters.quantile_norm import QuantileNormBlock
-from workflow.blocks.filters.zscore_filter import ZScoreBlock
-from workflow.blocks.filters.threshold import ThresholdBlock
+from workflow.blocks.normalization.quantile_norm import QuantileNormBlock
+from workflow.blocks.normalization.zscore_filter import ZScoreBlock
+from workflow.blocks.snmnmf.threshold import ThresholdBlock
 from workflow.blocks.filters.filter_by_bi import FilterByInteraction
-from workflow.blocks.filters.merge_comodule import MergeComoduleSets
+from workflow.blocks.processing.merge_comodule import MergeComoduleSets
 
-from workflow.blocks.snmnmf.enrichment_no_t_block import EnrichmentNoTBlock
+from workflow.blocks.testing.enrichment_no_t_block import EnrichmentNoTBlock
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 
 from workflow.blocks.pattern_search.pattern_search import PatternSearch
-from workflow.blocks.pattern_search.pattern_filter import PatternFilter
+from workflow.blocks.filters.pattern_filter import PatternFilter
 from workflow.blocks.pattern_search.pattern_edges import PatternEdges
 
 from workflow.blocks.classifiers.ncf import NCF
@@ -53,7 +53,7 @@ from workflow.blocks.visualizers.pattern_visualize import PatternView
 from workflow.blocks.visualizers.pca_visualize import PcaVisualize
 from workflow.blocks.visualizers.rc_table import RenderTable
 from workflow.blocks.visualizers.table_result_view import TableResultView
-from workflow.blocks.visualizers.comodule_visualize import ComoduleSetView
+from workflow.blocks.snmnmf.comodule_visualize import ComoduleSetView
 from workflow.blocks.visualizers.dictionary_visualize import DictionarySetView
 from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
 

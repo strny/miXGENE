@@ -12,6 +12,7 @@ DIR_BASE = 'doc'
 WORKFLOW_DIR_BASE = DIR_BASE + '/workflow'
 BLOCK_DIR_BASE = WORKFLOW_DIR_BASE + '/blocks'
 
+
 class Page:
     @staticmethod
     def _create_dir(path):
@@ -24,7 +25,10 @@ class Page:
     @staticmethod
     def generate_md_list(items):
         if items.strip():
-            return '\n'.join(map(lambda (x): '* '+x.strip(), items.split(',')))
+            if items.find('|') != -1:
+                return '\n'.join(map(lambda (x): '* '+ '*'+x.strip().replace('|', '* - '), items.split(',')))
+            else:
+                return '\n'.join(map(lambda (x): '* '+ '*'+x.strip()+'*', items.split(',')))
         else:
             return ""
 

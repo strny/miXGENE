@@ -7,7 +7,7 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inpu
 
 class DecisionTree(GenericClassifier):
     block_base_name = "DT"
-    name = "Decision tree"
+    name = "Decision Tree"
 
     classifier_name = "DT"
 

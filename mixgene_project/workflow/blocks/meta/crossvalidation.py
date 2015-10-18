@@ -17,7 +17,7 @@ log.setLevel(logging.DEBUG)
 
 class CrossValidation(UniformMetaBlock):
     block_base_name = "CROSS_VALID"
-    name = "Cross validation K-fold"
+    name = "Cross Validation K-fold"
 
     _cv_actions = ActionsList([
         ActionRecord("become_ready", ["valid_params"], "ready")

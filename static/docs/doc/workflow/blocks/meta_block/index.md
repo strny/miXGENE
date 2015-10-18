@@ -6,8 +6,8 @@
 
 ## Available Blocks
 
-* [Cross-validation K-fold](cross-validation_k-fold.html)
-* [Custom iterator](custom_iterator.html)
-* [Mass upload expression sets](mass_upload_expression_sets.html)
-* [Multi-feature validation](multi-feature_validation.html)
+* *[Cross-validation K-fold](cross-validation_k-fold.html)*
+* *[Custom iterator](custom_iterator.html)*
+* *[Mass upload expression sets](mass_upload_expression_sets.html)*
+* *[Multi-feature validation](multi-feature_validation.html)*
 

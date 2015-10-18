@@ -7,24 +7,24 @@
 
 ## Inputs
 
-* mRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* miRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* Gene2Gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
-* miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *mRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *miRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *Gene2Gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
+* *miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
-* l1
-* l2
-* g1
-* g2
-* rank
+* *l1* - stength of the regularization by the protein-protein interactions
+* *l2* - strength of the regularization by the miRNA-mRNA interaction
+* *g1* - a parameter inducing the sparse coding* - sparse coding
+* *g2* - the sparsity inducing parameter
+* *rank* - number of commodules
 
 ## Outputs
 
-* H2_genes[[ExpressionSet](../../../data_types.html#expressionset)]
-* W[[ExpressionSet](../../../data_types.html#expressionset)]
-* H1_miRNA[[ExpressionSet](../../../data_types.html#expressionset)]
+* *H2_genes[[ExpressionSet](../../../data_types.html#expressionset)]*
+* *W[[ExpressionSet](../../../data_types.html#expressionset)]*
+* *H1_miRNA[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

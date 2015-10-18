@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* New input field [[ExpressionSet](../../../data_types.html#expressionset)]
+* *New input field [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
@@ -15,7 +15,7 @@
 
 ## Outputs
 
-* results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]
+* *results_container[[ResultsContainer](../../../data_types.html#resultscontainer)]*
 
 ## Description
 

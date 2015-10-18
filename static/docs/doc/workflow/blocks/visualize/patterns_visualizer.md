@@ -7,9 +7,9 @@
 
 ## Inputs
 
-* patterns [[ComoduleSet](../../../data_types.html#comoduleset)]
-* edges [[Edges](../../../data_types.html#edges)]
-* diff_expr [[DiffExpr](../../../data_types.html#diffexpr)]
+* *patterns [[ComoduleSet](../../../data_types.html#comoduleset)]*
+* *edges [[Edges](../../../data_types.html#edges)]*
+* *diff_expr [[DiffExpr](../../../data_types.html#diffexpr)]*
 
 ## Parameters
 

@@ -12,7 +12,7 @@ class QuantileNormBlock(GenericBlock):
     name = "Quantile Normalization"
 
     is_abstract = False
-    block_group = GroupType.FILTER
+    block_group = GroupType.NORMALIZATION
 
     is_block_supports_auto_execution = True
 

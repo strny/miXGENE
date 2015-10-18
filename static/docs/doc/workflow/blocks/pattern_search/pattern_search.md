@@ -7,20 +7,20 @@
 
 ## Inputs
 
-* mRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* miRNA [[ExpressionSet](../../../data_types.html#expressionset)]
-* gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
-* miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *mRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *miRNA [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
+* *miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
-* Metric
-* d
-* Minimal improvement
+* *Metric* - phenotype-correlation statistic
+* *d* - the maximum diameter from the current pattern where to search for the next nodes
+* *Minimal improvementa * - the minimal ratio of the old pattern statistic and the new patterns statistic to accept the new found patterns
 
 ## Outputs
 
-* patterns[[ComoduleSet](../../../data_types.html#comoduleset)]
+* *patterns[[ComoduleSet](../../../data_types.html#comoduleset)]*
 
 ## Description
 

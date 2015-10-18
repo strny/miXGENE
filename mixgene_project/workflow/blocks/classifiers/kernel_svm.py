@@ -6,7 +6,7 @@ from workflow.blocks.fields import InputBlockField, ParamField, InputType, Field
 
 class KernelSvm(GenericClassifier):
     block_base_name = "KERNEL_SVM"
-    name = "Kernel SVM Classifier"
+    name = "Kernel SVM"
 
     classifier_name = "svm"
 

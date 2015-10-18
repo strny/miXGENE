@@ -6,7 +6,7 @@
 
 ## Available Blocks
 
-* [Goeman global test](goeman_global_test.html)
-* [Contingency enrichment](contingency_enrichment.html)
-* [TTest](ttest.html)
+* *[Goeman global test](goeman_global_test.html)*
+* *[Contingency enrichment](contingency_enrichment.html)*
+* *[TTest](ttest.html)*
 

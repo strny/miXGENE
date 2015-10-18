@@ -190,6 +190,7 @@ def pca_agg_task_cv(exp, block,
 
     return [result_train, result_test], {}
 
+
 def pca_agg_cv(train_data, test_data, gene_sets):
     """
     train_data      DataFrame

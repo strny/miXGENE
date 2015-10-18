@@ -4,8 +4,8 @@ __author__ = 'pavel'
 
 
 class RandomRanking(GenericRankingBlock):
-    block_base_name = "RANDOM_RANK"
-    name = "Random ranking"
+    block_base_name = "RANDOM_SIGN"
+    name = "Random Significance"
 
     def __init__(self, *args, **kwargs):
         super(RandomRanking, self).__init__(*args, **kwargs)

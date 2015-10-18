@@ -7,18 +7,18 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Penalty
-* Tolerance for stopping criteria
-* The loss function
+* *Penalty* - the norm of coefficient regularization ('2' - standard SVM '1' - sparse coeffficients)
+* *Tolerance for stopping criteria* - when to stop the optimization
+* *The loss function* - empirical risk metric
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

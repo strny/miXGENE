@@ -72,7 +72,7 @@ class CellInfoList(object):
 
 class CustomIterator(UniformMetaBlock):
     block_base_name = "CUSTOM_ITERATOR"
-    name = "Custom iterator"
+    name = "Custom Iterator"
     has_custom_layout = True
 
     _ci_block_actions = ActionsList([

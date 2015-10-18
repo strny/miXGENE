@@ -7,25 +7,25 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
-* miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *gene2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
+* *miRNA2gene [[BinaryInteraction](../../../data_types.html#binaryinteraction)]*
 
 ## Parameters
 
-* The number of trees in the forest
-* Walk max length
-* The function to measure quality of split
-* Eps
-* The maximum depth of the tree
-* The minimum number of samples to split an internal node
-* The minimum number of samples to be at a leaf node
-* bootstrap
+* *The number of trees in the forest* - size of the ensemble
+* *Walk max length* - length of the random walk (the key bias parameter)
+* *The function to measure quality of split* - phenotype-correlation statistic
+* *Eps* - parameter of the heuiristic for learning the optimal walk length
+* *The maximum depth of the tree* - key parameter for learning the optimal walk length
+* *The minimum number of samples to split an internal node* - determines how much to shatter the data
+* *The minimum number of samples to be at a leaf node* - determines how much to shatter the data
+* *bootstrap* - whether to subsample the data examples
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

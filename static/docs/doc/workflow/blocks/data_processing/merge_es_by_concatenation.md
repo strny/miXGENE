@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* es_1 [[ExpressionSet](../../../data_types.html#expressionset)]
-* es_2 [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es_1 [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *es_2 [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Concatenation
+* *Concatenation*
 
 ## Outputs
 
-* merged_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *merged_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

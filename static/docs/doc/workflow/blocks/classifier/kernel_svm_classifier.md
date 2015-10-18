@@ -7,21 +7,20 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Penalty
-* Kernel type
-* Degree of the polynomial kernel
-* Kernel coefficient for RBF\
-* Polynomial and Sigmoid
-* Tolerance for stopping criteria
+* *Penalty* - the norm of coefficient regularization ('2' - standard SVM  '1' - sparse coeffficients)
+* *Kernel type* - feature space adaptation
+* *Degree of the polynomial kernel* - degree of the feature space expansion (1-3)
+* *Kernel coefficient for RBF and Polynomial and Sigmoid* - kernel adaptation coefficient (if gamma is 0.0 then 1/n_features will be used instead)
+* *Tolerance for stopping criteria* - when to stop the optimization
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

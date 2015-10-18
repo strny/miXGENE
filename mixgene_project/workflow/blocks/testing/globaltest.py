@@ -11,8 +11,8 @@ from wrappers.gt import global_test_task
 
 class GlobalTest(GenericBlock):
     block_base_name = "GLOBAL_TEST"
-    name = "Goeman global test"
-    block_group = GroupType.PROCESSING
+    name = "Goeman Global Test"
+    block_group = GroupType.TESTING
     is_block_supports_auto_execution = True
 
     _block_actions = ActionsList([

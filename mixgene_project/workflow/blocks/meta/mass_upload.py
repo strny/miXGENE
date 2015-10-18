@@ -110,7 +110,7 @@ class DataInfoList(object):
 
 class MassUpload(UniformMetaBlock):
     block_base_name = "BunchUpload"
-    name = "Mass upload expression sets"
+    name = "Mass Upload Expression Sets"
 
     _bu_block_actions = ActionsList([
 

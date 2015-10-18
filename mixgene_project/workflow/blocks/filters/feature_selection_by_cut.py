@@ -55,8 +55,8 @@ def feature_selection_by_cut(
 
 class FeatureSelectionByCut(GenericBlock):
     block_base_name = "FS_BY_CUT"
-    block_group = GroupType.PROCESSING
-    name = "Feature selection by ranking cut"
+    block_group = GroupType.FILTER
+    name = "Feature Selection by Ranking"
 
     is_block_supports_auto_execution = True
 

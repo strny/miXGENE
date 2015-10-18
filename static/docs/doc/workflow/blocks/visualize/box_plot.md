@@ -7,11 +7,11 @@
 
 ## Inputs
 
-* results_container [[ResultsContainer](../../../data_types.html#resultscontainer)]
+* *results_container [[ResultsContainer](../../../data_types.html#resultscontainer)]*
 
 ## Parameters
 
-* Metric
+* *Metric* - measure of the predictive power
 
 ## Outputs
 

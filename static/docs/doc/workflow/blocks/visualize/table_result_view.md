@@ -7,7 +7,7 @@
 
 ## Inputs
 
-* tr [[TableResult](../../../data_types.html#tableresult)]
+* *tr [[TableResult](../../../data_types.html#tableresult)]*
 
 ## Parameters
 

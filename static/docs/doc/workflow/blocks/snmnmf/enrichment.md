@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* gs [[GeneSets](../../../data_types.html#genesets)]
-* H2_genes [[ExpressionSet](../../../data_types.html#expressionset)]
+* *gs [[GeneSets](../../../data_types.html#genesets)]*
+* *H2_genes [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Parameter T
+* *Parameter T* - determines the specificity of a commodule to the particular gene set
 
 ## Outputs
 
-* dictionary_set[[DictionarySet](../../../data_types.html#dictionaryset)]
+* *dictionary_set[[DictionarySet](../../../data_types.html#dictionaryset)]*
 
 ## Description
 

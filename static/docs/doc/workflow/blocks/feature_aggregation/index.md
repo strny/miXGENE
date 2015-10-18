@@ -6,9 +6,9 @@
 
 ## Available Blocks
 
-* [Gene set aggregation](gene_set_aggregation.html)
-* [Crossvalidated PCA-aggregation](crossvalidated_pca-aggregation.html)
-* [Subtractive aggregation](subtractive_aggregation.html)
-* [SVD aggregation](svd_aggregation.html)
-* [Crossvalidated PCA-aggregation](crossvalidated_pca-aggregation.html)
+* *[Gene set aggregation](gene_set_aggregation.html)*
+* *[Crossvalidated PCA-aggregation](crossvalidated_pca-aggregation.html)*
+* *[Subtractive aggregation](subtractive_aggregation.html)*
+* *[SVD aggregation](svd_aggregation.html)*
+* *[Crossvalidated PCA-aggregation](crossvalidated_pca-aggregation.html)*
 

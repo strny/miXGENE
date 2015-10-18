@@ -7,16 +7,16 @@
 
 ## Inputs
 
-* es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Threshold
-* Filter method
+* *Threshold* - the minimal percentile to filter the features
+* *Filter method* - whether to filter according to the maximum absolute value or variance of the features
 
 ## Outputs
 
-* flt_es[[ExpressionSet](../../../data_types.html#expressionset)]
+* *flt_es[[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Description
 

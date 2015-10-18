@@ -6,6 +6,6 @@
 
 ## Available Blocks
 
-* [NIMFA SNMNMF](nimfa_snmnmf.html)
-* [Enrichment](enrichment.html)
+* *[NIMFA SNMNMF](nimfa_snmnmf.html)*
+* *[Enrichment](enrichment.html)*
 

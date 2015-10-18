@@ -7,19 +7,20 @@
 
 ## Inputs
 
-* train_es [[ExpressionSet](../../../data_types.html#expressionset)]
-* test_es [[ExpressionSet](../../../data_types.html#expressionset)]
+* *train_es [[ExpressionSet](../../../data_types.html#expressionset)]*
+* *test_es [[ExpressionSet](../../../data_types.html#expressionset)]*
 
 ## Parameters
 
-* Number of neighbors
-* Algorithm [optional]
-* Leaf size for BallTree or KDTree [optional]
-* The distance metric to use for the tree [optional]
+* *Number of neighbors* - the bias parameter
+* *Algorithm [optional]* - search algorithm
+* *Leaf size for BallTree or KDTree [optional]* - parameter of the search algorithms\
+* *can affect the speed of the construction and query as well as the memory required to store the tree
+* *The distance metric to use for the tree [optional]* - neighbour similarity function
 
 ## Outputs
 
-* result [[ClassifierResult](../../../data_types.html#classifierresult)]
+* *result [[ClassifierResult](../../../data_types.html#classifierresult)]*
 
 ## Description
 

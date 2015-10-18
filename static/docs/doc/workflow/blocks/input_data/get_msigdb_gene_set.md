@@ -11,11 +11,11 @@
 
 ## Parameters
 
-* MSigDB gene set
+* *MSigDB gene set* - available gene sets
 
 ## Outputs
 
-* gs[[GeneSets](../../../data_types.html#genesets)]
+* *gs[[GeneSets](../../../data_types.html#genesets)]*
 
 ## Description
 
