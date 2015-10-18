@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 __author__ = 'pavel'
 
 
@@ -67,11 +68,11 @@ class SvdSubAgg(GenericBlock):
 
 class SubAggregation(SvdSubAgg):
     block_base_name = "SUB_AGG"
-    name = "Subtractive miRNA-aggregation"
+    name = "Subtractive μRNA-aggregation"
     mode = "SUB"
 
 
 class SvdAggregation(SvdSubAgg):
     block_base_name = "SVD_AGG"
-    name = "SVD-based miRNA-aggregation"
+    name = "SVD-based μRNA-aggregation"
     mode = "SVD"

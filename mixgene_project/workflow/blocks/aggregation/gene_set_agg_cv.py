@@ -1,16 +1,71 @@
-__author__ = 'pavel'
-
-
 from webapp.tasks import wrapper_task
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
     OutputBlockField
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
 from wrappers.aggregation.aggregation import pca_agg_task_cv
+from wrappers.aggregation.aggregation import preprocess_df_gs
+import pandas as pd
+
+__author__ = 'pavel'
+
+
+def agg_task_mean(df, gene_sets, method):
+    df_list = []
+    df_index_set = set(df.index)
+
+    for set_name, gene_ids in gene_sets.genes.items():
+        fixed_gene_ids = [gi for gi in gene_ids if gi in df_index_set]
+        if fixed_gene_ids:
+            sub_df = df.loc[fixed_gene_ids]
+            if method == "mean":
+                row = sub_df.mean()
+            # TODO: median != mean
+            if method == "median":
+                row = sub_df.mean()
+
+            df_list.append((set_name, row))
+
+    return pd.DataFrame(dict(df_list)).T
+
+
+def agg_task_cv(
+            exp,
+            block,
+            train_es,
+            test_es,
+            gene_sets,
+            method,
+            base_filename):
+    """
+        @type train_es, test_es: ExpressionSet
+        @type gene_sets: GeneSets
+
+    """
+    if method == "pca":
+        return pca_agg_task_cv(exp, block, train_es, test_es, gene_sets, base_filename)
+
+    df_train = train_es.get_assay_data_frame()
+    df_test = test_es.get_assay_data_frame()
+    src_gs = gene_sets.get_gs()
+    df_train, src_gs_train = preprocess_df_gs(df_train, src_gs)
+    df_test, src_gs_test = preprocess_df_gs(df_test, src_gs)
+
+    result_df_train = agg_task_mean(df_train, src_gs_train, method)
+    result_df_test = agg_task_mean(df_test, src_gs_train, method)
+
+    result_train = train_es.clone(base_filename + "_train")
+    result_train.store_assay_data_frame(result_df_train)
+    result_train.store_pheno_data_frame(train_es.get_pheno_data_frame())
+
+    result_test = test_es.clone(base_filename + "_test")
+    result_test.store_assay_data_frame(result_df_test)
+    result_test.store_pheno_data_frame(test_es.get_pheno_data_frame())
+
+    return [result_train, result_test], {}
 
 
 class GeneSetAggCV(GenericBlock):
-
     block_group = GroupType.AGGREGATION
     block_base_name = "CV_GS_A"
     name = "CV Gene Sets Aggregation"
@@ -49,7 +104,6 @@ class GeneSetAggCV(GenericBlock):
     out_train_es = OutputBlockField(name="out_train_es", provided_data_type="ExpressionSet")
     out_test_es = OutputBlockField(name="out_test_es", provided_data_type="ExpressionSet")
 
-
     def __init__(self, *args, **kwargs):
         super(GeneSetAggCV, self).__init__(*args, **kwargs)
         self.celery_task = None
@@ -62,11 +116,12 @@ class GeneSetAggCV(GenericBlock):
         gene_sets = self.get_input_var("gs")
 
         self.celery_task = wrapper_task.s(
-            pca_agg_task_cv,
+            agg_task_cv,
             exp, self,
             train_es=train_es,
             test_es=test_es,
             gene_sets=gene_sets,
+            method=self.agg_method,
             base_filename="%s_%s_agg" % (self.uuid, "pca_cv")
         )
         exp.store_block(self)
