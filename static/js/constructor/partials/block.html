@@ -1,7 +1,7 @@
 <div>
     <div id="{$ block.uuid $}" class="constructor-block" ng-controller="BlockCtrl">
 
-        <div class="panel panel-default">
+        <div class="panel panel-primary">
             <div class="panel-heading">
 
                 <div class="pull-left">
@@ -15,7 +15,7 @@
                     </span>
                     <a ng-hide="edit_base_name"
                        ng-if="!access.mode.ro"
-                       class="block-reload glyphicon glyphicon-pencil"
+                       class="block-reload glyphicon glyphicon-pencil" style="color:white;"
                        ng-click="toggleEditBaseName()">
                    </a>
                     ]
@@ -46,7 +46,7 @@
                            ng-click='toggleBodyVisibility()'>
                         </a>
                         &nbsp;&nbsp;&nbsp;&nbsp;
-                        <a ng-if="!access.mode.ro" class="block-remove text-danger glyphicon glyphicon-trash"
+                        <a ng-if="!access.mode.ro" class="block-remove text-danger glyphicon glyphicon-trash" style="color: white"
                            ng-click="access.remove_block(block)">
 
                         </a>

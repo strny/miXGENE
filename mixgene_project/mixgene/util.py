@@ -94,11 +94,6 @@ def gen_GPL_url(geo_uid):
 
 
 def prepare_GEO_ftp_url(geo_uid, file_format):
-    """
-        Supported types:
-            db: "GSE",
-            format: "txt", "soft"
-    """
     db_type = geo_uid[:3]
     uid = geo_uid[3:]
 

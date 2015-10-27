@@ -24,7 +24,6 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
 # TODO: merge fetch_geo_gpl and fetch_geo_gse
-
 def fetch_geo_gpl(exp, block, gpl_uid, ignore_cache=False):
     gpl_uid = gpl_uid.upper()
     file_format = "txt"

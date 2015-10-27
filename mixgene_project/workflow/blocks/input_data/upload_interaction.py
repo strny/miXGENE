@@ -20,12 +20,12 @@ class UploadInteraction(GenericBlock):
         ActionRecord("on_params_not_valid", ["validating_params"], "created"),
     ])
 
-    upload_interaction = ParamField("upload_interaction", title="Interaction matrix", order_num=10,
+    upload_interaction = ParamField("upload_interaction", title="Interaction file", order_num=10,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
-    row_units = ParamField("row_units", title="Row units",
-        order_num=11, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    col_units = ParamField("col_units", title="Column units",
-                           order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    # row_units = ParamField("row_units", title="Row units",
+    #     order_num=11, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    # col_units = ParamField("col_units", title="Column units",
+    #                        order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
     header = ParamField("header", title="Header",
                            order_num=13, input_type=InputType.CHECKBOX, field_type=FieldType.BOOLEAN, required=False)
 
@@ -93,8 +93,8 @@ class UploadInteraction(GenericBlock):
         interaction_df[2] = values
         interaction = BinaryInteraction(exp.get_data_folder(), str(self.uuid))
         interaction.store_pairs(interaction_df, self.bi_data_type)
-        interaction.row_units = self.row_units
-        interaction.col_units = self.col_units
+        # interaction.row_units = self.row_units
+        # interaction.col_units = self.col_units
         interaction.header = self.header
 
         self.set_out_var("interaction", interaction)
