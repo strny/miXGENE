@@ -77,6 +77,9 @@ class CustomIterator(UniformMetaBlock):
 
     _ci_block_actions = ActionsList([
         ActionRecord("become_ready", ["valid_params"], "ready"),
+        ActionRecord("reset_settings", ["*", "done", "sub_scope_executing", "ready_to_run_sub_scope",
+                                                          "generating_folds", "execution_error"], "ready",
+                                       user_title="Reset to initial state", reload_block_in_client=True)
     ])
 
     cells_prototype = BlockField(name="cells_prototype", field_type=FieldType.CUSTOM, init_val=None)
@@ -136,7 +139,6 @@ class CustomIterator(UniformMetaBlock):
         try:
             cell = json.loads(cell_json)
             self.cells.remove_by_label(cell["label"])
-
             exp.store_block(self)
         except:
             pass
@@ -161,5 +163,11 @@ class CustomIterator(UniformMetaBlock):
                 cell[name] = self.get_input_var(input_var_name)
             seq.append(cell)
         exp.store_block(self)
-
         self.do_action("on_folds_generation_success", exp, seq)
+
+    def reset_settings(self, exp, *args, **kwargs):
+        self.cells_prototype = CellsPrototype()
+        self.cells = CellInfoList()
+        self.is_cells_prototype_defined = False
+        exp.store_block(self)
+

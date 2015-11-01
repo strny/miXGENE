@@ -47,14 +47,14 @@ class TransSystem(object):
         self.is_action_visible[ar.name] = ar.show_to_user
 
     def user_visible(self, state):
-        return set([
+        return sorted(list(set([
             self.action_records_by_name[action]
             for action in itertools.chain(
                 self.states_to_actions.get(state, []),
                 self.states_to_actions.get("*", [])
             )
             if self.is_action_visible[action]
-        ])
+        ])), key=lambda x: x.user_title)
 
     def is_action_available(self, state, action_name):
         if action_name not in self.action_records_by_name:
