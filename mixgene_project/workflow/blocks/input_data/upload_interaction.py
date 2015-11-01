@@ -22,12 +22,48 @@ class UploadInteraction(GenericBlock):
 
     upload_interaction = ParamField("upload_interaction", title="Interaction file", order_num=10,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
-    # row_units = ParamField("row_units", title="Row units",
-    #     order_num=11, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    # col_units = ParamField("col_units", title="Column units",
-    #                        order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+
+
+    interaction_type = ParamField("interaction_type", title="Interaction type", order_num=11,
+        input_type=InputType.SELECT, field_type=FieldType.STR, required=True,
+                                    init_val="PPI",
+                                    options={
+                                        "inline_select_provider": True,
+                                        "select_options": [
+                                            ["PPI", "PPI"],
+                                            ["miRNA", "miRNA Target"]
+                                        ]
+                                    })
+
+    x1_unit = ParamField("x1_unit", title="(x1, x2) - x1 unit",
+                        order_num=12, input_type=InputType.SELECT, field_type=FieldType.STR, required=True,
+                        init_val="RefSeq",
+                        options={
+                            "inline_select_provider": True,
+                            "select_options": [
+                                ["RefSeq", "RefSeq"],
+                                ["Entrez", "EntrezID"],
+                                ["Symbol", "Symbol"],
+                                ["mirbase", "miRBase ID"]
+                            ]
+                        })
+
+    x2_unit = ParamField("x2_unit", title="(x1, x2) - x2 unit",
+                        order_num=13, input_type=InputType.SELECT, field_type=FieldType.STR, required=True,
+                        init_val="RefSeq",
+                        options={
+                            "inline_select_provider": True,
+                            "select_options": [
+                                ["RefSeq", "RefSeq"],
+                                ["Entrez", "EntrezID"],
+                                ["Symbol", "Symbol"],
+                                ["mirbase", "miRBase ID"]
+                            ]
+                        })
+
+
     header = ParamField("header", title="Header",
-                           order_num=13, input_type=InputType.CHECKBOX, field_type=FieldType.BOOLEAN, required=False)
+                           order_num=23, input_type=InputType.CHECKBOX, field_type=FieldType.BOOLEAN, required=False)
 
     bi_data_type = ParamField(
         "bi_data_type", title="Data type", order_num=40,
