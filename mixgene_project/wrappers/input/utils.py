@@ -1,13 +1,10 @@
-__author__ = 'pavel'
-
 import mygene
 import re
 from webapp.models import GeneIdentifier, Refseq, GEOTerm
 
+__author__ = 'pavel'
 
 gene_cache = {}
-
-
 
 
 def expand_inters(protein_refseq1, protein_refseq2, value):
@@ -62,8 +59,41 @@ def expand_inters(protein_refseq1, protein_refseq2, value):
     return exp_inters
 
 
-def expand_geneset(gene_set):
+def find_refseq(gene):
+    # Returns set of RefSeqs
+    mg = mygene.MyGeneInfo()
+    out = set()
+    res = Refseq.objects.filter(gene_identifier_name__name__in=gene_set)
 
+    if res:
+        return res[0].refseq
+    else:
+        if gene in gene_cache:
+            return gene_cache[gene]
+        else:
+            exp = mg.query(str(gene), species='human', fields='refseq')['hits']
+            if len(exp) > 0:
+                try:
+                    refseqs = exp[0]['refseq']['rna']
+                    gene_cache[gene] = set()
+                    if not isinstance(refseqs, basestring):
+                        for refseq in refseqs:
+                            entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
+                            entrez.refseq_set.create(refseq=refseq)
+                            gene_cache[gene].add(refseq)
+                            return refseq
+                    else:
+                        entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
+                        entrez.refseq_set.create(refseq=refseqs)
+                        gene_cache[gene].add(refseqs)
+                        return refseqs
+                except KeyError:
+                    pass
+    return None
+
+
+def expand_geneset(gene_set):
+    # Returns set of RefSeqs
     mg = mygene.MyGeneInfo()
     out = set()
     res = Refseq.objects.filter(gene_identifier_name__name__in=gene_set)
@@ -96,7 +126,7 @@ def expand_geneset(gene_set):
                         entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
                         entrez.refseq_set.create(refseq=refseqs)
                         gene_cache[gene].add(refseqs)
-                        out.add(refseq)
+                        out.add(refseqs)
                 except KeyError:
                     pass
     return out

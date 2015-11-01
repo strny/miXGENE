@@ -11,12 +11,28 @@ from workflow.blocks.generic import GenericBlock
 from workflow.common_tasks import fetch_geo_gpl
 from webapp.notification import AllUpdated, NotifyMode
 from webapp.tasks import wrapper_task
-from wrappers.input.utils import find_target_column
+from wrappers.input.utils import find_target_column, find_refseq
 import pandas
 import re
 from django.conf import settings
 
 __author__ = 'pavel'
+
+
+def convert_to_refseq(assay_df, unit, data_type):
+    # features of dataset
+    columns_source = set(list(assay_df))
+    new_names = {}
+    count = 0
+    for gene in columns_source:
+        new_name = find_refseq(gene)
+        if new_name:
+            new_names[gene] = new_name
+            count += 1
+        else:
+            new_names[gene] = gene
+    assay_df.rename(columns=new_names, inplace=True)
+    return assay_df, count
 
 
 def convert_ids(gpl_file, assay_df, data_type):
@@ -53,7 +69,7 @@ def convert_ids(gpl_file, assay_df, data_type):
     return assay_df, freqs[max_key]
 
 
-def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
+def process_data_frame(exp, block, df, ori, platform, unit, data_type="m_rna"):
     if settings.CELERY_DEBUG:
         import sys
         sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
@@ -85,6 +101,22 @@ def process_data_frame(exp, block, df, ori, platform, data_type="m_rna"):
             silent=False,
             mode=NotifyMode.INFO
         ).send()
+    else:
+        if unit != "RefSeq":
+            AllUpdated(
+                exp.pk,
+                comment=u"Converting unit %s to RefSeq" % platform,
+                silent=False,
+                mode=NotifyMode.INFO
+            ).send()
+            df, matched = convert_to_refseq(df, unit, data_type)
+            AllUpdated(
+                exp.pk,
+                comment=u"Matched %s features for %s dataset" % (matched, data_type),
+                silent=False,
+                mode=NotifyMode.INFO
+            ).send()
+
     es = ExpressionSet(base_dir=exp.get_data_folder(),
                        base_filename="%s_%s_es" % (block.uuid, data_type))
     es.store_assay_data_frame(df)
@@ -129,7 +161,7 @@ def user_upload_complex_task(exp,
     if block.m_rna_matrix is not None:
         m_rna_assay_df = block.m_rna_matrix.get_as_data_frame(sep_m_rna)
         m_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, m_rna_assay_df, block.m_rna_matrix_ori,
-                                                                 block.m_rna_platform, "m_rna")
+                                                                 block.m_rna_platform, block.m_rna_unit, "m_rna")
         block.m_rna_gpl_file = gpl_file
 
         if pheno_df is not None:
@@ -139,7 +171,7 @@ def user_upload_complex_task(exp,
     if block.mi_rna_matrix is not None:
         mi_rna_assay_df = block.mi_rna_matrix.get_as_data_frame(sep_mi_rna)
         mi_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, mi_rna_assay_df, block.mi_rna_matrix_ori,
-                                                                  block.mi_rna_platform, "mi_rna")
+                                                                  block.mi_rna_platform, block.mi_rna_unit, "mi_rna")
         block.mi_rna_gpl_file = gpl_file
 
         if pheno_df is not None:
@@ -167,6 +199,7 @@ def user_upload_complex_task(exp,
             ], {}
 
 class UserUploadComplex(GenericBlock):
+    # unit_options =
     block_base_name = "UPLOAD_CMPLX"
     block_group = GroupType.INPUT_DATA
     name = "Upload mRna/miRna/methyl"
@@ -187,8 +220,18 @@ class UserUploadComplex(GenericBlock):
                          input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
     m_rna_platform = ParamField("m_rna_platform", title="Platform ID", order_num=11,
                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    m_rna_unit = ParamField("m_rna_unit", title="Working unit [used when platform is unknown]", init_val=None,
-                           order_num=12, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+
+    m_rna_unit = ParamField("m_rna_unit", title="Working unit [used when platform is unknown]",
+                            order_num=12, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
+                            init_val="RefSeq",
+                            options={
+                                "inline_select_provider": True,
+                                "select_options": [
+                                    ["RefSeq", "RefSeq"],
+                                    ["Entrez", "EntrezID"],
+                                    ["Symbol", "Symbol"]
+                                ]
+                            })
 
     m_rna_matrix_ori = ParamField(
         "m_rna_matrix_ori", title="Matrix orientation", order_num=13,
@@ -222,8 +265,17 @@ class UserUploadComplex(GenericBlock):
 
     mi_rna_platform = ParamField("mi_rna_platform", title="Platform ID", order_num=21,
                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    mi_rna_unit = ParamField("mi_rna_unit", title="Working unit [used when platform is unknown]", init_val=None,
-                           order_num=22, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    mi_rna_unit = ParamField("mi_rna_unit", title="Working unit [used when platform is unknown]",
+                            order_num=22, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
+                            init_val="RefSeq",
+                            options={
+                                "inline_select_provider": True,
+                                "select_options": [
+                                    ["RefSeq", "RefSeq"],
+                                    ["mirbase", "miRBase ID"]
+                                ]
+                            })
+
 
     mi_rna_matrix_ori = ParamField(
         "mi_rna_matrix_ori", title="Matrix orientation", order_num=23,
@@ -257,8 +309,8 @@ class UserUploadComplex(GenericBlock):
 
     methyl_platform = ParamField("methyl_platform", title="Platform ID", order_num=31,
                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
-    methyl_unit = ParamField("methyl_unit", title="Working unit [used when platform is unknown]", init_val=None,
-                           order_num=32, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    # methyl_unit = ParamField("methyl_unit", title="Working unit [used when platform is unknown]", init_val=None,
+    #                        order_num=32, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
     methyl_matrix_ori = ParamField(
         "methyl_matrix_ori", title="Matrix orientation", order_num=33,
