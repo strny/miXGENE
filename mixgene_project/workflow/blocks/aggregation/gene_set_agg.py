@@ -42,7 +42,7 @@ def do_gs_agg(
 
             df_list.append((set_name, row))
 
-    result_df = pd.DataFrame(dict(df_list)).T
+    result_df = pd.DataFrame(dict(df_list))
     result_es.store_assay_data_frame(result_df)
 
     return [result_es], {}
