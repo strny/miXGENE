@@ -250,7 +250,8 @@ def generate_cv_folds(
     i = 0
     for train_idx, test_idx in chain(*repeat(cross_validation.StratifiedKFold(
         classes_vector,
-        n_folds=folds_num
+        n_folds=folds_num,
+        shuffle=True
     ), repeats_num)):
         cell = {}
         for input_name, output_names in inner_output_es_names_map.iteritems():

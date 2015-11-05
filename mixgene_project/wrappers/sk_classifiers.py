@@ -9,8 +9,7 @@ from sklearn import tree
 from sklearn import neighbors
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import preprocessing
-# from walkforest.hyperlearner import WalkForestHyperLearner
-from walkforest.walkforest import WalkForestHyperLearner
+# from walkforest.walkforest import WalkForestHyperLearner
 from celery import task
 
 from environment.structures import ExpressionSet, ClassifierResult
@@ -32,7 +31,7 @@ classifiers_map = {
     "DT": (tree.DecisionTreeClassifier, None),
     "random_forest": (RandomForestClassifier, None),
     "knn": (neighbors.KNeighborsClassifier, None),
-    "ncf": (WalkForestHyperLearner, None)
+    # "ncf": (WalkForestHyperLearner, None)
 }
 
 

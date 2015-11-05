@@ -47,7 +47,7 @@ from workflow.blocks.classifiers.gaussian_nb import GaussianNb
 from workflow.blocks.classifiers.kernel_svm import KernelSvm
 from workflow.blocks.classifiers.knn_classifier import KnnClassifier
 from workflow.blocks.classifiers.linear_svm import LinearSVM
-from workflow.blocks.classifiers.random_forest import RandomForest
+# from workflow.blocks.classifiers.random_forest import RandomForest
 
 from workflow.blocks.visualizers.pattern_visualize import PatternView
 from workflow.blocks.visualizers.pca_visualize import PcaVisualize
