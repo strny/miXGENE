@@ -66,8 +66,8 @@ class MergeExpressionSets(GenericBlock):
         options={
             "inline_select_provider": True,
             "select_options": [
-                ["CR", "concatenate rows"],
-                ["CC", "concatenate columns"]
+                ["CR", "concatenate samples"],
+                ["CC", "concatenate features"]
             ]
         }
     )
