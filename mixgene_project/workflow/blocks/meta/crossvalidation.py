@@ -38,7 +38,7 @@ class CrossValidation(UniformMetaBlock):
                              input_type=InputType.TEXT, field_type=FieldType.INT, init_val=1)
 
     def get_fold_labels(self):
-        return ["fold_%s" % (num + 1, ) for num in range(self.folds_num * self.repeats_num)]
+        return ["fold_%s_%s" % (repeat + 1, num + 1) for num in range(self.folds_num) for repeat in range(self.repeats_num)]
 
     def add_dyn_input_hook(self, exp, dyn_port, new_port):
         """

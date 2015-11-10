@@ -11,7 +11,7 @@ from workflow.blocks.generic import GenericBlock
 from workflow.common_tasks import fetch_geo_gpl
 from webapp.notification import AllUpdated, NotifyMode
 from webapp.tasks import wrapper_task
-from wrappers.input.utils import find_target_column, find_refseq
+from wrappers.input.utils import find_target_column, find_refseqs
 import pandas
 import re
 from django.conf import settings
@@ -25,9 +25,9 @@ def convert_to_refseq(assay_df, unit, data_type):
     new_names = {}
     count = 0
     for gene in columns_source:
-        new_name = find_refseq(gene)
+        new_name = find_refseqs(gene)
         if new_name:
-            new_names[gene] = new_name
+            new_names[gene] = new_name[0]
             count += 1
         else:
             new_names[gene] = gene

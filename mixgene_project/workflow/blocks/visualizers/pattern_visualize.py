@@ -21,7 +21,6 @@ from environment.structures import ComoduleSet
 from wrappers.pattern_search.pattern_filter import get_patterns
 from wrappers.pattern_search.pattern_filter import differential_expression
 from scipy.stats import zscore
-from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 import traceback
 import sys

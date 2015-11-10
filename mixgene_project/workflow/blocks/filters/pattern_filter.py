@@ -13,7 +13,7 @@ from django.conf import settings
 from wrappers.pattern_search.pattern_filter import pattern_filter
 from environment.structures import ComoduleSet
 import scipy.sparse as sp
-from wrappers.pattern_search.utils import translate_inters
+# from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 from wrappers.pattern_search.pattern_filter import pattern_filter
 from scipy.stats import zscore

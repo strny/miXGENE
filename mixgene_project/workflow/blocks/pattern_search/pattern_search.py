@@ -14,7 +14,6 @@ from django.conf import settings
 from wrappers.pattern_search.pattern_search import DifferentialPatternSearcher
 from environment.structures import ComoduleSet
 import scipy.sparse as sp
-from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 from scipy.stats import zscore
 
@@ -45,9 +44,8 @@ def pattern_search(exp, block,
 
     exp.log(block.uuid, "Initializing data...")
     mData = m_rna_es.get_assay_data_frame()
-    gene2gene = gene2gene.load_pairs()
     gene_platform = list(mData.columns)
-    gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
+    gene2gene = gene2gene.get_matrix_for_platform(gene_platform)
     if miRNA2gene is not None:
         miRNA2gene = miRNA2gene.load_matrix().T
         miRNA2gene = sp.coo_matrix(miRNA2gene.values)

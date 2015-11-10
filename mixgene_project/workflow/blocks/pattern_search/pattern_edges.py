@@ -23,7 +23,6 @@ from environment.structures import Edges, DiffExpr
 from wrappers.pattern_search.pattern_filter import get_patterns
 from wrappers.pattern_search.pattern_filter import differential_expression
 from scipy.stats import zscore
-from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 import traceback
 import sys
@@ -56,8 +55,7 @@ def compute_edges(exp, block,
     cs = comodule_set
     mData = es.get_assay_data_frame()
     gene_platform = mData.columns.values.tolist()
-    gene2gene = gene2gene.load_pairs()
-    gene2gene = translate_inters(gene2gene, gene_platform, symmetrize=True, tolower=False)
+    gene2gene = gene2gene.get_matrix_for_platform(gene_platform)
     nw = gene2gene
     mData.set_index(mData.columns[0], inplace=True, drop=True)
     pheno = es.get_pheno_data_frame()

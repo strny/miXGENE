@@ -3,6 +3,8 @@ import cPickle as pickle
 import logging
 from uuid import uuid1
 import pandas as pd
+import numpy as np
+import scipy.sparse as sp
 import rpy2.robjects as R
 from copy import deepcopy
 import hashlib
@@ -11,6 +13,10 @@ import json
 
 from workflow.input import AbsInputVar
 from wrappers.scoring import metrics
+
+
+# from wrappers.input.utils import translate_inters
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -117,6 +123,7 @@ class PcaResult(GenericStoreStructure):
         return self.pca_storage.load()
 
 
+
 class BinaryInteraction(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
         super(BinaryInteraction, self).__init__(*args, **kwargs)
@@ -138,13 +145,56 @@ class BinaryInteraction(GenericStoreStructure):
             raise RuntimeError("Interaction pairs data wasn't stored prior")
         return self.storage_pairs.load()
 
+    def get_matrix_for_platform(self, gene_list, symmetrize=True, tolower=False):
+# def translate_inters(interactons, platform_order, symmetrize=False, tolower=False):
+        from collections import defaultdict
+        from wrappers.input.utils import find_refseqs
+        hasht=dict(zip(gene_list, range(len(gene_list))))
+        inter_hash = defaultdict(list)
+        interactons = self.load_pairs()
+        # new_inters = []
+        cols=[]
+        rows=[]
+        # interactons.iloc
+        log.debug("transforming interactions")
+        for ix  in range(len(interactons)):
+            a, b, val = interactons.iloc[ix]
+            inter_hash[a].append([b, val])
+        log.debug("transformation of interactions done")
+        count = 0
+        for key, value in inter_hash.iteritems():
+            count += 1
+            refseqs = find_refseqs(key)
+            for refseq in refseqs:
+                if refseq in gene_list:
+                    for (gene, strength) in value:
+                        # new_inters.append([(refseq, new_refseq, strength)
+                        for new_refseq in find_refseqs(gene):
+                            gi = refseq
+                            gj = new_refseq
+                            val = strength
+                            if tolower:
+                                gi=gi.lower()
+                                gj=gj.lower()
+                            if (gi not in hasht) or (gj not in hasht):
+                                 continue
+                            cols += [hasht[gi]]
+                            rows += [hasht[gj]]
+        size = max(max(rows), max(cols)) + 1
+        # TODO fix for custom value of interactions
+        inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
+        if symmetrize:
+            inters_matr = inters_matr + inters_matr.T
+            inters_matr.data /= inters_matr.data
+        return inters_matr
+
+
     def store_matrix(self, df):
         # deprecated
         pass
         # if self.storage is None:
         #     self.storage = DataFrameStorage(self.form_filepath("interaction"))
         # self.storage.store(df)
-
 
     def load_matrix(self):
         if self.storage is None:
@@ -167,8 +217,6 @@ class BinaryInteraction(GenericStoreStructure):
             for index, cols in interaction_df.iterrows():
                 sd[cols[1]][cols[0]] = cols[3]
         sd = sd.to_dense()
-
-
         # matrix.set_index(matrix.columns[0], inplace=True, drop=True)
         return sd
 

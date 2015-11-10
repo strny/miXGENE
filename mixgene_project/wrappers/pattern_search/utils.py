@@ -4,7 +4,6 @@ import scipy.sparse as sp
 import numpy as np
 import random as rd
 
-
 def draw_graph(edges, path, i, genes_colors=None):
     import pygraphviz as pgv
     G = pgv.AGraph()
@@ -27,26 +26,8 @@ def mergeNetworks(gene2gene, mir2gene):
                        shape=(gene2gene.shape[0] + mir2gene.shape[0], gene2gene.shape[0] + mir2gene.shape[0]))
     return nw
 
-def translate_inters(interactons, platform_order, symmetrize=False, tolower=False):
-    hasht=dict(zip(platform_order,range(len(platform_order))))
-    cols=[]
-    rows=[]
-    for ix in range(len(interactons)):
-        gi,gj=interactons.iloc[ix]
-        if tolower:
-            gi=gi.lower()
-            gj=gj.lower()
-        if (gi not in hasht) or (gj not in hasht):
-             continue
-        cols+=[hasht[gi]]
-        rows+=[hasht[gj]]
-    size = max(max(rows), max(cols)) + 1
-    inters_matr = sp.coo_matrix((np.ones(len(cols)),(rows,cols)), (size, size))
-    if symmetrize:
-        inters_matr = inters_matr + inters_matr.T 
-        inters_matr.data /= inters_matr.data  
-            
-    return inters_matr
+
+
 
 def mergeSamples(mRNA, miRNA):
     """
