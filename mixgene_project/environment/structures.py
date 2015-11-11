@@ -149,7 +149,7 @@ class BinaryInteraction(GenericStoreStructure):
 # def translate_inters(interactons, platform_order, symmetrize=False, tolower=False):
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
-        hasht=dict(zip(gene_list, range(len(gene_list))))
+        hasht = dict(zip(gene_list, range(len(gene_list))))
         inter_hash = defaultdict(list)
         interactons = self.load_pairs()
         # new_inters = []
@@ -164,20 +164,24 @@ class BinaryInteraction(GenericStoreStructure):
         count = 0
         for key, value in inter_hash.iteritems():
             count += 1
+            if count % 500 == 0:
+                log.debug("translating gene %d", count)
             refseqs = find_refseqs(key)
             for refseq in refseqs:
+                if refseq not in hasht:
+                    continue
                 if refseq in gene_list:
                     for (gene, strength) in value:
                         # new_inters.append([(refseq, new_refseq, strength)
                         for new_refseq in find_refseqs(gene):
                             gi = refseq
                             gj = new_refseq
+                            if gj not in hasht:
+                                 continue
                             val = strength
                             if tolower:
                                 gi=gi.lower()
                                 gj=gj.lower()
-                            if (gi not in hasht) or (gj not in hasht):
-                                 continue
                             cols += [hasht[gi]]
                             rows += [hasht[gj]]
         size = max(max(rows), max(cols)) + 1
