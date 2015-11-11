@@ -110,16 +110,9 @@ def find_refseqs(gene):
     # TODO little rewrite, duplicate code
     global gene_cache
     global web_counter
-
     if gene in gene_cache:
         return gene_cache[gene]
-
     mg = mygene.MyGeneInfo()
-
-    out = set()
-
-    if gene in gene_cache:
-        return gene_cache[gene]
     res = Refseq.objects.filter(gene_identifier_name__name=gene)
     if res:
         rs = [r.refseq for r in res]
@@ -131,12 +124,15 @@ def find_refseqs(gene):
             return gene_cache[gene]
         else:
             exp = mg.query(str(gene), species='human', fields='refseq')['hits']
+            gene_cache[gene] = set()
             if len(exp) == 0:
                 web_counter += 1
+                entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
+                entrez.refseq_set.create(refseq=gene)
+                gene_cache[gene].add(gene)
             if len(exp) > 0:
                 try:
                     refseqs = exp[0]['refseq']['rna']
-                    gene_cache[gene] = set()
                     if not isinstance(refseqs, basestring):
                         for refseq in refseqs:
                             entrez, created = GeneIdentifier.objects.get_or_create(name=gene)
@@ -150,7 +146,7 @@ def find_refseqs(gene):
                         return [refseqs]
                 except KeyError:
                     pass
-    return [gene]
+    return set([gene])
 
 
 def expand_geneset(gene_set):

@@ -56,8 +56,6 @@ class FetchGSE(GenericBlock):
 
     _expression_set = OutputBlockField(name="expression_set", field_type=FieldType.HIDDEN,
                                 provided_data_type="ExpressionSet")
-    # _gpl_annotation = OutputBlockField(name="gpl_annotation", field_type=FieldType.HIDDEN,
-    #                             provided_data_type="PlatformAnnotation")
 
     def __init__(self, *args, **kwargs):
         #"Fetch ncbi gse",

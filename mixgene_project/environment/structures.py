@@ -151,12 +151,10 @@ class BinaryInteraction(GenericStoreStructure):
         hasht = dict(zip(gene_list, range(len(gene_list))))
         inter_hash = defaultdict(list)
         interactons = self.load_pairs()
-        # new_inters = []
         cols=[]
         rows=[]
-        # interactons.iloc
         log.debug("transforming interactions")
-        for ix  in range(len(interactons)):
+        for ix in range(len(interactons)):
             a, b, val = interactons.iloc[ix]
             inter_hash[a].append([b, val])
         AllUpdated(
@@ -167,6 +165,9 @@ class BinaryInteraction(GenericStoreStructure):
         ).send()
         log.debug("transformation of interactions done")
         count = 0
+        counter2 = 0
+        counter3 = 0
+        counter4 = 0
         size_hash = len(inter_hash)
         for key, value in inter_hash.iteritems():
             count += 1
@@ -178,25 +179,29 @@ class BinaryInteraction(GenericStoreStructure):
                     silent=False,
                     mode=NotifyMode.INFO
                 ).send()
-
             refseqs = find_refseqs(key)
             for refseq in refseqs:
+                counter2 += 1
                 if refseq not in hasht:
                     continue
-                if refseq in gene_list:
+                if refseq in hasht:
                     for (gene, strength) in value:
                         # new_inters.append([(refseq, new_refseq, strength)
                         for new_refseq in find_refseqs(gene):
+                            counter3 += 1
                             gi = refseq
                             gj = new_refseq
                             if gj not in hasht:
                                  continue
+                            counter4 += 1
                             val = strength
                             if tolower:
                                 gi=gi.lower()
                                 gj=gj.lower()
-                            cols += [hasht[gi]]
-                            rows += [hasht[gj]]
+                            cols.append(hasht[gi])
+                            rows.append(hasht[gj])
+                            #cols += [hasht[gi]]
+                            #rows += [hasht[gj]]
         size = max(max(rows), max(cols)) + 1
         # TODO fix for custom value of interactions
         inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
