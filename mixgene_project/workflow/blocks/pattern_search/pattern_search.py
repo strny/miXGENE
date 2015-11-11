@@ -16,6 +16,8 @@ from environment.structures import ComoduleSet
 import scipy.sparse as sp
 from wrappers.pattern_search.utils import mergeNetworks
 from scipy.stats import zscore
+from webapp.notification import AllUpdated, NotifyMode
+
 
 def pattern_search(exp, block,
             m_rna_es,
@@ -42,15 +44,36 @@ def pattern_search(exp, block,
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
+    AllUpdated(
+        exp.pk,
+        comment=u"Initializing data...",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
     exp.log(block.uuid, "Initializing data...")
+
     mData = m_rna_es.get_assay_data_frame()
     gene_platform = list(mData.columns)
-    gene2gene = gene2gene.get_matrix_for_platform(gene_platform)
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
+    gene2gene = gene2gene.get_matrix_for_platform(exp, gene_platform)
+
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix done",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
     if miRNA2gene is not None:
         miRNA2gene = miRNA2gene.load_matrix().T
         miRNA2gene = sp.coo_matrix(miRNA2gene.values)
-
-
     if mi_rna_es is not None:
         miData = mi_rna_es.get_assay_data_frame()
         mir2gene = miRNA2gene

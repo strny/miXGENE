@@ -13,7 +13,7 @@ import json
 
 from workflow.input import AbsInputVar
 from wrappers.scoring import metrics
-
+from webapp.notification import AllUpdated, NotifyMode
 
 # from wrappers.input.utils import translate_inters
 
@@ -145,8 +145,7 @@ class BinaryInteraction(GenericStoreStructure):
             raise RuntimeError("Interaction pairs data wasn't stored prior")
         return self.storage_pairs.load()
 
-    def get_matrix_for_platform(self, gene_list, symmetrize=True, tolower=False):
-# def translate_inters(interactons, platform_order, symmetrize=False, tolower=False):
+    def get_matrix_for_platform(self, exp, gene_list, symmetrize=True, tolower=False):
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
         hasht = dict(zip(gene_list, range(len(gene_list))))
@@ -160,12 +159,26 @@ class BinaryInteraction(GenericStoreStructure):
         for ix  in range(len(interactons)):
             a, b, val = interactons.iloc[ix]
             inter_hash[a].append([b, val])
+        AllUpdated(
+            exp.pk,
+            comment=u"Transforming interaction matrix done",
+            silent=False,
+            mode=NotifyMode.INFO
+        ).send()
         log.debug("transformation of interactions done")
         count = 0
+        size_hash = len(inter_hash)
         for key, value in inter_hash.iteritems():
             count += 1
             if count % 500 == 0:
                 log.debug("translating gene %d", count)
+                AllUpdated(
+                    exp.pk,
+                    comment=u"Translating gene %s of %s" % (count, size_hash),
+                    silent=False,
+                    mode=NotifyMode.INFO
+                ).send()
+
             refseqs = find_refseqs(key)
             for refseq in refseqs:
                 if refseq not in hasht:
