@@ -36,9 +36,29 @@ def nimfa_snmnmf_task(exp,
     mRNA_matrix = mRNA_matrix[mRNA_matrix.columns[0:2500]]
     miRNA_matrix = miRNA.get_assay_data_frame()
     miRNA_matrix = miRNA_matrix[miRNA_matrix.columns[0:2500]]
+
+    gene_platform = list(mRNA.columns)
+    mi_rna_platform = list(miRNA_matrix.columns)
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
+    g2g = gene2gene.get_matrix_for_platform(exp, gene_platform)
+    m2g = gene2gene.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix done",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
     snm = ns.NIMFA_SNMNMF(mRNA=mRNA_matrix, miRNA=miRNA_matrix, DNAmethyl=None,
-                          gene2gene=gene2gene.load_matrix(),
-                          miRNA2gene=miRNA2gene.load_matrix(),
+                          gene2gene=g2g,
+                          miRNA2gene=m2g,
                           gene2DNAmethylation=None,
                           params=params)
 

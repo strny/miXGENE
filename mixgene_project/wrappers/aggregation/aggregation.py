@@ -24,6 +24,9 @@ import sys
 
 
 #@task(name="wrappers.aggregation.aggregation.aggregation_task")
+from webapp.notification import AllUpdated, NotifyMode
+
+
 def aggregation_task(exp, block,
                      mode, c,
                      m_rna_es, mi_rna_es, interaction_matrix,
@@ -43,7 +46,25 @@ def aggregation_task(exp, block,
 
     m_rna = m_rna_es.get_assay_data_frame()
     mi_rna = mi_rna_es.get_assay_data_frame()
-    targets_matrix = interaction_matrix.load_matrix()
+    gene_platform = list(m_rna.columns)
+    mi_rna_platform = list(mi_rna)
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
+    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix done",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
+
+    # targets_matrix = interaction_matrix.load_matrix()
 
     result_df = agg_func(m_rna, mi_rna, targets_matrix, c)
     result = m_rna_es.clone(base_filename)

@@ -55,7 +55,7 @@ def compute_edges(exp, block,
     cs = comodule_set
     mData = es.get_assay_data_frame()
     gene_platform = mData.columns.values.tolist()
-    gene2gene = gene2gene.get_matrix_for_platform(gene_platform)
+    gene2gene = gene2gene.get_matrix_for_platform(exp, gene_platform)
     nw = gene2gene
     mData.set_index(mData.columns[0], inplace=True, drop=True)
     pheno = es.get_pheno_data_frame()
@@ -114,11 +114,11 @@ class PatternEdges(GenericBlock):
         # gene_platform = self.upload_gene2gene_platform
         gene2gene = self.get_input_var("gene2gene")
         """:type :BinaryInteraction"""
-        gene_platform = gene_platform.get_file()
-        with open(gene_platform.path) as f:
-            for line in f:
-                gene_platform = line.split(',')
-                self.clean_errors()
+        # gene_platform = gene_platform.get_file()
+        # with open(gene_platform.path) as f:
+        #     for line in f:
+        #         gene_platform = line.split(',')
+        #         self.clean_errors()
 
         self.celery_task = wrapper_task.s(
             compute_edges,

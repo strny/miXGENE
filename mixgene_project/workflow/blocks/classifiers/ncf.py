@@ -17,11 +17,11 @@ class NCF(GenericClassifier):
                                  required_data_type="BinaryInteraction",
                                  required=True)
 
-    upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=32,
-                                           input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
+    # upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=32,
+    #                                        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
-    upload_mirna_platform = ParamField("upload_mirna_platform", title="miRNA platform", order_num=33,
-                                       input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
+    # upload_mirna_platform = ParamField("upload_mirna_platform", title="miRNA platform", order_num=33,
+    #                                    input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
     n_estimators = ParamField(
         name="n_estimators",
@@ -112,17 +112,17 @@ class NCF(GenericClassifier):
     )
 
     def collect_options(self):
-        g_p = self.upload_gene2gene_platform.get_file()
-        m_p = self.upload_mirna_platform.get_file()
-        with open(g_p.path) as f:
-            for line in f:
-                g_p = line.split(',')
-        with open(m_p.path) as f:
-            for line in f:
-                m_p = line.split(',')
+        # g_p = self.upload_gene2gene_platform.get_file()
+        # m_p = self.upload_mirna_platform.get_file()
+        # with open(g_p.path) as f:
+        #     for line in f:
+        #         g_p = line.split(',')
+        # with open(m_p.path) as f:
+        #     for line in f:
+        #         m_p = line.split(',')
 
-        self.classifier_options["gene_platform"] = g_p
-        self.classifier_options["miRNA_platform"] = m_p
+        # self.classifier_options["gene_platform"] = g_p
+        # self.classifier_options["miRNA_platform"] = m_p
         self.classifier_options["gene2gene"] = self.get_input_var("gene2gene")
         self.classifier_options["miRNA2gene"] = self.get_input_var("miRNA2gene")
         self.classifier_options['walk_lengths'] = range(1, int(self.walk_max_length))

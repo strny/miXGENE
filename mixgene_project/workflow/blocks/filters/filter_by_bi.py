@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from webapp.notification import AllUpdated
+from webapp.notification import NotifyMode
 
 from webapp.tasks import wrapper_task
 from workflow.blocks.blocks_pallet import GroupType
@@ -27,19 +29,38 @@ def filter_by_bi(
 
     m_rna_df = m_rna_es.get_assay_data_frame()
     mi_rna_df = mi_rna_es.get_assay_data_frame()
-    targets_matrix = interaction_matrix.load_matrix()
-    targets_matrix.columns = m_rna_df.columns
-    targets_matrix.index = mi_rna_df.columns
+    gene_platform = list(m_rna_df.columns)
+    mi_rna_platform = list(mi_rna_df.columns)
 
-    allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.index)
-    #allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.columns)
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
 
-    m_rna_df_filtered = m_rna_df.loc[allowed_m_rna_index_set, :]
+    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
 
-    allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.index)
-    #allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.columns)
+    AllUpdated(
+        exp.pk,
+        comment=u"Transforming interaction matrix done",
+        silent=False,
+        mode=NotifyMode.INFO
+    ).send()
 
-    mi_rna_df_filtered = mi_rna_df.loc[allowed_mi_rna_index_set, :]
+    # targets_matrix = interaction_matrix.load_matrix()
+    # targets_matrix.columns = m_rna_df.columns
+    # targets_matrix.index = mi_rna_df.columns
+
+    # allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.index)
+    allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.columns)
+
+    m_rna_df_filtered = m_rna_df.loc[:, allowed_m_rna_index_set]
+
+    # allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.index)
+    allowed_mi_rna_index_set = set(targets_matrix.index) & set(mi_rna_df.columns)
+
+    mi_rna_df_filtered = mi_rna_df.loc[:, allowed_mi_rna_index_set]
 
     #result_df = agg_func(m_rna, mi_rna, targets_matrix, c)
     m_rna_result = m_rna_es.clone(base_filename + "_mRNA")

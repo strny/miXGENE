@@ -145,10 +145,13 @@ class BinaryInteraction(GenericStoreStructure):
             raise RuntimeError("Interaction pairs data wasn't stored prior")
         return self.storage_pairs.load()
 
-    def get_matrix_for_platform(self, exp, gene_list, symmetrize=True, tolower=False):
+    def get_matrix_for_platform(self, exp, gene_list, mirna_list = None, symmetrize=True, tolower=False):
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
         hasht = dict(zip(gene_list, range(len(gene_list))))
+        mirna_hasht = dict()
+        if mirna_list is not None:
+            mirna_hasht = dict(zip(mirna_list, range(len(mirna_list))))
         inter_hash = defaultdict(list)
         interactons = self.load_pairs()
         cols=[]
@@ -169,42 +172,82 @@ class BinaryInteraction(GenericStoreStructure):
         counter3 = 0
         counter4 = 0
         size_hash = len(inter_hash)
-        for key, value in inter_hash.iteritems():
-            count += 1
-            if count % 500 == 0:
-                log.debug("translating gene %d", count)
-                AllUpdated(
-                    exp.pk,
-                    comment=u"Translating gene %s of %s" % (count, size_hash),
-                    silent=False,
-                    mode=NotifyMode.INFO
-                ).send()
-            refseqs = find_refseqs(key)
-            for refseq in refseqs:
-                counter2 += 1
-                if refseq not in hasht:
-                    continue
-                if refseq in hasht:
-                    for (gene, strength) in value:
-                        # new_inters.append([(refseq, new_refseq, strength)
-                        for new_refseq in find_refseqs(gene):
-                            counter3 += 1
-                            gi = refseq
-                            gj = new_refseq
-                            if gj not in hasht:
-                                 continue
-                            counter4 += 1
-                            val = strength
-                            if tolower:
-                                gi=gi.lower()
-                                gj=gj.lower()
-                            cols.append(hasht[gi])
-                            rows.append(hasht[gj])
-                            #cols += [hasht[gi]]
-                            #rows += [hasht[gj]]
+        if mirna_list is None:
+            for key, value in inter_hash.iteritems():
+                count += 1
+                if count % 500 == 0:
+                    log.debug("translating gene %d", count)
+                    AllUpdated(
+                        exp.pk,
+                        comment=u"Translating gene %s of %s" % (count, size_hash),
+                        silent=False,
+                        mode=NotifyMode.INFO
+                    ).send()
+                refseqs = find_refseqs(key)
+                for refseq in refseqs:
+                    counter2 += 1
+                    if refseq not in hasht:
+                        continue
+                    if refseq in hasht:
+                        for (gene, strength) in value:
+                            # new_inters.append([(refseq, new_refseq, strength)
+                            for new_refseq in find_refseqs(gene):
+                                counter3 += 1
+                                gi = refseq
+                                gj = new_refseq
+                                if gj not in hasht:
+                                     continue
+                                counter4 += 1
+                                val = strength
+                                if tolower:
+                                    gi=gi.lower()
+                                    gj=gj.lower()
+                                cols.append(hasht[gi])
+                                rows.append(hasht[gj])
+        else:
+            for key, value in inter_hash.iteritems():
+                count += 1
+                if count % 500 == 0:
+                    log.debug("translating gene %d", count)
+                    AllUpdated(
+                        exp.pk,
+                        comment=u"Translating gene %s of %s" % (count, size_hash),
+                        silent=False,
+                        mode=NotifyMode.INFO
+                    ).send()
+                refseqs = find_refseqs(key)
+                for refseq in refseqs:
+                    counter2 += 1
+                    if refseq not in mirna_hasht:
+                        continue
+                    if refseq in mirna_hasht:
+                        for (gene, strength) in value:
+                            for new_refseq in find_refseqs(gene):
+                                counter3 += 1
+                                gi = refseq
+                                gj = new_refseq
+                                if gj not in hasht:
+                                     continue
+                                counter4 += 1
+                                val = strength
+                                if tolower:
+                                    gi=gi.lower()
+                                    gj=gj.lower()
+                                rows.append(mirna_hasht[gi])
+                                cols.append(hasht[gj])
         size = max(max(rows), max(cols)) + 1
+        AllUpdated(
+            exp.pk,
+            comment=u"%d interactions were found." % len(cols),
+            silent=False,
+            mode=NotifyMode.INFO
+        ).send()
+        inters_matr = None
         # TODO fix for custom value of interactions
-        inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
+        if mirna_list is None:
+            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
+        else:
+            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (max(rows) + 1, max(cols) + 1))
         if symmetrize:
             inters_matr = inters_matr + inters_matr.T
             inters_matr.data /= inters_matr.data

@@ -117,11 +117,11 @@ def preprocess_soft(exp, block, source_file):
     else:
         refseq_idx = refseq_idx[0]
 
-    #TODO bug here
+
     probe_to_genes_GS = GS()
     for row in pl[1:]:
         probe_to_genes_GS.description[row[id_idx]] = ""
-        probe_to_genes_GS.genes[row[id_idx]] = row[refseq_idx].split(" /// ")
+        probe_to_genes_GS.genes[row[id_idx]] = [row[refseq_idx].split(" /// ")[0]]
 
     # platform_annotation = PlatformAnnotation(
     #     "TODO:GET NAME FROM SOFT",

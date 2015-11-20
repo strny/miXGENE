@@ -71,16 +71,17 @@ def pattern_search(exp, block,
         mode=NotifyMode.INFO
     ).send()
 
-    if miRNA2gene is not None:
-        miRNA2gene = miRNA2gene.load_matrix().T
-        miRNA2gene = sp.coo_matrix(miRNA2gene.values)
-    if mi_rna_es is not None:
-        miData = mi_rna_es.get_assay_data_frame()
-        mir2gene = miRNA2gene
-        mir2gene = sp.coo_matrix(mir2gene.values).T
-        nw = mergeNetworks(gene2gene, mir2gene)
-    else:
-        nw = gene2gene
+    # TODO fix pattern search
+    # if miRNA2gene is not None:
+    #     miRNA2gene = miRNA2gene.load_matrix().T
+    #     miRNA2gene = sp.coo_matrix(miRNA2gene.values)
+    # if mi_rna_es is not None:
+    #     miData = mi_rna_es.get_assay_data_frame()
+    #     mir2gene = miRNA2gene
+    #     mir2gene = sp.coo_matrix(mir2gene.values).T
+    #     nw = mergeNetworks(gene2gene, mir2gene)
+    # else:
+    nw = gene2gene
     # data = mData.ix[1:]
     data = mData
     data.set_index(data.columns[0], inplace=True, drop=True)
