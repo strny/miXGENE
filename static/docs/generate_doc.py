@@ -1,10 +1,21 @@
 import csv
 import os
+import shutil
 from templates.block_template import BLOCK_TEMPLATE, BLOCK_TEMPLATE_INDEX
 from templates.main_page_template import MAIN_PAGE_MD, MAIN_PAGE_HTML
 from templates.workflow_template import WORKFLOW_MD, WORKFLOW_HTML
 from templates.category_template import CATEGORY_MD, CATEGORY_HTML
 from templates.data_types_template import DATA_TYPES_MD, DATA_TYPES_HTML
+
+
+import os
+import sys
+sys.path.append('../../mixgene_project')
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mixgene.settings")
+
+# your imports, e.g. Django models
+from webapp.models import HelpBlock, HelpBlockAttribute
 
 __author__ = 'pavel'
 
@@ -17,8 +28,11 @@ class Page:
     @staticmethod
     def _create_dir(path):
         try:
+            shutil.copytree("css", path+"/css")
             os.makedirs(path)
-        except OSError:
+            # shutil.copytree("css", path)
+        except OSError as e:
+            #print(e)
             if not os.path.isdir(path):
                 raise
 
@@ -161,6 +175,20 @@ class Block(Page):
     def set_data_types(self, data_types):
         self.data_types = data_types
 
+    def save_to_db(self):
+        hb, created = HelpBlock.objects.get_or_create(block_name=self.name)
+        hb.block_description = self.description
+        hb.save()
+        pars = self.parameters.split(',')
+        for p in pars:
+            try:
+                par_name, par_desc = p.split('|')
+            except ValueError as v:
+                par_name, par_desc = p, ""
+            ba, created = hb.helpblockattribute_set.get_or_create(attribute_name=par_name)
+            ba.parameters_description = par_desc
+            ba.save()
+
     @staticmethod
     def create_blocks_from_csv(csv_file):
         with open(csv_file, 'rb') as csvfile:
@@ -236,9 +264,12 @@ class DataTypes(Page):
         block_vars = {'data_types': s}
         return DATA_TYPES_MD.format(**block_vars)
 
+
+print("Starting generating documentation...")
 os.system("rm -rf doc")
 
 blocks = Block.create_blocks_from_csv('blocks.csv')
+map(lambda b: b.save_to_db(), blocks)
 categories = Category.create_categories_from_csv('categories.csv')
 data_types = DataTypes.create_from_csv('data_types.csv')
 for c in categories:
@@ -250,3 +281,4 @@ for c in categories:
 mp = MainPage(Workflow(categories), data_types)
 mp.generate()
 # generate_blocks_index(blocks)
+print("Generating done.")

@@ -628,3 +628,13 @@ class GEOTerm(models.Model):
     term_name = models.CharField(max_length=512)
     term_genes = models.TextField()
 
+
+class HelpBlock(models.Model):
+    block_name = models.CharField(max_length=512)
+    block_description = models.TextField()
+
+
+class HelpBlockAttribute(models.Model):
+    help_block = models.ForeignKey(HelpBlock)
+    attribute_name = models.CharField(max_length=512)
+    parameters_description = models.TextField()

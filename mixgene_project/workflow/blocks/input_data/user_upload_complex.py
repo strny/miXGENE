@@ -25,7 +25,7 @@ def convert_to_refseq(assay_df, unit, data_type):
     new_names = {}
     count = 0
     for gene in columns_source:
-        new_name = find_refseqs(gene)
+        new_name = list(find_refseqs(gene))
         if new_name:
             new_names[gene] = new_name[0]
             count += 1

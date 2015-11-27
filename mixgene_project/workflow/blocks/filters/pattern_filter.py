@@ -16,12 +16,13 @@ import scipy.sparse as sp
 # from wrappers.pattern_search.utils import translate_inters
 from wrappers.pattern_search.utils import mergeNetworks
 from wrappers.pattern_search.pattern_filter import pattern_filter
+from environment.structures import GS, GeneSets
 from scipy.stats import zscore
 
 def pattern_filter_task(exp, block,
             m_rna_es,
             mi_rna_es,
-            comodule_set,
+            gene_sets,
             metric,
             n_best,
             base_filename):
@@ -52,10 +53,10 @@ def pattern_filter_task(exp, block,
     result = pattern_filter(com_set.values(), data, classes, n_best, metric)
 
     result = {key: value for key, value in enumerate(result)}
+    gs = GS(None, result)
+    cs = GeneSets(exp.get_data_folder(), base_filename)
 
-    cs = ComoduleSet(exp.get_data_folder(), base_filename)
-
-    cs.store_set(result)
+    cs.store_set(gs)
 
     return [cs], {}
 
@@ -78,7 +79,7 @@ class PatternFilter(GenericBlock):
     _m_rna = InputBlockField(name="mRNA", order_num=10, required_data_type="ExpressionSet", required=True)
     _mi_rna = InputBlockField(name="miRNA", order_num=20, required_data_type="ExpressionSet", required=False)
 
-    _cs = InputBlockField(name="cs", order_num=30, required_data_type="ComoduleSet", required=True)
+    _gs = InputBlockField(name="gs", order_num=30, required_data_type="GeneSets", required=True)
 
 
     _metric = ParamField(
@@ -101,7 +102,7 @@ class PatternFilter(GenericBlock):
 
     n_best = ParamField(name="n_best", order_num=50, title="# of best", input_type=InputType.TEXT, field_type=FieldType.INT, init_val=10)
 
-    patterns = OutputBlockField(name="patterns", provided_data_type="ComoduleSet")
+    patterns = OutputBlockField(name="patterns", provided_data_type="GeneSets")
 
     def __init__(self, *args, **kwargs):
         super(PatternFilter, self).__init__(*args, **kwargs)
@@ -115,7 +116,7 @@ class PatternFilter(GenericBlock):
             exp, self,
             m_rna_es = self.get_input_var("mRNA"),
             mi_rna_es = self.get_input_var("miRNA"),
-            comodule_set = self.get_input_var("cs"),
+            gene_sets = self.get_input_var("gs"),
             metric = self.metric,
             n_best = self.n_best,
             base_filename="%s_comodule_sets" % self.uuid

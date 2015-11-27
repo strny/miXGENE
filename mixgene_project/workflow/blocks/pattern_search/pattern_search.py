@@ -12,7 +12,7 @@ from workflow.blocks.generic import GenericBlock, save_params_actions_list, exec
 from converters.gene_set_tools import map_gene_sets_to_probes
 from django.conf import settings
 from wrappers.pattern_search.pattern_search import DifferentialPatternSearcher
-from environment.structures import ComoduleSet
+from environment.structures import ComoduleSet, GS, GeneSets
 import scipy.sparse as sp
 from wrappers.pattern_search.utils import mergeNetworks
 from scipy.stats import zscore
@@ -103,13 +103,18 @@ def pattern_search(exp, block,
     # tj. pro nase potreby:
     comodule_set = map(lambda pattern: [gene_platform[gene] for gene in pattern.genes], res)
 
-    cs = ComoduleSet(exp.get_data_folder(), base_filename)
-
+    # cs = ComoduleSet(exp.get_data_folder(), base_filename)
+    gene_sets = GeneSets(exp.get_data_folder(), str(exp.uuid))
     result = {key: value for key, value in enumerate(comodule_set)}
-    cs.store_set(result)
-    exp.log(block.uuid, "ComoduleSet stored.")
+    gs = GS(None, result)
+    gene_sets.store_gs(gs)
 
-    return [cs], {}
+    # self.set_out_var("gene_sets", gene_sets)
+    # result = {key: value for key, value in enumerate(comodule_set)}
+    # cs.store_set(result)
+    # exp.log(block.uuid, "ComoduleSet stored.")
+
+    return [gs], {}
 
 
 class PatternSearch(GenericBlock):
@@ -164,7 +169,7 @@ class PatternSearch(GenericBlock):
             ]
         }
     )
-    patterns = OutputBlockField(name="patterns", provided_data_type="ComoduleSet")
+    patterns = OutputBlockField(name="patterns", provided_data_type="GeneSets")
 
     def __init__(self, *args, **kwargs):
         super(PatternSearch, self).__init__(*args, **kwargs)
