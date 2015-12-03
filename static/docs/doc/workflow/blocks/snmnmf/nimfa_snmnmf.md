@@ -14,9 +14,9 @@
 
 ## Parameters
 
-* *l1* - stength of the regularization by the protein-protein interactions
+* *l1* - strength of the regularization by the protein-protein interactions
 * *l2* - strength of the regularization by the miRNA-mRNA interaction
-* *g1* - a parameter inducing the sparse coding* - sparse coding
+* *g1* - a parameter inducing the sparse coding
 * *g2* - the sparsity inducing parameter
 * *rank* - number of commodules
 

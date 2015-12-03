@@ -11,7 +11,7 @@
 
 ## Parameters
 
-* *Geo accession id* - identifier of the stored dataset
+* *Geo accession id* - data series number GSE[0-9]^7
 
 ## Outputs
 

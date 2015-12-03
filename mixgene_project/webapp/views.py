@@ -17,7 +17,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
-from webapp.models import Experiment, UploadedData, delete_exp, Article, ExperimentLog
+from webapp.models import Experiment, UploadedData, delete_exp, Article, ExperimentLog, HelpBlock, HelpBlockAttribute
 from webapp.forms import UploadForm
 from webapp.scope import Scope
 from webapp.store import add_block_to_exp_from_dict
@@ -456,6 +456,7 @@ def add_experiment(request):
     mkdir(exp.get_data_folder())
     return redirect("/constructor/%s" % exp.pk) # TODO use reverse
 
+
 @login_required(login_url='/auth/login/')
 @csrf_protect
 @never_cache
@@ -465,3 +466,27 @@ def duplicate_experiment(request, exp_id):
     # exp.pk = None
     # exp.save()
     return redirect("/constructor/%s" % exp.pk) # TODO use reverse
+
+
+@never_cache
+def get_tooltip(request, exp_id, block_uuid):
+    try:
+        field_title = request.GET['field_title']
+    except KeyError:
+        field_title = None
+    exp = Experiment.objects.get(pk=exp_id)
+    block = exp.get_block(block_uuid)
+    try:
+        if field_title:
+            hba = HelpBlockAttribute.objects.get(help_block__block_name__icontains = block.name, attribute_name__icontains = field_title)
+            hba_json = {"description": hba.parameters_description}
+        else:
+            hba = HelpBlock.objects.get(block_name__icontains = block.name)
+            hba_json = {"description": hba.block_description}
+    except Exception:
+        hba_json = {"description": "Not available"}
+    content_type = "application/json"
+    resp = HttpResponse(content_type=content_type)
+    json.dump(hba_json, resp)
+    return resp
+

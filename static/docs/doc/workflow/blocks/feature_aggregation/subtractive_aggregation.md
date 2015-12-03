@@ -13,7 +13,9 @@
 
 ## Parameters
 
-* *Constant c* - the general strength of miRNA-mRNA interactions
+* *Constant c* - the real valued general strength of miRNA-mRNA interactions
+* *a bigger value puts more emphasis on the prior knowledge. The zero value means no influence of miRNAs. If the data are normalized
+* *the upper bound-value is possible to estimate as the mean cardinality of mRNA-miRNA interactions.
 
 ## Outputs
 

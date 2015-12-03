@@ -12,7 +12,8 @@
 
 ## Parameters
 
-* *Concatenation*
+* *Concatenation* - whether to concatenate by rows (when merging samples)
+* *or by columns (when merging features)
 
 ## Outputs
 

@@ -13,7 +13,7 @@
 ## Parameters
 
 * *The function to measure the quality of a splitclass-correlation statistic
-* *The maximum depth of the tree* - phenotype-correlation statistic
+* *The maximum depth of the tree* - determines how much to shatter the data
 * *The minimum number of samples to split an internal node* - determines how much to shatter the data
 * *The minimum number of samples to be at a leaf node* - determines how much to shatter the data
 

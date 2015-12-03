@@ -162,6 +162,30 @@ Constructor.factory("blockAccess", function($http, $log){
 
     };
 
+    access.get_tooltip = function(block, field, on_success) {
+        if(field) {
+            $http({
+                method: 'GET',
+                url: '/workflows/' + access.exp_id + '/blocks/' + block.uuid + '/get_tooltip'
+                , params: {field_title: field.title}
+            }).success(function (data, status, headers, config) {
+                if (typeof(on_success) != "undefined") {
+                    on_success(data);
+                }
+            });
+        } else {
+            $http({
+                method: 'GET',
+                url: '/workflows/' + access.exp_id + '/blocks/' + block.uuid + '/get_tooltip'
+                , params: {}
+            }).success(function (data, status, headers, config) {
+                if (typeof(on_success) != "undefined") {
+                    on_success(data);
+                }
+            });
+        }
+    };
+
     access.send_action = function(block, action_code, do_reload_all, on_success){
         if(typeof(do_reload_all)==='undefined'){ do_reload_all = false };
 

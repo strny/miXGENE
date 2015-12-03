@@ -14,11 +14,14 @@
 
 ## Parameters
 
-* *The number of trees in the forest* - size of the ensemble
-* *Walk max length* - length of the random walk (the key bias parameter)
+* *The number of trees in the forest* - size of the ensemble; a bigger value means more accurate but significantly slower
+* *Walk max length* - length of the random walk; the shorter gives more importance to the prior omics interactions and makes the base learners more diverse yet less adaptable\
+* *longer gives less importance on the particular omics interactions and preferes the features with more interactions in general
 * *The function to measure quality of split* - phenotype-correlation statistic
-* *Eps* - parameter of the heuiristic for learning the optimal walk length
+* *Eps* - parameter of the heuristic for learning the optimal walk length; a diferencial of the ensemble diversity drop between two subsequent walk lengths
 * *The maximum depth of the tree* - key parameter for learning the optimal walk length
+* *mimics the base learners weaknes\
+* *determines how much to shatter the data
 * *The minimum number of samples to split an internal node* - determines how much to shatter the data
 * *The minimum number of samples to be at a leaf node* - determines how much to shatter the data
 * *bootstrap* - whether to subsample the data examples

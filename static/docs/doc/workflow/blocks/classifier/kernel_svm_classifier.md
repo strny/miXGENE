@@ -16,7 +16,7 @@
 * *Kernel type* - feature space adaptation
 * *Degree of the polynomial kernel* - degree of the feature space expansion (1-3)
 * *Kernel coefficient for RBF and Polynomial and Sigmoid* - kernel adaptation coefficient (if gamma is 0.0 then 1/n_features will be used instead)
-* *Tolerance for stopping criteria* - when to stop the optimization
+* *Tolerance for stopping criteria* - Minimal tolerated residuum of the optimal value when to stop the optimization
 
 ## Outputs
 

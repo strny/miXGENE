@@ -20,7 +20,7 @@
 
 ## Outputs
 
-* *patterns[[ComoduleSet](../../../data_types.html#comoduleset)]*
+* *patterns[[GeneSets](../../../data_types.html#genesets)]*
 
 ## Description
 

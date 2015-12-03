@@ -32,6 +32,9 @@ urlpatterns = patterns('',
 
     url(r'^workflows/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)$',
         'webapp.views.block_resource', name="block_resource"),
+    url(r'^workflows/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)/get_tooltip/?$',
+        'webapp.views.get_tooltip', name="get_tooltip"),
+
     url(r'^workflows/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)/actions/(?P<action_code>\w+)$',
         'webapp.views.block_resource', name="block_resource_with_action"),
     url(r'^workflows/(?P<exp_id>\d+)/blocks/(?P<block_uuid>[\w|\d]+)/(?P<field>\w+)$',

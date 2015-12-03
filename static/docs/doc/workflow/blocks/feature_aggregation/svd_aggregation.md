@@ -14,6 +14,7 @@
 ## Parameters
 
 * *Constant c* - the general strength of miRNA-mRNA interactions
+* *a bigger value puts more emphasis on the prior knowledge
 
 ## Outputs
 

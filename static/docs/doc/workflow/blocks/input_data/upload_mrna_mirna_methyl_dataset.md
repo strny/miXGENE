@@ -11,19 +11,19 @@
 
 ## Parameters
 
-* *mRNA expression* - mRNA expression data-file
+* *mRNA expression* - a csv-like data table with header as gene or transcript IDs and index as sample IDs (or vice versa)
 * *Platform ID* - NCBI platform identifier
 * *Working unit* -  [used when platform is unknown]
 * *Matrix orientation* - whether to consider the rows as samples and columns as features\
 * *or vice versa
 * *CSV separator symbol* - data entry delimiter
-* *μRNA expression* - miRNA expression data-file
+* *μRNA expression* - a csv-like data table with header as miRNA transcript IDs and index as sample IDs (or vice versa)
 * *Platform ID* - NCBI platform identifier
 * *Working unit * - [used when platform is unknown]
 * *Matrix orientation* - whether to consider the rows as samples and columns as features\
 * *or vice versa
 * *CSV separator symboldata entry delimiter
-* *Methylation Expression* - methylation data-file
+* *Methylation Expression* - a csv-like data table with header as methylation island IDs IDs and index as sample IDs (or vice versa)
 * *Platform ID* - NCBI platform identifier
 * *Working unit* -  [used when platform is unknown]
 * *Matrix orientation* - whether to consider the rows as samples and columns as features\

@@ -11,8 +11,8 @@
 
 ## Parameters
 
-* *Folds number* - the number of disjoint subsets the data are split into
-* *Repeats number* - the number cross-validation runs on differently splitted data
+* *Folds number* - the number of disjoint subsets the data are split into; more folds makes the predictive performance estimate less biased
+* *Repeats number* - the number cross-validation runs on differently splitted data; more repetitions makes the predictive performance estimate more stable
 
 ## Outputs
 

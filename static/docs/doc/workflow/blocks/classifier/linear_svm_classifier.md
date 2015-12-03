@@ -13,8 +13,8 @@
 ## Parameters
 
 * *Penalty* - the norm of coefficient regularization ('2' - standard SVM '1' - sparse coeffficients)
-* *Tolerance for stopping criteria* - when to stop the optimization
-* *The loss function* - empirical risk metric
+* *Tolerance for stopping criteria* - Minimal tolerated residuum of the optimal value when to stop the optimization
+* *The loss function* - empirical risk metric (‘hinge’ or ‘squared_hinge’ )
 
 ## Outputs
 

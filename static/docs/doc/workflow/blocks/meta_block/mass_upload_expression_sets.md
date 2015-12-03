@@ -12,7 +12,8 @@
 ## Parameters
 
 * *Expression sets* - expression data-files
-* *Matrices orientation
+* *Matrices orientation* - whether the feature vectors (i.e. samples) are stored as columns\
+* *or rows
 * *Platform ID* - NCBI platform identidfier
 * *Phenotypes* - phenotype data-file
 * *CSV separator symbol* - data entry delimiter

@@ -37,7 +37,6 @@ class GeneCache(object):
         self.gene_cache[key] = value
 
 
-gene_cache = GeneCache()
 tmp_counter = 0
 
 log = logging.getLogger(__name__)
@@ -108,7 +107,7 @@ web_counter = 0
 def find_refseqs(gene):
     # Returns set of RefSeqs
     # TODO little rewrite, duplicate code
-    global gene_cache
+    gene_cache = GeneCache()
     global web_counter
     if gene in gene_cache:
         return gene_cache[gene]
@@ -152,7 +151,7 @@ def find_refseqs(gene):
 def expand_geneset(gene_set):
     # Returns set of RefSeqs
     mg = mygene.MyGeneInfo()
-    global gene_cache
+    gene_cache = GeneCache()
     out = set()
     res = Refseq.objects.filter(gene_identifier_name__name__in=gene_set)
 

@@ -14,6 +14,7 @@ import json
 from workflow.input import AbsInputVar
 from wrappers.scoring import metrics
 from webapp.notification import AllUpdated, NotifyMode
+from django.conf import settings
 
 # from wrappers.input.utils import translate_inters
 
@@ -146,6 +147,12 @@ class BinaryInteraction(GenericStoreStructure):
         return self.storage_pairs.load()
 
     def get_matrix_for_platform(self, exp, gene_list, mirna_list = None, symmetrize=True, tolower=False):
+        if settings.CELERY_DEBUG:
+            import sys
+            sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+            import pydevd
+            pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
         hasht = dict(zip(gene_list, range(len(gene_list))))
@@ -208,10 +215,10 @@ class BinaryInteraction(GenericStoreStructure):
             for key, value in inter_hash.iteritems():
                 count += 1
                 if count % 500 == 0:
-                    log.debug("translating gene %d", count)
+                    log.debug("translating miRNA %d", count)
                     AllUpdated(
                         exp.pk,
-                        comment=u"Translating gene %s of %s" % (count, size_hash),
+                        comment=u"Translating miRNA %s of %s" % (count, size_hash),
                         silent=False,
                         mode=NotifyMode.INFO
                     ).send()

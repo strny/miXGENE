@@ -180,6 +180,8 @@ Constructor.controller('BlockCtrl', function BlockCtrl($scope, blockAccess, $mod
 
     };
 
+    $scope.access.get_tooltip($scope.block, null, function(data) { $scope.tooltip = data });
+
     // TODO: legacy
     if( $scope.block.show_collector_editor == undefined ){
         $scope.block.show_collector_editor = false;
@@ -245,6 +247,8 @@ Constructor.controller('formFieldCtrl', function($scope, $log){
     $scope.predicate = "order_num";
 
     $scope.field = $scope.param_proto;
+
+    $scope.access.get_tooltip($scope.block, $scope.field, function(data) { $scope.tooltip = data });
 });
 
 Constructor.controller('blockElementCtrl', function($scope){
