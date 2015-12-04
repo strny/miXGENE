@@ -129,5 +129,5 @@ class GeneSetAggCV(GenericBlock):
 
     def success(self, exp, out_train_es, out_test_es):
         self.set_out_var("out_train_es", out_train_es)
-        self.set_out_var("out_test_es", out_train_es)
+        self.set_out_var("out_test_es", out_test_es)
         exp.store_block(self)
