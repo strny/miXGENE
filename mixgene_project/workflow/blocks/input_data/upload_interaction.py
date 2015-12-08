@@ -54,8 +54,8 @@ def upload_interaction_task(exp,
     interaction_df[2] = values
     interaction = BinaryInteraction(exp.get_data_folder(), str(block.uuid))
     interaction.store_pairs(interaction_df, block.bi_data_type)
-    # interaction.row_units = self.row_units
-    # interaction.col_units = self.col_units
+    interaction.x1_unit = getattr(block, "x1_unit", "")
+    interaction.x2_unit = getattr(block, "x2_unit", "")
     interaction.header = block.header
     AllUpdated(
         exp.pk,

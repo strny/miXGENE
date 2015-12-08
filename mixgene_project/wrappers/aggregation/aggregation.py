@@ -38,13 +38,28 @@ def aggregation_task(exp, block,
         @type interaction_matrix: BinaryInteraction
 
     """
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     agg_func = svd_agg
     if mode == "SVD":
         agg_func = svd_agg
     elif mode == "SUB":
         agg_func = sub_agg
 
-    m_rna = m_rna_es.get_assay_data_frame()
+    inter_units = None
+    m_rna = None
+    if interaction_matrix.x1_unit == 'RefSeq':
+        inter_units = interaction_matrix.load_pairs().iloc[:,0].tolist()
+
+    if inter_units:
+        m_rna = m_rna_es.get_assay_data_frame_for_platform(exp, inter_units)
+    else:
+        m_rna = m_rna_es.get_assay_data_frame()
+
     mi_rna = mi_rna_es.get_assay_data_frame()
     gene_platform = list(m_rna.columns)
     mi_rna_platform = list(mi_rna)
@@ -55,7 +70,7 @@ def aggregation_task(exp, block,
         mode=NotifyMode.INFO
     ).send()
 
-    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False, identifiers=True)
 
     AllUpdated(
         exp.pk,
@@ -92,6 +107,8 @@ def sub_agg(m_rna, mi_rna, targets_matrix, c=1):
         i = Index([i])
         targets = targets_matrix.ix[i, targets_matrix.xs(i[0])==1].columns
         #
+        if set(targets) == set([]):
+            continue
         ratios = m_rna[targets].apply(lambda x:[i*1.0/sum(x) for i in x], axis=1)
         subtracts = ratios.apply(lambda x: x*mi_rna[i[0]], axis=0) # ratios*c*miRNA sample-wise
         subtracts = subtracts.apply(lambda x:x/targeting_miRNAs[targets] , axis=1)

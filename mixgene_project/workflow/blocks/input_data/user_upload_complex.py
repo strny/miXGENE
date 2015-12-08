@@ -19,20 +19,6 @@ from django.conf import settings
 __author__ = 'pavel'
 
 
-def convert_to_refseq(assay_df, unit, data_type):
-    # features of dataset
-    columns_source = set(list(assay_df))
-    new_names = {}
-    count = 0
-    for gene in columns_source:
-        new_name = list(find_refseqs(gene))
-        if new_name:
-            new_names[gene] = new_name[0]
-            count += 1
-        else:
-            new_names[gene] = gene
-    assay_df.rename(columns=new_names, inplace=True)
-    return assay_df, count
 
 
 def convert_ids(gpl_file, assay_df, data_type):
@@ -101,24 +87,10 @@ def process_data_frame(exp, block, df, ori, platform, unit, data_type="m_rna"):
             silent=False,
             mode=NotifyMode.INFO
         ).send()
-    else:
-        if unit != "RefSeq":
-            AllUpdated(
-                exp.pk,
-                comment=u"Converting unit %s to RefSeq" % platform,
-                silent=False,
-                mode=NotifyMode.INFO
-            ).send()
-            df, matched = convert_to_refseq(df, unit, data_type)
-            AllUpdated(
-                exp.pk,
-                comment=u"Matched %s features for %s dataset" % (matched, data_type),
-                silent=False,
-                mode=NotifyMode.INFO
-            ).send()
-
+        unit = 'RefSeq'
     es = ExpressionSet(base_dir=exp.get_data_folder(),
                        base_filename="%s_%s_es" % (block.uuid, data_type))
+    es.working_unit = unit
     es.store_assay_data_frame(df)
     return es, df, gpl_file
 

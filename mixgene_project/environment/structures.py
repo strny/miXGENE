@@ -16,6 +16,7 @@ from wrappers.scoring import metrics
 from webapp.notification import AllUpdated, NotifyMode
 from django.conf import settings
 
+
 # from wrappers.input.utils import translate_inters
 
 
@@ -124,14 +125,13 @@ class PcaResult(GenericStoreStructure):
         return self.pca_storage.load()
 
 
-
 class BinaryInteraction(GenericStoreStructure):
     def __init__(self, *args, **kwargs):
         super(BinaryInteraction, self).__init__(*args, **kwargs)
         # self.storage = None
         self.storage_pairs = None
-        self.row_units = ""
-        self.col_units = ""
+        self.x1_unit = ""
+        self.x2_unit = ""
         self.header = False
         self.bi_data_type = ""
 
@@ -146,7 +146,8 @@ class BinaryInteraction(GenericStoreStructure):
             raise RuntimeError("Interaction pairs data wasn't stored prior")
         return self.storage_pairs.load()
 
-    def get_matrix_for_platform(self, exp, gene_list, mirna_list = None, symmetrize=True, tolower=False):
+    def get_matrix_for_platform(self, exp, gene_list, mirna_list=None, symmetrize=True, identifiers=True,
+                                tolower=False):
         if settings.CELERY_DEBUG:
             import sys
             sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
@@ -161,12 +162,18 @@ class BinaryInteraction(GenericStoreStructure):
             mirna_hasht = dict(zip(mirna_list, range(len(mirna_list))))
         inter_hash = defaultdict(list)
         interactons = self.load_pairs()
-        cols=[]
-        rows=[]
+        cols = []
+        rows = []
         log.debug("transforming interactions")
         for ix in range(len(interactons)):
             a, b, val = interactons.iloc[ix]
-            inter_hash[a].append([b, val])
+            if mirna_list is not None:
+                if self.x2_unit == 'mirbase':
+                    inter_hash[b].append([a, val])
+                else:
+                    inter_hash[a].append([b, val])
+            else:
+                inter_hash[a].append([b, val])
         AllUpdated(
             exp.pk,
             comment=u"Transforming interaction matrix done",
@@ -203,12 +210,12 @@ class BinaryInteraction(GenericStoreStructure):
                                 gi = refseq
                                 gj = new_refseq
                                 if gj not in hasht:
-                                     continue
+                                    continue
                                 counter4 += 1
                                 val = strength
                                 if tolower:
-                                    gi=gi.lower()
-                                    gj=gj.lower()
+                                    gi = gi.lower()
+                                    gj = gj.lower()
                                 cols.append(hasht[gi])
                                 rows.append(hasht[gj])
         else:
@@ -234,12 +241,12 @@ class BinaryInteraction(GenericStoreStructure):
                                 gi = refseq
                                 gj = new_refseq
                                 if gj not in hasht:
-                                     continue
+                                    continue
                                 counter4 += 1
                                 val = strength
                                 if tolower:
-                                    gi=gi.lower()
-                                    gj=gj.lower()
+                                    gi = gi.lower()
+                                    gj = gj.lower()
                                 rows.append(mirna_hasht[gi])
                                 cols.append(hasht[gj])
         size = max(max(rows), max(cols)) + 1
@@ -255,11 +262,27 @@ class BinaryInteraction(GenericStoreStructure):
             inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
         else:
             inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (max(rows) + 1, max(cols) + 1))
+
         if symmetrize:
             inters_matr = inters_matr + inters_matr.T
             inters_matr.data /= inters_matr.data
-        return inters_matr
 
+        if identifiers:
+            inters_matr = inters_matr.tocsr()
+            sparse_df = pd.SparseDataFrame([pd.SparseSeries(inters_matr[i].toarray().ravel())
+                                            for i in np.arange(inters_matr.shape[0])])
+            sparse_df = sparse_df.to_dense()
+            if mirna_list is None:
+                index = gene_list[:sparse_df.shape[0]]
+                columns = gene_list[:sparse_df.shape[1]]
+            else:
+                index = mirna_list[:sparse_df.shape[0]]
+                columns = gene_list[:sparse_df.shape[1]]
+            sparse_df['new_index'] = pd.Series(index, index=sparse_df.index)
+            sparse_df.set_index(['new_index'], inplace=True)
+            sparse_df.columns = columns
+            return sparse_df
+        return inters_matr
 
     def store_matrix(self, df):
         # deprecated
@@ -357,6 +380,27 @@ class DictionarySet(GenericStoreStructure):
         return self.storage.load()
 
 
+def convert_to_refseq(assay_df, platform):
+    from wrappers.input.utils import find_refseqs
+    # features of dataset
+    columns_source = set(list(assay_df))
+    new_names = {}
+    count = 0
+    for gene in columns_source:
+        new_name = list(find_refseqs(gene))
+        if new_name:
+            for n in new_name:
+                if n in platform:
+                    new_names[gene] = n
+                    count += 1
+                    # find first and assign it to gene
+                    break
+        else:
+            new_names[gene] = gene
+    assay_df.rename(columns=new_names, inplace=True)
+    return assay_df, count
+
+
 class ExpressionSet(GenericStoreStructure):
     def __init__(self, base_dir, base_filename):
         """
@@ -384,6 +428,8 @@ class ExpressionSet(GenericStoreStructure):
         self.working_unit = None
         self.annotation = None
 
+        self.df_platform = {}
+
         # Have no idea about 3 following variables
         self.feature_data = None
         self.experiment_data = None
@@ -408,6 +454,47 @@ class ExpressionSet(GenericStoreStructure):
             es.store_pheno_data_frame(self.get_pheno_data_frame())
 
         return es
+
+    def get_assay_data_frame_for_platform(self, exp, platform):
+        """
+            @rtype: pd.DataFrame
+        """
+        if self.assay_data_storage is None:
+            raise RuntimeError("Assay data wasn't setup prior")
+        p = set(platform)
+        checksum = np.frombuffer("".join(platform), "uint8").sum()
+        if checksum in self.df_platform:
+            if self.df_platform[checksum]:
+                if exp:
+                    AllUpdated(
+                        exp.pk,
+                        comment=u"Loading Expression Set from Cache",
+                        silent=False,
+                        mode=NotifyMode.INFO
+                    ).send()
+                return self.df_platform[checksum].load()
+        if self.working_unit != 'RefSeq':
+            if exp:
+                AllUpdated(
+                    exp.pk,
+                    comment=u"Converting unit %s to RefSeq" % self.working_unit,
+                    silent=False,
+                    mode=NotifyMode.INFO
+                ).send()
+            df = self.assay_data_storage.load()
+            df, matched = convert_to_refseq(df, p)
+            self.df_platform[checksum] = DataFrameStorage(
+                filepath="%s/%s_%s_assay.csv.gz" % (self.base_dir, self.base_filename, checksum))
+            self.df_platform[checksum].store(df)
+            if exp:
+                AllUpdated(
+                    exp.pk,
+                    comment=u"Converted %s %s to RefSeq" % (matched, self.working_unit),
+                    silent=False,
+                    mode=NotifyMode.INFO
+                ).send()
+            return df
+        return self.assay_data_storage.load()
 
     def get_assay_data_frame(self):
         """

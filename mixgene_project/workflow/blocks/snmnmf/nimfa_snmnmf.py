@@ -47,7 +47,7 @@ def nimfa_snmnmf_task(exp,
     ).send()
 
     g2g = gene2gene.get_matrix_for_platform(exp, gene_platform)
-    m2g = gene2gene.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+    m2g = miRNA2gene.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
 
     AllUpdated(
         exp.pk,
