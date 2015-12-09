@@ -50,3 +50,36 @@ body {
 .table>tbody>.active>td {
     background-color: #f5ad66;
 }
+
+.tooltip.top .tooltip-inner {
+    background-color:red;
+}
+
+.tooltip.top .tooltip-arrow {
+      border-top-color: red;
+}
+
+.tooltip.right .tooltip-arrow {
+      border-top-color: whitesmoke;
+}
+
+
+.tooltip.right .tooltip-inner {
+      background-color: #458ECD;
+	  color: white;
+      font-weight: normal;
+}
+
+.tooltip.bottom .tooltip-arrow {
+      border-top-color: whitesmoke;
+}
+
+.tooltip.bottom .tooltip-inner {
+      background-color: #458ECD;
+	  color: whitesmoke;
+}
+
+.tooltip-color {
+    color: #357EBD
+}
+
