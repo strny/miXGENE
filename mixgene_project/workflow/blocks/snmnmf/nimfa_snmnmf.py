@@ -7,6 +7,7 @@ from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, P
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
 import wrappers.snmnmf.nimfa_snmnmf as ns
 from django.conf import settings
+from webapp.notification import AllUpdated, NotifyMode
 
 # @task(name="wrappers.filter.filter_task")
 def nimfa_snmnmf_task(exp,
@@ -37,7 +38,7 @@ def nimfa_snmnmf_task(exp,
     miRNA_matrix = miRNA.get_assay_data_frame()
     miRNA_matrix = miRNA_matrix[miRNA_matrix.columns[0:2500]]
 
-    gene_platform = list(mRNA.columns)
+    gene_platform = list(mRNA_matrix.columns)
     mi_rna_platform = list(miRNA_matrix.columns)
     AllUpdated(
         exp.pk,

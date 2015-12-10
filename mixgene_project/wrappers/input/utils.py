@@ -145,7 +145,7 @@ def find_refseqs(gene):
                         return [refseqs]
                 except KeyError:
                     pass
-    return set([gene])
+    return [gene]
 
 
 def expand_geneset(gene_set):

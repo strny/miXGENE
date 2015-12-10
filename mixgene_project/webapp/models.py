@@ -370,6 +370,12 @@ class Experiment(models.Model):
         else:
             r = redis_instance
         log.debug("getting_blocks: %s", block_uuid_list)
+        # for uuid in block_uuid_list:
+        #     try:
+        #         uuid, block = pickle.loads(r.get(ExpKeys.get_block_key(uuid)))
+        #     except TypeError:
+        #         self.remove_block()
+
         return [(uuid, pickle.loads(r.get(ExpKeys.get_block_key(uuid))))
                 for uuid in block_uuid_list]
 

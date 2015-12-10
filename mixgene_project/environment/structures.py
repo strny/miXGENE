@@ -8,7 +8,7 @@ import scipy.sparse as sp
 import rpy2.robjects as R
 from copy import deepcopy
 import hashlib
-
+import re
 import json
 
 from workflow.input import AbsInputVar
@@ -156,6 +156,18 @@ class BinaryInteraction(GenericStoreStructure):
 
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
+
+        regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
+        if len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x), re.IGNORECASE), gene_list))) < (len(gene_list)*0.5):
+            new_g = []
+            for gene in gene_list:
+                rf = list(find_refseqs(gene))
+                if len(rf) > 0:
+                    new_g.append(rf[0])
+            gene_list = new_g
+            # gene_list = map(lambda gene: list(find_refseqs(gene))[0], gene_list)
+
+
         hasht = dict(zip(gene_list, range(len(gene_list))))
         mirna_hasht = dict()
         if mirna_list is not None:
