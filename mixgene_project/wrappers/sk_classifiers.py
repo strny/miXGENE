@@ -47,11 +47,11 @@ def apply_classifier(
         @type exp: Experiment
         @type block: GenericBlock
     """
-    if settings.CELERY_DEBUG:
-        import sys
-        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-        import pydevd
-        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    # if settings.CELERY_DEBUG:
+    #     import sys
+    #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+    #     import pydevd
+    #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     if not classifier_options:
         classifier_options = {}

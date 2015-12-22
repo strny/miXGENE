@@ -8,6 +8,7 @@ from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, F
 from workflow.blocks.generic import GenericBlock
 from wrappers.scoring import metrics_dict
 import logging
+from webapp.models import Experiment
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

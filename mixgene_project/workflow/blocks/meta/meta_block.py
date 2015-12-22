@@ -23,6 +23,8 @@ from workflow.blocks.fields import FieldType, BlockField, OutputBlockField, Inne
 from workflow.blocks.generic import GenericBlock, save_params_actions_list
 from workflow.blocks.managers import IteratedInnerFieldManager
 
+from django.conf import settings
+
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -135,6 +137,10 @@ class UniformMetaBlock(GenericBlock):
     def get_fold_labels(self):
         pass
 
+    @abstractmethod
+    def get_repeat_labels(self):
+        pass
+
     def get_inner_out_var(self, name):
         return self.inner_output_manager.get_var(name)
 
@@ -184,6 +190,12 @@ class UniformMetaBlock(GenericBlock):
                 self.do_action("success", exp)
 
     def build_result_collection(self, exp):
+        if settings.CELERY_DEBUG:
+            import sys
+            sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+            import pydevd
+            pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
         rc = ResultsContainer(
             base_dir=exp.get_data_folder(),
             base_filename="%s" % self.uuid
@@ -192,12 +204,9 @@ class UniformMetaBlock(GenericBlock):
 
         axis_meta_block = self.base_name
         axis_meta_block_labels = self.get_fold_labels()
-
-
         def create_new_dim_rc(local_rc):
             local_rc.axis_list = [axis_meta_block]
             local_rc.labels_dict[axis_meta_block] = axis_meta_block_labels
-
             local_rc.init_ar()
             local_rc.update_label_index()
 
@@ -208,7 +217,6 @@ class UniformMetaBlock(GenericBlock):
             for field_name in res_seq.fields:
                 rc_single = ResultsContainer("", "")
                 create_new_dim_rc(rc_single)
-
                 for idx, res_seq_cell in enumerate(res_seq.sequence):
                     rc_single.ar[idx] = res_seq_cell[field_name]
                 single_rc_list.append(rc_single)
