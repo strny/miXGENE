@@ -1,5 +1,5 @@
 {% extends "empty.html" %}
-
+{% load static %}
 {% block body %}
 
 <!-- top navigation -->
@@ -28,7 +28,7 @@
                 </ul>
 
             </li>
-
+            <li><a target="_blank" href="{% static 'docs/doc/index.html' %}">Documenation</a></li>
             <li><a href="{% url 'webapp.views.about' %}">About</a></li>
             <li><a href="{% url 'webapp.views.contact' %}">Contact</a></li>
         </ul>
@@ -73,17 +73,16 @@
 {% block inner %}
 {% endblock %}
 
-<!-- div id="footer">
+<div id="footer">
     <div class="row">
-        <div class="col-md-10 col-md-offset-1">
-            <div class="navbar navbar-default navbar-fixed-bottom" role="navigation">
-                <h5> All used 3rd-party software is listed on
-                    <a href="{% url 'webapp.views.about' %}"> About</a> page
+        <div class="col-md-10 col-md-offset-6">
+            <div class="navbar navbar-default navbar-fixed-bottom" role="navigation" style="text-align: center">
+                <h5> This software was created by <a href="http://ida.fel.cvut.cz">IDA group</a> at <a href="https://www.cvut.cz">Czech Technical University in Prague</a>. The source code of this project is available on <a href="https://github.com/strny/miXGENE">GitHub</a>
                 </h5>
             </div>
         </div>
     </div>
-</div -->
+</div>
 
 
 {% endblock body %}

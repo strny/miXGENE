@@ -1,38 +1,42 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block inner %}
     <div class="container">
-        <div class="jumbotron">
-            <h1>miXGENE</h1>
+        <div class="jumbotron" style="background-color: #c2fbfd">
+            <!--<h1>miXGENE</h1>-->
+            <img src="{%  static 'img/logo.png' %}" width="400px"/>
             <p></p>
             <!--<p><a class="btn btn-primary btn-lg" role="button">Learn more</a></p>-->
         </div>
     </div>
     <div class="row">
-         <div class="col-xs-10 col-xs-offset-1 col-lg-6 col-lg-offset-3">
+         <div class="col-xs-10 col-xs-offset-1 col-lg-8 col-lg-offset-2">
 
 
 
         <!--{% if  user.is_authenticated %}-->
             <!--<h2>Welcome back <b>{{user.username}}</b> ! </h2>-->
         <!--{% endif %}-->
+         <b>miXGENE</b> is a public web tool for automated learning from heterogeneous omics measurements (mRNA, miRNA, methylation) that makes use of prior knowledge (gene interactions, gene sets, miRNA targets). The resulting models and markers match the actual measurements  as  well  as  the  relationships  among  biological  entities recorded  in  curated  biological  databases.  The  tool  provides  the  principal means  for  the  user-friendly  discovery  of  dedicated  models  in particular  domains.  It  represents  the  platform  for  assembly, development,  comparison  and  eventual  dissemination  of  the methods for joint analysis of omics data.
 
 
-
-            <h2>Main features</h2>
-            <ul class="list-group">
-
-                <li class="list-group-item">Integrated analysis of mRNA, miRNA and epigenetic data.</li>
-                <li class="list-group-item">Development of predictive models (support vector machines, decision trees, nearest neighbour search) that best distinguish among user-supplied sample classes.</li>
-                <li class="list-group-item">Detection of markers (biological modules based on prior knowledge such as miRNA regulations, pathways or gene ontology terms).</li>
-                <li class="list-group-item">Automated utilization of genomic knowledge during model creation and generation of biomarkers.</li>
-                <li class="list-group-item">Visualization and data understanding in terms of principal component analysis.</li>
-                <li class="list-group-item">Automated integration of heterogeneous measurement platforms.</li>
-                <li class="list-group-item">Smooth search and import of expression samples from NCBI GEO as well as the import of user data.</li>
-                <li class="list-group-item">Free and easy registration and further utilization.</li>
-                <li class="list-group-item">The results are all yours, the computational burden is all ours.</li>
+         <h2>Main features</h2>
+         <!--class="list-group"-->
+            <ul class="index">
+                <!--class="list-group-item"-->
+                <li>Integrated analysis of mRNA, miRNA and epigenetic data.</li>
+                <li>Development of predictive models (support vector machines, decision trees, nearest neighbour search) that best distinguish among user-supplied sample classes.</li>
+                <li>Detection of markers (biological modules based on prior knowledge such as miRNA regulations, pathways or gene ontology terms).</li>
+                <li>Automated utilization of genomic knowledge during model creation and generation of biomarkers.</li>
+                <li>Visualization and data understanding in terms of principal component analysis.</li>
+                <li>Automated integration of heterogeneous measurement platforms.</li>
+                <li>Smooth search and import of expression samples from NCBI GEO as well as the import of user data.</li>
+                <li>Free and easy registration and further utilization.</li>
+                <li>The results are all yours, the computational burden is all ours.</li>
             </ul>
+
         </div>
+
     </div>
 
 

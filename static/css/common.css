@@ -1,6 +1,6 @@
 body {
     /*padding-top: 80px; *//* 60px to make the container go all the way to the bottom of the topbar */
-    //padding-bottom: 80px;
+    /*padding-bottom: 80px;*/
 }
 
 .modal-dialog {
@@ -14,8 +14,8 @@ body {
 }
 
 .worktable {
-    //border-width: 1px;
-    //border-style: solid;
+    /*border-width: 1px;
+    border-style: solid;*/
 }
 
 .dotted{
@@ -83,3 +83,21 @@ body {
     color: #357EBD
 }
 
+.index>li {
+  list-style: none;
+}
+
+.index>li:before {
+  /* For a round bullet */
+  content: '\2022';
+  /* For a square bullet */
+  /*content:'\25A0';*/
+  display: block;
+  position: relative;
+  max-width: 0;
+  max-height: 0;
+  left: -10px;
+  top: -5px;
+  color: #428bca;
+  font-size: 20px;
+}
