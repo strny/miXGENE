@@ -156,7 +156,9 @@ class BinaryInteraction(GenericStoreStructure):
 
         from collections import defaultdict
         from wrappers.input.utils import find_refseqs
-
+        log.debug(gene_list)
+        if(mirna_list):
+            log.debug(mirna_list)
         regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
         if len(filter(lambda x: x is not None, map(lambda x: re.match(regex, str(x), re.IGNORECASE), gene_list))) < (len(gene_list)*0.5):
             new_g = []

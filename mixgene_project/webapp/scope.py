@@ -200,7 +200,7 @@ class ScopeRunner(object):
             # block.do_action("execute", self.exp
             AllUpdated(
                 self.exp.pk,
-                comment=u"Executing Block %s" % blocks_to_execute[0].name.encode("ascii", "ignore"),
+                comment=u"Executing Block %s" % blocks_to_execute[0].name.decode("utf-8"),
                 mode=NotifyMode.SUCCESS,
                 silent=False
             ).send()
