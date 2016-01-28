@@ -243,11 +243,13 @@ class MassUpload(UniformMetaBlock):
                 es_name, pheno_name
                 in zip(es_matrix_names, pheno_matrix_names)
             }
+            sep = getattr(self, "csv_sep", " ")
             self.clean_errors()
             self.celery_task = wrapper_task.s(
                 bunch_upload_task,
                 exp,
                 self,
+                sep,
                 success_action="processing_done",
                 error_action="error_on_processing"
             )
