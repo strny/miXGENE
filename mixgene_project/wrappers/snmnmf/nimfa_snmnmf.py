@@ -59,7 +59,9 @@ class NIMFA_SNMNMF(SNMNMF):
             self.miRNA = self.transformToNonNegativeRepresentation(self.miRNA)        
         # test if mRNA and miRNA have the same samples
         if not self.colnamesAndIndexCompatibility(A = self.mRNA, B = self.miRNA, index = True):
-            raise SNMNMFException("Matrices mRNA and miRNA have not compatible dimemsions")
+            A = self.mRNA
+            B = self.miRNA
+            raise SNMNMFException("Matrices mRNA and miRNA have not compatible dimemsions A.index: %s, B.index: %s, A.cols: %s, B.cols: %s" % (str(A.index), str(B.index), str(A.columns), str(B.columns)))
         # adapt the prior knowledge
         self.gene2gene = self.adaptInteractionData(self.mRNA.columns, self.mRNA.columns, self.gene2gene)
         self.miRNA2gene = self.adaptInteractionData(self.miRNA.columns, self.mRNA.columns, self.miRNA2gene)    
