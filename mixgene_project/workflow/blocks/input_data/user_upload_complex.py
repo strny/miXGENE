@@ -62,14 +62,15 @@ def process_data_frame(exp, block, df, ori, platform, unit, data_type="m_rna"):
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
-    df.set_index(df.columns[0], inplace=True)
-
     # if matrix is bad oriented, then do transposition
     if ori == "GxS":
         df = df.T
         # df.columns = df.iloc[0]
         # df = df.drop(df.index[0])
     # if isinstance(df.columns[0][0], basestring):
+
+    df.set_index(df.columns[0], inplace=True)
+
 
     gpl_file = None
     if platform:
@@ -132,7 +133,7 @@ def user_upload_complex_task(exp,
     methyl_es = None
     if block.m_rna_matrix is not None:
         m_rna_assay_df = block.m_rna_matrix.get_as_data_frame(sep_m_rna)
-        m_rna_es, mi_rna_assay_df, gpl_file = process_data_frame(exp, block, m_rna_assay_df, block.m_rna_matrix_ori,
+        m_rna_es, m_rna_assay_df, gpl_file = process_data_frame(exp, block, m_rna_assay_df, block.m_rna_matrix_ori,
                                                                  block.m_rna_platform, block.m_rna_unit, "m_rna")
         block.m_rna_gpl_file = gpl_file
 
