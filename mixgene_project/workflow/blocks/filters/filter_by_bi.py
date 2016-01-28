@@ -27,11 +27,21 @@ def filter_by_bi(
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
-    m_rna_df = m_rna_es.get_assay_data_frame()
+    # m_rna_df = m_rna_es.get_assay_data_frame()
+    # mi_rna_df = mi_rna_es.get_assay_data_frame()
+    inter_units = None
+
+    if interaction_matrix.x1_unit == 'RefSeq':
+        inter_units = interaction_matrix.load_pairs().iloc[:, 0].tolist()
+
+    if inter_units:
+        m_rna_df = m_rna_es.get_assay_data_frame_for_platform(exp, inter_units)
+    else:
+        m_rna_df = m_rna_es.get_assay_data_frame()
+
     mi_rna_df = mi_rna_es.get_assay_data_frame()
     gene_platform = list(m_rna_df.columns)
-    mi_rna_platform = list(mi_rna_df.columns)
-
+    mi_rna_platform = list(mi_rna_df)
     AllUpdated(
         exp.pk,
         comment=u"Transforming interaction matrix",
@@ -39,7 +49,7 @@ def filter_by_bi(
         mode=NotifyMode.INFO
     ).send()
 
-    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+    targets_matrix = interaction_matrix.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False, identifiers=True)
 
     AllUpdated(
         exp.pk,

@@ -53,7 +53,7 @@ def aggregation_task(exp, block,
     inter_units = None
     m_rna = None
     if interaction_matrix.x1_unit == 'RefSeq':
-        inter_units = interaction_matrix.load_pairs().iloc[:,0].tolist()
+        inter_units = interaction_matrix.load_pairs().iloc[:, 0].tolist()
 
     if inter_units:
         m_rna = m_rna_es.get_assay_data_frame_for_platform(exp, inter_units)

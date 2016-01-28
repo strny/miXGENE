@@ -19,8 +19,6 @@ from django.conf import settings
 __author__ = 'pavel'
 
 
-
-
 def convert_ids(gpl_file, assay_df, data_type):
     import StringIO
     output = StringIO.StringIO()
@@ -42,8 +40,8 @@ def convert_ids(gpl_file, assay_df, data_type):
 
     freqs = {c_t: len(set(map(lambda x: str(x).lower(), gpl_data[c_t].values)).intersection(
         map(lambda x: str(x).lower(), columns_source)))
-            for c_t in columns_target}
-    #find max key
+             for c_t in columns_target}
+    # find max key
     max_key = max(freqs.keys(), key=(lambda key: freqs[key]))
     regex = "^[A-Z][A-Z]_[a-zA-Z0-9.]*"
     if data_type == "mi_rna":
@@ -62,14 +60,13 @@ def process_data_frame(exp, block, df, ori, platform, unit, data_type="m_rna"):
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
+    df.set_index(df.columns[0], inplace=True)
     # if matrix is bad oriented, then do transposition
     if ori == "GxS":
         df = df.T
         # df.columns = df.iloc[0]
         # df = df.drop(df.index[0])
     # if isinstance(df.columns[0][0], basestring):
-
-    df.set_index(df.columns[0], inplace=True)
 
 
     gpl_file = None
@@ -134,7 +131,7 @@ def user_upload_complex_task(exp,
     if block.m_rna_matrix is not None:
         m_rna_assay_df = block.m_rna_matrix.get_as_data_frame(sep_m_rna)
         m_rna_es, m_rna_assay_df, gpl_file = process_data_frame(exp, block, m_rna_assay_df, block.m_rna_matrix_ori,
-                                                                 block.m_rna_platform, block.m_rna_unit, "m_rna")
+                                                                block.m_rna_platform, block.m_rna_unit, "m_rna")
         block.m_rna_gpl_file = gpl_file
 
         if pheno_df is not None:
@@ -191,9 +188,9 @@ class UserUploadComplex(GenericBlock):
     ])
 
     m_rna_matrix = ParamField("m_rna_matrix", title="mRNA expression", order_num=10,
-                         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
+                              input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
     m_rna_platform = ParamField("m_rna_platform", title="Platform ID", order_num=11,
-                               input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
     m_rna_unit = ParamField("m_rna_unit", title="Working unit [used when platform is unknown]",
                             order_num=12, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
@@ -235,21 +232,20 @@ class UserUploadComplex(GenericBlock):
     )
 
     mi_rna_matrix = ParamField("mi_rna_matrix", title=u"μRNA expression", order_num=20,
-                          input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
+                               input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
     mi_rna_platform = ParamField("mi_rna_platform", title="Platform ID", order_num=21,
-                               input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+                                 input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
     mi_rna_unit = ParamField("mi_rna_unit", title="Working unit [used when platform is unknown]",
-                            order_num=22, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
-                            init_val="RefSeq",
-                            options={
-                                "inline_select_provider": True,
-                                "select_options": [
-                                    ["RefSeq", "RefSeq"],
-                                    ["mirbase", "miRBase ID"]
-                                ]
-                            })
-
+                             order_num=22, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
+                             init_val="RefSeq",
+                             options={
+                                 "inline_select_provider": True,
+                                 "select_options": [
+                                     ["RefSeq", "RefSeq"],
+                                     ["mirbase", "miRBase ID"]
+                                 ]
+                             })
 
     mi_rna_matrix_ori = ParamField(
         "mi_rna_matrix_ori", title="Matrix orientation", order_num=23,
@@ -279,10 +275,10 @@ class UserUploadComplex(GenericBlock):
     )
 
     methyl_matrix = ParamField("methyl_matrix", title="Methylation expression", order_num=30,
-                          input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
+                               input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM, required=False)
 
     methyl_platform = ParamField("methyl_platform", title="Platform ID", order_num=31,
-                               input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+                                 input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
     # methyl_unit = ParamField("methyl_unit", title="Working unit [used when platform is unknown]", init_val=None,
     #                        order_num=32, input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
 
@@ -335,13 +331,13 @@ class UserUploadComplex(GenericBlock):
     _is_sub_pages_visible = BlockField("is_sub_pages_visible", FieldType.RAW, is_a_property=True)
 
     _m_rna_es = OutputBlockField(name="m_rna_es", field_type=FieldType.HIDDEN,
-        provided_data_type="ExpressionSet")
+                                 provided_data_type="ExpressionSet")
     # _m_rna_annotation = OutputBlockField(name="m_rna_annotation", field_type=FieldType.HIDDEN,
     #     provided_data_type="PlatformAnnotation")
     _mi_rna_es = OutputBlockField(name="mi_rna_es", field_type=FieldType.HIDDEN,
-                                provided_data_type="ExpressionSet")
+                                  provided_data_type="ExpressionSet")
     _methyl_es = OutputBlockField(name="methyl_es", field_type=FieldType.HIDDEN,
-                                 provided_data_type="ExpressionSet")
+                                  provided_data_type="ExpressionSet")
 
     mrna_gpl_file = BlockField("mrna_gpl_file", FieldType.CUSTOM, None)
     mirna_gpl_file = BlockField("mirna_gpl_file", FieldType.CUSTOM, None)
