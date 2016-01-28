@@ -11,9 +11,10 @@ import auxiliary as aux
 
 
 class SNMNMFException(Exception):
-    """Base class for exceptions in this module."""
-    def __init__(self, msg = None):
-        self.msg = msg
+    pass
+    # """Base class for exceptions in this module."""
+    # def __init__(self, msg = None):
+    #     self.msg = msg
     
 
 class SNMNMFPerformance:
