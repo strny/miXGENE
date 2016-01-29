@@ -42,12 +42,13 @@ def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map):
 
             assay_df = es.get_assay_data_frame()
             # TODO remove this hack
-            assay_df = assay_df.T
+            # assay_df = assay_df.T
             # Reorder columns to be compatible to phenotype
-            assay_df = assay_df[pheno_df.index]
+            assay_df = assay_df.loc[pheno_df.index, :]
 
-            modified_assay_df = assay_df[assay_df.columns[mask]]
-            modified_assay_df = modified_assay_df.T
+            # modified_assay_df = assay_df.loc[assay_df.columns[mask]]
+            modified_assay_df = assay_df.loc[assay_df.index[mask]]
+            # modified_assay_df = modified_assay_df.T
 
             modified_es.store_assay_data_frame(modified_assay_df)
 
