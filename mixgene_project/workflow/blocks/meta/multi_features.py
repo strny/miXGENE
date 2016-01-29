@@ -41,10 +41,14 @@ def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map):
             modified_es.store_pheno_data_frame(modified_pheno_df)
 
             assay_df = es.get_assay_data_frame()
+            # TODO remove this hack
+            assay_df = assay_df.T
             # Reorder columns to be compatible to phenotype
             assay_df = assay_df[pheno_df.index]
 
             modified_assay_df = assay_df[assay_df.columns[mask]]
+            modified_assay_df = modified_assay_df.T
+
             modified_es.store_assay_data_frame(modified_assay_df)
 
             cell[output_name] = modified_es
