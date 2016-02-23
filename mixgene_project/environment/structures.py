@@ -167,13 +167,18 @@ class BinaryInteraction(GenericStoreStructure):
                 if len(rf) > 0:
                     new_g.append(rf[0])
             gene_list = new_g
-            # gene_list = map(lambda gene: list(find_refseqs(gene))[0], gene_list)
-
-
         hasht = dict(zip(gene_list, range(len(gene_list))))
+
         mirna_hasht = dict()
         if mirna_list is not None:
+            new_g = []
+            for gene in mirna_list:
+                rf = list(find_refseqs(gene))
+                if len(rf) > 0:
+                    new_g.append(rf[0])
+            mirna_list = new_g
             mirna_hasht = dict(zip(mirna_list, range(len(mirna_list))))
+
         inter_hash = defaultdict(list)
         interactons = self.load_pairs()
         cols = []
@@ -188,12 +193,13 @@ class BinaryInteraction(GenericStoreStructure):
                     inter_hash[a].append([b, val])
             else:
                 inter_hash[a].append([b, val])
-        AllUpdated(
-            exp.pk,
-            comment=u"Transforming interaction matrix done",
-            silent=False,
-            mode=NotifyMode.INFO
-        ).send()
+        if exp:
+            AllUpdated(
+                exp.pk,
+                comment=u"Transforming interaction matrix done",
+                silent=False,
+                mode=NotifyMode.INFO
+            ).send()
         log.debug("transformation of interactions done")
         count = 0
         counter2 = 0
@@ -205,12 +211,13 @@ class BinaryInteraction(GenericStoreStructure):
                 count += 1
                 if count % 500 == 0:
                     log.debug("translating gene %d", count)
-                    AllUpdated(
-                        exp.pk,
-                        comment=u"Translating gene %s of %s" % (count, size_hash),
-                        silent=False,
-                        mode=NotifyMode.INFO
-                    ).send()
+                    if exp:
+                        AllUpdated(
+                            exp.pk,
+                            comment=u"Translating gene %s of %s" % (count, size_hash),
+                            silent=False,
+                            mode=NotifyMode.INFO
+                        ).send()
                 refseqs = find_refseqs(key)
                 for refseq in refseqs:
                     counter2 += 1
@@ -237,12 +244,13 @@ class BinaryInteraction(GenericStoreStructure):
                 count += 1
                 if count % 500 == 0:
                     log.debug("translating miRNA %d", count)
-                    AllUpdated(
-                        exp.pk,
-                        comment=u"Translating miRNA %s of %s" % (count, size_hash),
-                        silent=False,
-                        mode=NotifyMode.INFO
-                    ).send()
+                    if exp:
+                        AllUpdated(
+                            exp.pk,
+                            comment=u"Translating miRNA %s of %s" % (count, size_hash),
+                            silent=False,
+                            mode=NotifyMode.INFO
+                        ).send()
                 refseqs = find_refseqs(key)
                 for refseq in refseqs:
                     counter2 += 1
@@ -263,19 +271,22 @@ class BinaryInteraction(GenericStoreStructure):
                                     gj = gj.lower()
                                 rows.append(mirna_hasht[gi])
                                 cols.append(hasht[gj])
-        size = max(max(rows), max(cols)) + 1
-        AllUpdated(
-            exp.pk,
-            comment=u"%d interactions were found." % len(cols),
-            silent=False,
-            mode=NotifyMode.INFO
-        ).send()
+        # size = max(max(rows), max(cols)) + 1
+        if exp:
+            AllUpdated(
+                exp.pk,
+                comment=u"%d interactions were found." % len(cols),
+                silent=False,
+                mode=NotifyMode.INFO
+            ).send()
         inters_matr = None
         # TODO fix for custom value of interactions
         if mirna_list is None:
-            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
+            # inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (size, size))
+            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (len(gene_list), len(gene_list)))
         else:
-            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (max(rows) + 1, max(cols) + 1))
+            inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (len(mirna_list), len(gene_list)))
+            #inters_matr = sp.coo_matrix((np.ones(len(cols)), (rows, cols)), (max(rows) + 1, max(cols) + 1))
 
         if symmetrize:
             inters_matr = inters_matr + inters_matr.T
@@ -285,7 +296,7 @@ class BinaryInteraction(GenericStoreStructure):
             inters_matr = inters_matr.tocsr()
             sparse_df = pd.SparseDataFrame([pd.SparseSeries(inters_matr[i].toarray().ravel())
                                             for i in np.arange(inters_matr.shape[0])])
-            sparse_df = sparse_df.to_dense()
+            # sparse_df = sparse_df.to_dense()
             if mirna_list is None:
                 index = gene_list[:sparse_df.shape[0]]
                 columns = gene_list[:sparse_df.shape[1]]

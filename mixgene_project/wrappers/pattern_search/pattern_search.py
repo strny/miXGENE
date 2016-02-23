@@ -428,14 +428,14 @@ class DifferentialPatternSearcher(object):
             if self.trivial_patterns or len(list(seed)[0]) > 2:
                 self.patterns += [pattern]    
                 check_dir(self.base_dir + 'greedy_search_pics/')
-                if self.draw:
-                    gene_color = dict()
-                    for gene in pattern.genes:
-                        edges_names = set((self.gene_names[h1], self.gene_names[h2]) for (h1, h2) in pattern.edges)
-                        # a function to color a gene in discovered pattern
-                        gene_color[self.gene_names[gene]] = scipy.stats.ttest_ind(data[:,-1], GE_profile = data[:,gene])
-                    print "Drawing a graph for seed %s" % str(seed)
-                    draw_graph(edges_names, self.base_dir + 'greedy_search_pics/test-graph-greedy', seed)    
+                # if self.draw:
+                #     gene_color = dict()
+                #     for gene in pattern.genes:
+                #         edges_names = set((self.gene_names[h1], self.gene_names[h2]) for (h1, h2) in pattern.edges)
+                #         # a function to color a gene in discovered pattern
+                #         gene_color[self.gene_names[gene]] = scipy.stats.ttest_ind(data[:,-1], GE_profile = data[:,gene])
+                #     print "Drawing a graph for seed %s" % str(seed)
+                #     draw_graph(edges_names, self.base_dir + 'greedy_search_pics/test-graph-greedy', seed)
 
             # if seed > 550:
             #     break

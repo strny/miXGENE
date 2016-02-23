@@ -122,7 +122,12 @@ def find_refseqs(gene):
         if gene in gene_cache:
             return gene_cache[gene]
         else:
-            exp = mg.query(str(gene), species='human', fields='refseq')['hits']
+            try:
+                exp_ = mg.query(str(gene), species='human', fields='refseq')
+                exp = exp_['hits']
+            except KeyError:
+                log.debug("Gene %s not found in mygene db. Returned: %s" % (str(gene), exp_))
+                return [gene]
             gene_cache[gene] = set()
             if len(exp) == 0:
                 web_counter += 1

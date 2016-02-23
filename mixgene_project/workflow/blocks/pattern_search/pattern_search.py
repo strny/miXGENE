@@ -17,6 +17,25 @@ import scipy.sparse as sp
 from wrappers.pattern_search.utils import mergeNetworks
 from scipy.stats import zscore
 from webapp.notification import AllUpdated, NotifyMode
+from scipy.sparse import hstack
+from pandas import SparseDataFrame
+
+
+def sparse_df_to_saprse_matrix(sparse_df):
+    # sparse_df = sparse_df.to_sparse()
+    index_list = sparse_df.index.values.tolist()
+    matrix_columns = []
+    sparse_matrix = None
+    for column in sparse_df.columns:
+        sps_series = sparse_df[column]
+        sps_series.index = pd.MultiIndex.from_product([index_list, [column]])
+        curr_sps_column, rows, cols = sps_series.to_coo()
+        if sparse_matrix is not None:
+            sparse_matrix = hstack([sparse_matrix, curr_sps_column])
+        else:
+            sparse_matrix = curr_sps_column
+        matrix_columns.extend(cols)
+    return sparse_matrix, index_list, matrix_columns
 
 
 def pattern_search(exp, block,
@@ -38,11 +57,6 @@ def pattern_search(exp, block,
         @type radius: int
         @type min_imp: double
     """
-    if settings.CELERY_DEBUG:
-        import sys
-        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-        import pydevd
-        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     AllUpdated(
         exp.pk,
@@ -62,7 +76,7 @@ def pattern_search(exp, block,
         mode=NotifyMode.INFO
     ).send()
 
-    gene2gene = gene2gene.get_matrix_for_platform(exp, gene_platform)
+    gene2gene = gene2gene.get_matrix_for_platform(exp, gene_platform, symmetrize=True, identifiers=False)
 
     AllUpdated(
         exp.pk,
@@ -81,7 +95,9 @@ def pattern_search(exp, block,
     #     mir2gene = sp.coo_matrix(mir2gene.values).T
     #     nw = mergeNetworks(gene2gene, mir2gene)
     # else:
-    nw = gene2gene
+    # gene2gene = gene2gene.load_matrix()
+    # nw = sparse_df_to_saprse_matrix(gene2gene)
+    nw = gene2gene.tocsr()
     # data = mData.ix[1:]
     data = mData
     data.set_index(data.columns[0], inplace=True, drop=True)
@@ -89,6 +105,12 @@ def pattern_search(exp, block,
     data = zscore(data)
     pheno = m_rna_es.get_pheno_data_frame()
     classes = pheno['User_class'].values
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     exp.log(block.uuid, "Data ready. Running Pattern Search")
 
     # inicializace objektu metric=metric,
@@ -104,7 +126,7 @@ def pattern_search(exp, block,
     comodule_set = map(lambda pattern: [gene_platform[gene] for gene in pattern.genes], res)
 
     # cs = ComoduleSet(exp.get_data_folder(), base_filename)
-    gene_sets = GeneSets(exp.get_data_folder(), str(exp.uuid))
+    gene_sets = GeneSets(exp.get_data_folder(), "%s_ps_gene_sets" % str(block.uuid))
     result = {key: value for key, value in enumerate(comodule_set)}
     gs = GS(None, result)
     gene_sets.store_gs(gs)

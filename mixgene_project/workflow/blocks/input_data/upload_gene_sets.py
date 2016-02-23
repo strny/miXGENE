@@ -34,12 +34,10 @@ class UploadGeneSets(GenericBlock):
     def on_params_is_valid(self, exp, *args, **kwargs):
         try:
             gmt_file = self.upload_gs.get_file()
-            gs = read_inp(gmt_file, "\t")
+            gs = GmtStorage.read_inp(gmt_file, "\t")
             gene_sets = GeneSets(exp.get_data_folder(), str(self.uuid))
             gene_sets.store_gs(gs)
-
             self.set_out_var("gene_sets", gene_sets)
-
         except Exception as e:
             exp.log(self.uuid, e, severity="CRITICAL")
             log.error(e)

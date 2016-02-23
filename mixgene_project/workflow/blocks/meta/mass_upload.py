@@ -14,28 +14,39 @@ from webapp.notification import AllUpdated, NotifyMode
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
+# def process_df(exp, block, es_name, pheno_name):
 
-def bunch_upload_task(exp, block, sep):
+
+def bunch_upload_task(exp, block):
     seq = []
-    for es_name, pheno_name in block.pheno_by_es_names.iteritems():
-        es_ufw = block.es_matrices[es_name]
-        es_df = es_ufw.get_as_data_frame(sep)
+    for pheno_name, (es_mRNA_name, es_miRNA_name) in block.pheno_by_es_names.iteritems():
+        es_mRNA_ufw = block.es_mRNA_matrices[es_mRNA_name]
+        es_mRNA_df = es_mRNA_ufw.get_as_data_frame(block.csv_sep_m_rna)
+        es_miRNA_ufw = block.es_miRNA_matrices[es_miRNA_name]
+        es_miRNA_df = es_miRNA_ufw.get_as_data_frame(block.csv_sep_mi_rna)
 
         pheno_ufw = block.pheno_matrices[pheno_name]
-        pheno_df = pheno_ufw.get_as_data_frame(sep)
+        pheno_df = pheno_ufw.get_as_data_frame(block.csv_sep)
 
-        es, es_df, gpl_file = process_data_frame(exp, block, es_df, block.es_matrices_ori, block.platform, "bu")
-
-        # if block.es_matrices_ori == "GxS":
-        #     es_df = es_df.T
-        # es_df.set_index(es_df.columns[0], inplace=True)
-        #
+        es_mRNA, es_mRNA_df, gpl_file = process_data_frame(exp, block, es_mRNA_df, block.es_mRNA_matrices_ori, block.m_rna_platform, block.m_rna_unit, "m_rna")
+        es_miRNA, es_miRNA_df, gpl_file = process_data_frame(exp, block, es_miRNA_df, block.es_miRNA_matrices_ori, block.mi_rna_platform, block.mi_rna_unit, "mi_rna")
 
         pheno_df.set_index(pheno_df.columns[0], inplace=True)
-        es_sample_names = sorted(es_df.index.tolist())
+        es_mRNA_sample_names = sorted(es_mRNA_df.index.tolist())
+        es_miRNA_sample_names = sorted(es_miRNA_df.index.tolist())
+
         pheno_sample_names = sorted(pheno_df.index.tolist())
-        if es_sample_names != pheno_sample_names:
-            msg = "Couldn't match `%s` and `%s` due to different sample name sets" % (es_name, pheno_name)
+        if es_mRNA_sample_names != pheno_sample_names:
+            msg = "Couldn't match `%s` and `%s` due to different sample name sets" % (es_mRNA_name, pheno_name)
+            AllUpdated(
+                exp.pk,
+                comment=msg,
+                silent=False,
+                mode=NotifyMode.ERROR
+            ).send()
+            raise RuntimeError(msg)
+        if es_miRNA_sample_names != pheno_sample_names:
+            msg = "Couldn't match `%s` and `%s` due to different sample name sets" % (es_miRNA_name, pheno_name)
             AllUpdated(
                 exp.pk,
                 comment=msg,
@@ -44,68 +55,15 @@ def bunch_upload_task(exp, block, sep):
             ).send()
             raise RuntimeError(msg)
 
-        # es = ExpressionSet(
-        #     base_dir=exp.get_data_folder(),
-        #     base_filename="%s_%s" % (block.uuid, es_name)
-        # )
-        #
-        # es.store_assay_data_frame(es_df)
-        es.store_pheno_data_frame(pheno_df)
-        for cell in block.cells.cells:
-            es.assay_metadata[cell.label] = {"from_index": cell.from_index,
-                                             "to_index": cell.to_index}
-        es.pheno_metadata["user_class_title"] = pheno_df.columns[0]
-        seq.append({"es": es, "__label__": es_name})
+        es_mRNA.store_pheno_data_frame(pheno_df)
+        es_miRNA.store_pheno_data_frame(pheno_df)
+
+        es_mRNA.pheno_metadata["user_class_title"] = pheno_df.columns[0]
+        es_miRNA.pheno_metadata["user_class_title"] = pheno_df.columns[0]
+
+        seq.append({"mRNA_es": es_mRNA, "miRNA_es": es_miRNA, "__label__": es_mRNA_name})
     block.seq = seq
     return [block], {}
-
-
-class DataInfo(object):
-    def __init__(self, label):
-        self.label = label
-        self.from_index = None
-        self.to_index = None
-
-    def set_indices(self, from_index, to_index):
-        self.from_index = from_index
-        self.to_index = to_index
-
-    def to_dict(self, *args, **kwargs):
-        return {
-            "label": self.label,
-            "from_index": self.from_index,
-            "to_index": self.to_index
-        }
-
-    def __hash__(self):
-        return hash(self.label)
-
-    def __eq__(self, other):
-        if not isinstance(other, DataInfo):
-            return False
-        if other.label == self.label:
-            return True
-
-        return False
-
-
-class DataInfoList(object):
-    def __init__(self):
-        self.cells = []
-
-    def remove_by_label(self, label):
-        self.cells.remove(DataInfo(label))
-
-    def find_by_label(self, label):
-        for cell in self.cells:
-            if cell.label == label:
-                return cell
-
-    def to_dict(self, *args, **kwargs):
-        return {
-            "dict": {cell.label: cell.to_dict() for cell in self.cells},
-            "list": [cell.to_dict() for cell in self.cells]
-        }
 
 
 class MassUpload(UniformMetaBlock):
@@ -124,14 +82,14 @@ class MassUpload(UniformMetaBlock):
         # ActionRecord("error", ["processing_upload"], "valid_params"),
     ])
 
-    es_matrices = ParamField(
-        "es_matrices", title="Expression sets", order_num=10,
+    es_mRNA_matrices = ParamField(
+        "es_mRNA_matrices", title="mRNA Expression sets", order_num=10,
         input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM,
         options={"multiple": True},
     )
 
-    es_matrices_ori = ParamField(
-        "es_matrices_ori", title="Matrices orientation", order_num=11,
+    es_mRNA_matrices_ori = ParamField(
+        "es_mRNA_matrices_ori", title="Matrices orientation", order_num=11,
         input_type=InputType.SELECT, field_type=FieldType.STR,
         init_val="SxG",
         options={
@@ -143,8 +101,81 @@ class MassUpload(UniformMetaBlock):
         }
     )
 
-    platform = ParamField("platform", title="Platform ID", order_num=12,
-                          input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    m_rna_platform = ParamField("m_rna_platform", title="Platform ID", order_num=12,
+                                input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+
+    m_rna_unit = ParamField("m_rna_unit", title="Working unit [used when platform is unknown]",
+                            order_num=13, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
+                            init_val="RefSeq",
+                            options={
+                                "inline_select_provider": True,
+                                "select_options": [
+                                    ["RefSeq", "RefSeq"],
+                                    ["Entrez", "EntrezID"],
+                                    ["Symbol", "Symbol"]
+                                ]
+                            })
+
+    csv_sep_m_rna = ParamField(
+        "csv_sep_m_rna", title="CSV separator symbol", order_num=14,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
+            ]
+        }
+    )
+
+    es_miRNA_matrices = ParamField(
+        "es_miRNA_matrices", title="miRNA Expression sets", order_num=15,
+        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM,
+        options={"multiple": True},
+    )
+
+    mi_rna_platform = ParamField("mi_rna_platform", title="Platform ID", order_num=21,
+                                 input_type=InputType.TEXT, field_type=FieldType.STR, required=False)
+    mi_rna_unit = ParamField("mi_rna_unit", title="Working unit [used when platform is unknown]",
+                             order_num=22, input_type=InputType.SELECT, field_type=FieldType.STR, required=False,
+                             init_val="RefSeq",
+                             options={
+                                 "inline_select_provider": True,
+                                 "select_options": [
+                                     ["RefSeq", "RefSeq"],
+                                     ["mirbase", "miRBase ID"]
+                                 ]
+                             })
+
+    es_miRNA_matrices_ori = ParamField(
+        "es_miRNA_matrices_ori", title="Matrices orientation", order_num=23,
+        input_type=InputType.SELECT, field_type=FieldType.STR,
+        init_val="SxG",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                ["SxG", "Samples x Genes"],
+                ["GxS", "Genes x Samples"]
+            ]
+        }
+    )
+    csv_sep_mi_rna = ParamField(
+        "csv_sep_mi_rna", title="CSV separator symbol", order_num=24,
+        input_type=InputType.SELECT, field_type=FieldType.STR, init_val=",",
+        options={
+            "inline_select_provider": True,
+            "select_options": [
+                [" ", "space ( )"],
+                [",", "comma  (,)"],
+                ["\t", "tab (\\t)"],
+                [";", "semicolon (;)"],
+                [":", "colon (:)"],
+            ]
+        }
+    )
 
     pheno_matrices = ParamField(
         "pheno_matrices", title="Phenotypes", order_num=40,
@@ -167,23 +198,28 @@ class MassUpload(UniformMetaBlock):
         }
     )
 
-    cells = BlockField(name="cells", field_type=FieldType.CUSTOM, init_val=None)
+    # cells = BlockField(name="cells", field_type=FieldType.CUSTOM, init_val=None)
 
-    elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
-        "mass_upload/data_spec.html"
-    ])
+    # elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
+    #     "mass_upload/data_spec.html"
+    # ])
 
     def __init__(self, *args, **kwargs):
         super(MassUpload, self).__init__(*args, **kwargs)
-        self.es_matrices = MultiUploadField()
+        self.es_mRNA_matrices = MultiUploadField()
+        self.es_miRNA_matrices = MultiUploadField()
+
         self.pheno_matrices = MultiUploadField()
 
         self.pheno_by_es_names = {}
+
         self.labels = []
         self.seq = []
-        self.cells = DataInfoList()
         self.register_inner_output_variables([InnerOutputField(
-            name="es",
+            name="mRNA_es",
+            provided_data_type="ExpressionSet"
+        ), InnerOutputField(
+            name="miRNA_es",
             provided_data_type="ExpressionSet"
         )])
 
@@ -192,30 +228,6 @@ class MassUpload(UniformMetaBlock):
         if self.state in ['source_was_preprocessed', 'sample_classes_assigned', 'ready', 'done']:
             return True
         return False
-
-    def add_cell(self, exp, received_block, *args, **kwargs):
-        new_cell_dict = received_block.get("cells", {}).get("new")
-        if new_cell_dict:
-            cell = DataInfo(new_cell_dict["label"])
-            self.cells.cells.append(cell)
-            exp.store_block(self)
-
-    def remove_cell(self, exp, cell_json, *args, **kwargs):
-        try:
-            cell = json.loads(cell_json)
-            self.cells.remove_by_label(cell["label"])
-            exp.store_block(self)
-        except:
-            pass
-
-    def save_cell(self, exp, cell_json, *args, **kwargs):
-        try:
-            cell = json.loads(cell_json)
-            f = self.cells.find_by_label(cell["label"])
-            f.set_indices(int(cell["from_index"]), int(cell["to_index"]))
-            exp.store_block(self)
-        except:
-            pass
 
     def get_fold_labels(self):
         return self.labels
@@ -231,25 +243,28 @@ class MassUpload(UniformMetaBlock):
             @param exp: Experiment
         """
         self.clean_errors()
-        # sep = getattr(self, "csv_sep", " ")
-        # platform = getattr(self, "platform", " ")
         try:
-            if len(self.pheno_matrices) != len(self.es_matrices):
-                raise RuntimeError("Different number of phenotypes and expression sets")
-            self.labels = es_matrix_names = sorted(self.es_matrices)
+            if len(self.pheno_matrices) != len(self.es_mRNA_matrices):
+                raise RuntimeError("Different number of phenotypes and mRNA expression sets")
+            if self.es_miRNA_matrices:
+                if len(self.pheno_matrices) != len(self.es_miRNA_matrices):
+                    raise RuntimeError("Different number of phenotypes and miRNA expression sets")
+            self.labels = es_mRNA_matrix_names = sorted(self.es_mRNA_matrices)
+            es_miRNA_matrix_names = sorted(self.es_miRNA_matrices)
             pheno_matrix_names = sorted(self.pheno_matrices)
+            if len(es_miRNA_matrix_names) == 0:
+                es_miRNA_matrix_names = len(es_mRNA_matrix_names) * [None]
             self.pheno_by_es_names = {
-                es_name: pheno_name for
+                pheno_name: es_name for
                 es_name, pheno_name
-                in zip(es_matrix_names, pheno_matrix_names)
+                in zip(zip(es_mRNA_matrix_names, es_miRNA_matrix_names), pheno_matrix_names)
             }
-            sep = getattr(self, "csv_sep", " ")
+
             self.clean_errors()
             self.celery_task = wrapper_task.s(
                 bunch_upload_task,
                 exp,
                 self,
-                sep,
                 success_action="processing_done",
                 error_action="error_on_processing"
             )
@@ -266,5 +281,5 @@ class MassUpload(UniformMetaBlock):
         self.inner_output_manager.reset()
         self.do_action("on_folds_generation_success", exp, self.seq)
 
-    # def success(self, exp, *args, **kwargs):
-    #     pass
+    def get_repeat_labels(self):
+        pass
