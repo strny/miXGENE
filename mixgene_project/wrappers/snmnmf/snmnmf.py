@@ -127,10 +127,20 @@ class SNMNMF(object):
     # For an interaction matrix, assures the dimensional compatibility
     def adaptInteractionData(self, index_names, columns_names, interactions_matrix):
         """Return the adapted interaction matrix."""
-        inte = pd.DataFrame(interactions_matrix, index=index_names, columns=columns_names).to_sparse()
-        inte = inte.fillna(0)
-        return inte
-            
+        from scipy.sparse import csr_matrix, hstack, vstack
+        #inte = pd.DataFrame(interactions_matrix, index=index_names, columns=columns_names).to_sparse()
+        #inte = inte.fillna(0)
+        y, x = interactions_matrix.shape
+        Z2 = interactions_matrix
+        if x != len(columns_names):
+            Z = csr_matrix((y, len(columns_names) - x), dtype='int')
+            Z2 = hstack((Z2, Z))
+        if y != len(index_names):
+            Z = csr_matrix((len(index_names) - y, Z2.shape[1]), dtype='int')
+            Z2 = vstack((Z2, Z))
+        return Z2
+
+
     def run(self):
         print "this method should be overridden"     
         #        

@@ -56,7 +56,7 @@ def pattern_filter(modules, GE, classes, n_best=10, metric='mutual_information',
     else: raise KeyError("no such an aggregation")
 
     modules = [list(mod) for mod in modules]
-    # GE[mod].values
+
     sort_modules = sorted(modules, key=lambda mod: metric(classes, aggregate(GE[mod].values)), reverse=True)
     
     return sort_modules[:n_best]

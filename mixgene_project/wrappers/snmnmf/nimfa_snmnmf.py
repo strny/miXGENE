@@ -64,12 +64,12 @@ class NIMFA_SNMNMF(SNMNMF):
             raise SNMNMFException("Matrices mRNA and miRNA have not compatible dimemsions A.index: %s, B.index: %s, A.cols: %s, B.cols: %s" % (str(A.index), str(B.index), str(A.columns), str(B.columns)))
         # adapt the prior knowledge
         self.gene2gene = self.adaptInteractionData(self.mRNA.columns, self.mRNA.columns, self.gene2gene)
-        self.miRNA2gene = self.adaptInteractionData(self.miRNA.columns, self.mRNA.columns, self.miRNA2gene)    
+        self.miRNA2gene = self.adaptInteractionData(self.miRNA.columns, self.mRNA.columns, self.miRNA2gene)
     
     def run(self, **params):
         if not self.dataConsolided:
             print "NIMFA_SNMNMF: preparing data"     
-            self.consolideTheData()         
+            self.consolideTheData()
             self.dataConsolided = True
         print "NIMFA_SNMNMF: starting"     
         #        
@@ -86,7 +86,7 @@ class NIMFA_SNMNMF(SNMNMF):
                       initialize_only = True,
                       A = A ,
                       B = B,               
-                      n_run = 3,
+                      n_run = 1,
                       gamma = self.g1,
                       gamma_1 = self.g2,
                       lamb = self.l1,

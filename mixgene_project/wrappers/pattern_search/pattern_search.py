@@ -404,7 +404,8 @@ class DifferentialPatternSearcher(object):
         self.patterns = []
         c = 0
         time_d=0
-        for seed in self.seeds:
+        #TODO odstranit omezeni
+        for seed in self.seeds[:500]:
             #print seed
             c += 1
             if self.verbose and c%100 == 0:         

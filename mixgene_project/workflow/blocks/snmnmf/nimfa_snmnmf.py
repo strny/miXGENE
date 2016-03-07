@@ -1,3 +1,5 @@
+from nimfa.utils.utils import MFError
+
 __author__ = 'pavel'
 
 from webapp.tasks import wrapper_task
@@ -47,8 +49,8 @@ def nimfa_snmnmf_task(exp,
         mode=NotifyMode.INFO
     ).send()
 
-    g2g = gene2gene.get_matrix_for_platform(exp, gene_platform)
-    m2g = miRNA2gene.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, symmetrize=False)
+    g2g = gene2gene.get_matrix_for_platform(exp, gene_platform, identifiers=False)
+    m2g = miRNA2gene.get_matrix_for_platform(exp, gene_platform, mi_rna_platform, identifiers=False, symmetrize=False)
 
     AllUpdated(
         exp.pk,
@@ -64,8 +66,10 @@ def nimfa_snmnmf_task(exp,
                           params=params)
 
     # run factorization
-    snm.run(seed="random_c", rank=params['rank'], max_iter=5)
-
+    try:
+        snm.run(seed="random_c", rank=params['rank'], max_iter=5)
+    except MFError as mfe:
+        raise(Exception(mfe.message))
     W = mRNA.clone(base_filename + "_W")
     W.store_assay_data_frame(snm.W)
 

@@ -374,7 +374,7 @@ class Experiment(models.Model):
         #     try:
         #         uuid, block = pickle.loads(r.get(ExpKeys.get_block_key(uuid)))
         #     except TypeError:
-        #         self.remove_block()
+        #         pass
 
         return [(uuid, pickle.loads(r.get(ExpKeys.get_block_key(uuid))))
                 for uuid in block_uuid_list]

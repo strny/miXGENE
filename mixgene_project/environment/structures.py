@@ -166,6 +166,8 @@ class BinaryInteraction(GenericStoreStructure):
                 rf = list(find_refseqs(gene))
                 if len(rf) > 0:
                     new_g.append(rf[0])
+                if len(rf) == 0:
+                    new_g.append(gene)
             gene_list = new_g
         hasht = dict(zip(gene_list, range(len(gene_list))))
 
@@ -638,7 +640,7 @@ class GmtStorage(object):
         return gene_sets
 
     @staticmethod
-    def read_inp(inp, sep):
+    def read_inp(inp, sep, conv=True):
         gene_sets = GS(dict(), dict())
         for line in inp:
             split = line.strip().split(sep)
@@ -647,18 +649,21 @@ class GmtStorage(object):
             key = split[0]
             gene_sets.description[key] = split[1]
             gene_sets.genes[key] = split[2:]
-        return GmtStorage.convert_to_refseqs(gene_sets)
+        if conv:
+            return GmtStorage.convert_to_refseqs(gene_sets)
+        else:
+            return gene_sets
 
-    def load(self):
+    def load(self, conv=True):
         """
             @rtype  : GS
         """
         if self.compression == "gzip":
             with gzip.open(self.filepath) as inp:
-                return GmtStorage.read_inp(inp, self.sep)
+                return GmtStorage.read_inp(inp, self.sep, conv)
         else:
             with open(self.filepath) as inp:
-                return GmtStorage.read_inp(inp, self.sep)
+                return GmtStorage.read_inp(inp, self.sep, conv)
 
     def store(self, gene_sets):
         """
@@ -704,10 +709,12 @@ class GeneSets(GenericStoreStructure):
             )
         self.storage.store(gs)
 
-    def get_gs(self):
+    def get_gs(self, conv=True):
         if self.storage is None:
             raise RuntimeError("No gene sets was stored")
-        return self.storage.load()
+        return self.storage.load(conv)
+
+
 
 
 class PlatformAnnotation(object):

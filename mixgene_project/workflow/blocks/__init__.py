@@ -55,8 +55,10 @@ from workflow.blocks.visualizers.rc_table import RenderTable
 from workflow.blocks.visualizers.table_result_view import TableResultView
 from workflow.blocks.snmnmf.comodule_visualize import ComoduleSetView
 from workflow.blocks.visualizers.dictionary_visualize import DictionarySetView
-from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
 
+
+from workflow.blocks.visualizers.enrichment_visualize import EnrichmentVisualize
+from workflow.blocks.visualizers.geneset_visualize import GeneSetsView
 
 from blocks_pallet import block_classes_by_name, blocks_by_group
 

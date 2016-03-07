@@ -39,24 +39,20 @@ def pattern_filter_task(exp, block,
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
-
     mData = m_rna_es.get_assay_data_frame()
     pheno = m_rna_es.get_pheno_data_frame()
     classes = pheno['User_class'].values
 
     data = mData
-    data.set_index(data.columns[0], inplace=True, drop=True)
-
-    # data = zscore(data)
-    com_set = comodule_set.load_set()
+    com_set = gene_sets.get_gs(conv=False).genes
 
     result = pattern_filter(com_set.values(), data, classes, n_best, metric)
 
     result = {key: value for key, value in enumerate(result)}
-    gs = GS(None, result)
+    gs = GS(result, result)
     cs = GeneSets(exp.get_data_folder(), base_filename)
 
-    cs.store_set(gs)
+    cs.store_gs(gs)
 
     return [cs], {}
 

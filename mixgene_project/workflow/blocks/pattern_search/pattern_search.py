@@ -128,7 +128,7 @@ def pattern_search(exp, block,
     # cs = ComoduleSet(exp.get_data_folder(), base_filename)
     gene_sets = GeneSets(exp.get_data_folder(), "%s_ps_gene_sets" % str(block.uuid))
     result = {key: value for key, value in enumerate(comodule_set)}
-    gs = GS(None, result)
+    gs = GS(result, result)
     gene_sets.store_gs(gs)
 
     # self.set_out_var("gene_sets", gene_sets)
@@ -136,7 +136,7 @@ def pattern_search(exp, block,
     # cs.store_set(result)
     # exp.log(block.uuid, "ComoduleSet stored.")
 
-    return [gs], {}
+    return [gene_sets], {}
 
 
 class PatternSearch(GenericBlock):
