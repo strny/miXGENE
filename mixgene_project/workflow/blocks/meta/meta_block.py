@@ -146,6 +146,10 @@ class UniformMetaBlock(GenericBlock):
 
     def run_sub_scope(self, exp, *args, **kwargs):
         self.reset_execution_for_sub_blocks()
+        cell = self.res_seq.sequence[self.inner_output_manager.iterator]
+        log.debug("Cell!!!!!!!! %s", str(cell))
+        act = self.inner_output_manager.sequence[self.inner_output_manager.iterator]
+        log.debug("Cell!!!!!!!! %s", str(act))
 
         exp.store_block(self)
         sr = ScopeRunner(exp, self.sub_scope_name)
@@ -184,7 +188,7 @@ class UniformMetaBlock(GenericBlock):
                 self.inner_output_manager.next()
                 self.do_action("run_sub_scope", exp)
             except StopIteration, e:
-                # All folds was processed without errors
+                # All folds were processed without errors
                 self.build_result_collection(exp)
 
                 self.do_action("success", exp)

@@ -271,7 +271,6 @@ class InputManager(object):
         }
 
 
-
 class IteratedInnerFieldManager(object):
     def __init__(self):
         self.fields = {}

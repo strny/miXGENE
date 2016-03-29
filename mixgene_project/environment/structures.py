@@ -629,13 +629,16 @@ class GmtStorage(object):
         import json
 
         for key in gene_sets.genes.keys():
-            term, created = GEOTerm.objects.get_or_create(term_name=key)
-            if created:
+            if str(key).isdigit():
                 genes = expand_geneset(gene_sets.genes[key])
-                term.term_genes = json.dumps(list(genes))
-                term.save()
             else:
-                genes = set(json.loads(term.term_genes))
+                term, created = GEOTerm.objects.get_or_create(term_name=key)
+                if created:
+                    genes = expand_geneset(gene_sets.genes[key])
+                    term.term_genes = json.dumps(list(genes))
+                    term.save()
+                else:
+                    genes = set(json.loads(term.term_genes))
             gene_sets.genes[key] = genes
         return gene_sets
 

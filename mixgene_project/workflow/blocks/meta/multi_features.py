@@ -8,12 +8,13 @@ import pandas as pd
 from workflow.blocks.fields import FieldType, BlockField, InnerOutputField, InputBlockField, ActionRecord, ActionsList
 from workflow.blocks.meta.meta_block import UniformMetaBlock
 from environment.structures import prepare_phenotype_for_js_from_es
+from webapp.tasks import wrapper_task
 
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
-def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map):
+def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map, success_action="success"):
     """
         @type features: list
         @param features: Phenotype features to use as target class
@@ -55,7 +56,7 @@ def prepare_folds(exp, block, features, es_dict, inner_output_es_names_map):
             cell[output_name] = modified_es
         seq.append(cell)
 
-    return seq
+    return [seq],{}
 
 
 class MultiFeature(UniformMetaBlock):
@@ -118,14 +119,16 @@ class MultiFeature(UniformMetaBlock):
             inp_name: self.get_input_var(inp_name)
             for inp_name in self.es_inputs
         }
-        seq = prepare_folds(
+        self.celery_task = wrapper_task.s(
+            prepare_folds,
             exp, self,
-            self.features, es_dict,
-            self.inner_output_es_names_map
+            features=self.features,
+            es_dict=es_dict,
+            inner_output_es_names_map=self.inner_output_es_names_map,
+            success_action="on_folds_generation_success"
         )
-
         exp.store_block(self)
-        self.do_action("on_folds_generation_success", exp, seq)
+        self.celery_task.apply_async()
 
     def phenotype_for_js(self, exp, *args, **kwargs):
         es = None

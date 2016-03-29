@@ -384,7 +384,7 @@ class DifferentialPatternSearcher(object):
         self.trivial_patterns = trivial_patterns
         self.verbose = verbose
         self.draw = draw
-        self.base_dir=base_dir
+        self.base_dir = base_dir
         
         if search_method == 'Chuang':
             self.search_method = ChuangMethod()
@@ -404,8 +404,7 @@ class DifferentialPatternSearcher(object):
         self.patterns = []
         c = 0
         time_d=0
-        #TODO odstranit omezeni
-        for seed in self.seeds[:500]:
+        for seed in self.seeds:
             #print seed
             c += 1
             if self.verbose and c%100 == 0:         

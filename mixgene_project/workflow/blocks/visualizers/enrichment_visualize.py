@@ -16,6 +16,7 @@ from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField,
 from workflow.blocks.generic import GenericBlock
 
 from django.core.urlresolvers import reverse
+from webapp.models import Refseq, GeneIdentifier
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -50,6 +51,10 @@ class EnrichmentVisualize(GenericBlock):
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
         "enrichment_view.html"
     ])
+
+    def map_to_symbols(self, gene_set):
+        genes = [gi.name for gi in GeneIdentifier.objects.filter(refseq__refseq__in=gene_set)]
+        return genes
 
     @property
     def export_results_csv_url(self):
@@ -96,7 +101,7 @@ class EnrichmentVisualize(GenericBlock):
                 "rows": [
                     dict(zip(fields_list, row))
                     for row in
-                    [(k, v[1], v[0]) for k, v in table.iteritems()]
+                    [(k, v[1], set(self.map_to_symbols(v[0]))) for k, v in table.iteritems()]
                     #table.to_records().tolist() #[:100]
                 ]
             }

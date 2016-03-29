@@ -47,11 +47,11 @@ def apply_classifier(
         @type exp: Experiment
         @type block: GenericBlock
     """
-    # if settings.CELERY_DEBUG:
-    #     import sys
-    #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
-    #     import pydevd
-    #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     if not classifier_options:
         classifier_options = {}
@@ -87,7 +87,17 @@ def apply_classifier(
     if apply_func is None:
         cl = get_classifier(fabric, classifier_options, classifier_name, block)
         log.debug("Fitting classifier.")
-        cl.fit(x_train, y_train_fixed)
+        try:
+            log.debug(str(x_train))
+            cl.fit(x_train, y_train_fixed)
+        except ValueError:
+            # if settings.CELERY_DEBUG:
+            #     import sys
+            #     sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+            #     import pydevd
+            #     pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+            log.debug(str(x_train))
+            raise
         log.debug("Finished fitting classifier.")
     else:
         raise NotImplementedError()

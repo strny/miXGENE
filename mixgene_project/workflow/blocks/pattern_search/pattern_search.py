@@ -19,7 +19,7 @@ from scipy.stats import zscore
 from webapp.notification import AllUpdated, NotifyMode
 from scipy.sparse import hstack
 from pandas import SparseDataFrame
-
+import numpy as np
 
 def sparse_df_to_saprse_matrix(sparse_df):
     # sparse_df = sparse_df.to_sparse()
@@ -47,6 +47,7 @@ def pattern_search(exp, block,
             # miRNA_platform,
             radius,
             min_imp,
+            number_of_genes,
             metric,
             base_filename):
     """
@@ -112,9 +113,9 @@ def pattern_search(exp, block,
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
 
     exp.log(block.uuid, "Data ready. Running Pattern Search")
-
+    seeds = np.random.choice(np.unique(nw.indices), number_of_genes, replace=False)
     # inicializace objektu metric=metric,
-    searcher = DifferentialPatternSearcher(nw, radius=radius, min_improve=min_imp,
+    searcher = DifferentialPatternSearcher(nw, radius=radius, min_improve=min_imp, seeds=seeds,
                                            base_dir="orig_interactions/", verbose=True)
 
     #vlastni search
@@ -164,6 +165,9 @@ class PatternSearch(GenericBlock):
                                  required_data_type="BinaryInteraction",
                                  required=False)
 
+    genes_num = ParamField(name="genes_num", title="Number of Genes", order_num=10,
+                           input_type=InputType.TEXT, field_type=FieldType.INT, init_val=100)
+
     # upload_gene2gene_platform = ParamField("upload_gene2gene_platform", title="PPI platform", order_num=32,
     #                                        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
@@ -210,6 +214,7 @@ class PatternSearch(GenericBlock):
             miRNA2gene=self.get_input_var("miRNA2gene"),
             radius=self.d,
             min_imp=self.min_imp,
+            number_of_genes=self.genes_num,
             metric=self.get_input_var("metric"),
             base_filename="%s_comodule_sets" % self.uuid,
         )

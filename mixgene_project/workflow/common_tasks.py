@@ -247,6 +247,11 @@ def generate_cv_folds(
 
     masked_pheno_df = pheno_df.loc[mask]
     classes_vector = masked_pheno_df[user_class_title].values
+    from collections import Counter
+    for c in Counter(classes_vector).itervalues():
+        folds_num = min(c, folds_num)
+    block.folds_num = folds_num
+    # block.save()
     i = 0
     for train_idx, test_idx in chain(*repeat(cross_validation.StratifiedKFold(
         classes_vector,
@@ -281,6 +286,8 @@ def generate_cv_folds(
 
             cell[es_train_name] = train_es
             cell[es_test_name] = test_es
+            log.debug("train_es: %s", assay_df[train_idx].shape)
+            log.debug("test_es: %s", assay_df[test_idx].shape)
         sequence.append(cell)
         i += 1
 

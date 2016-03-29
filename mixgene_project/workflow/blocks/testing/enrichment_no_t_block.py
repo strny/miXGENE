@@ -15,7 +15,7 @@ from wrappers.snmnmf.evaluation import EnrichmentInGeneSets
 def enrichment_no_t_task(exp, block,
                      T,
                      gs,
-                     cs,
+                     patterns,
                      base_filename,
     ):
 
@@ -25,9 +25,9 @@ def enrichment_no_t_task(exp, block,
         import pydevd
         pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
     gene_set = gs.get_gs()
-    cs = cs.load_set()
-    e = EnrichmentInGeneSets(cs)
-    enrich = e.getModuleEnrichmentInGeneSets(cs, gene_set.genes, pval_threshold=T)
+    patterns = patterns.get_gs()
+    e = EnrichmentInGeneSets(patterns.genes)
+    enrich = e.getModuleEnrichmentInGeneSets(patterns.genes, gene_set.genes, pval_threshold=T)
     enrich = dict((mod, (genes, map(lambda x: (gene_set.description[x[0]], x[0], x[1]), terms))) for (mod, (genes, terms)) in enrich.items())
     ds = DictionarySet(exp.get_data_folder(), base_filename)
     ds.store_dict(enrich)
@@ -51,7 +51,7 @@ class EnrichmentNoTBlock(GenericBlock):
     _block_actions.extend(execute_block_actions_list)
 
     _cs_1 = InputBlockField(name="gs", order_num=10, required_data_type="GeneSets", required=True)
-    H = InputBlockField(name="cs", order_num=11, required_data_type="ComoduleSet", required=True)
+    H = InputBlockField(name="patterns", order_num=11, required_data_type="GeneSets", required=True)
     _t = ParamField(name="T", order_num=12, title="Enrichment threshold", input_type=InputType.TEXT, field_type=FieldType.FLOAT, init_val="0.05")
 
     dict = OutputBlockField(name="dictionary_set", provided_data_type="DictionarySet")
@@ -63,13 +63,13 @@ class EnrichmentNoTBlock(GenericBlock):
     def execute(self, exp, *args, **kwargs):
         self.clean_errors()
         gs = self.get_input_var("gs")
-        cs = self.get_input_var("cs")
+        cs = self.get_input_var("patterns")
         self.celery_task = wrapper_task.s(
             enrichment_no_t_task,
             exp, self,
             T = self.T,
             gs = gs,
-            cs = cs,
+            patterns = cs,
             base_filename="%s_%s_enrich" % (self.uuid, 'enrichment_cont')
         )
         exp.store_block(self)

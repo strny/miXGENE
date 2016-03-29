@@ -67,8 +67,6 @@ def process_data_frame(exp, block, df, ori, platform, unit, data_type="m_rna"):
         # df.columns = df.iloc[0]
         # df = df.drop(df.index[0])
     # if isinstance(df.columns[0][0], basestring):
-
-
     gpl_file = None
     if platform:
         AllUpdated(
@@ -120,7 +118,7 @@ def user_upload_complex_task(exp,
         pheno_df = None
     else:
         pheno_df = block.pheno_matrix.get_as_data_frame(sep_pheno)
-        pheno_df.set_index(pheno_df.columns[0])
+        pheno_df.set_index(pheno_df.columns[0], inplace=True)
 
         # TODO: solve somehow better: Here we add empty column with user class assignment
         pheno_df[ExpressionSet(None, None).pheno_metadata["user_class_title"]] = ""

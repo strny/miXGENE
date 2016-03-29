@@ -11,6 +11,7 @@ import wrappers.snmnmf.nimfa_snmnmf as ns
 from django.conf import settings
 from webapp.notification import AllUpdated, NotifyMode
 
+
 # @task(name="wrappers.filter.filter_task")
 def nimfa_snmnmf_task(exp,
                       block,

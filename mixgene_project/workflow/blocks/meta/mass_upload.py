@@ -22,18 +22,23 @@ def bunch_upload_task(exp, block):
     for pheno_name, (es_mRNA_name, es_miRNA_name) in block.pheno_by_es_names.iteritems():
         es_mRNA_ufw = block.es_mRNA_matrices[es_mRNA_name]
         es_mRNA_df = es_mRNA_ufw.get_as_data_frame(block.csv_sep_m_rna)
-        es_miRNA_ufw = block.es_miRNA_matrices[es_miRNA_name]
-        es_miRNA_df = es_miRNA_ufw.get_as_data_frame(block.csv_sep_mi_rna)
+        es_miRNA_ufw = None
+        if es_miRNA_name is not None:
+            es_miRNA_ufw = block.es_miRNA_matrices[es_miRNA_name]
+        if es_miRNA_ufw is not None:
+            es_miRNA_df = es_miRNA_ufw.get_as_data_frame(block.csv_sep_mi_rna)
 
         pheno_ufw = block.pheno_matrices[pheno_name]
         pheno_df = pheno_ufw.get_as_data_frame(block.csv_sep)
 
         es_mRNA, es_mRNA_df, gpl_file = process_data_frame(exp, block, es_mRNA_df, block.es_mRNA_matrices_ori, block.m_rna_platform, block.m_rna_unit, "m_rna")
-        es_miRNA, es_miRNA_df, gpl_file = process_data_frame(exp, block, es_miRNA_df, block.es_miRNA_matrices_ori, block.mi_rna_platform, block.mi_rna_unit, "mi_rna")
+        if es_miRNA_name is not None:
+            es_miRNA, es_miRNA_df, gpl_file = process_data_frame(exp, block, es_miRNA_df, block.es_miRNA_matrices_ori, block.mi_rna_platform, block.mi_rna_unit, "mi_rna")
 
         pheno_df.set_index(pheno_df.columns[0], inplace=True)
         es_mRNA_sample_names = sorted(es_mRNA_df.index.tolist())
-        es_miRNA_sample_names = sorted(es_miRNA_df.index.tolist())
+        if es_miRNA_name is not None:
+            es_miRNA_sample_names = sorted(es_miRNA_df.index.tolist())
 
         pheno_sample_names = sorted(pheno_df.index.tolist())
         if es_mRNA_sample_names != pheno_sample_names:
@@ -45,22 +50,26 @@ def bunch_upload_task(exp, block):
                 mode=NotifyMode.ERROR
             ).send()
             raise RuntimeError(msg)
-        if es_miRNA_sample_names != pheno_sample_names:
-            msg = "Couldn't match `%s` and `%s` due to different sample name sets" % (es_miRNA_name, pheno_name)
-            AllUpdated(
-                exp.pk,
-                comment=msg,
-                silent=False,
-                mode=NotifyMode.ERROR
-            ).send()
-            raise RuntimeError(msg)
+        if es_miRNA_name is not None:
+            if es_miRNA_sample_names != pheno_sample_names:
+                msg = "Couldn't match `%s` and `%s` due to different sample name sets" % (es_miRNA_name, pheno_name)
+                AllUpdated(
+                    exp.pk,
+                    comment=msg,
+                    silent=False,
+                    mode=NotifyMode.ERROR
+                ).send()
+                raise RuntimeError(msg)
 
         es_mRNA.store_pheno_data_frame(pheno_df)
-        es_miRNA.store_pheno_data_frame(pheno_df)
+        if es_miRNA_name is not None:
+            es_miRNA.store_pheno_data_frame(pheno_df)
 
         es_mRNA.pheno_metadata["user_class_title"] = pheno_df.columns[0]
-        es_miRNA.pheno_metadata["user_class_title"] = pheno_df.columns[0]
-
+        if es_miRNA_name is not None:
+            es_miRNA.pheno_metadata["user_class_title"] = pheno_df.columns[0]
+        else:
+            es_miRNA = None
         seq.append({"mRNA_es": es_mRNA, "miRNA_es": es_miRNA, "__label__": es_mRNA_name})
     block.seq = seq
     return [block], {}

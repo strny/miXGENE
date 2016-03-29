@@ -15,7 +15,6 @@ log.setLevel(logging.DEBUG)
 @task(name="webapp.tasks.auto_exec")
 def auto_exec_task(exp, scope_name, is_init=False):
     r = get_redis_instance()
-
     lock_key = ExpKeys.get_auto_exec_task_lock_key(exp.pk, scope_name)
     with redis_lock.Lock(r, lock_key):
         try:
