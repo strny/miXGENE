@@ -1,21 +1,18 @@
-__author__ = 'pavel'
-
-
-from collections import defaultdict
 import hashlib
 import logging
-
-import numpy as np
-from sklearn import decomposition
-
-from mixgene.util import log_timing
-from webapp.tasks import wrapper_task
 from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import FieldType, BlockField, InputType, ParamField, ActionsList, ActionRecord, \
     InputBlockField
 from workflow.blocks.generic import GenericBlock
-
 from django.core.urlresolvers import reverse
+
+# from collections import defaultdict
+
+# import numpy as np
+# from sklearn import decomposition
+#
+# from mixgene.util import log_timing
+# from webapp.tasks import wrapper_task
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -38,19 +35,16 @@ class GeneSetsView(GenericBlock):
     ])
 
     _input_dictionary_set = InputBlockField(name="gs", order_num=10,
-                               required_data_type="GeneSets", required=True)
+                                            required_data_type="GeneSets", required=True)
 
     _table_for_js = BlockField(name="table_js", field_type=FieldType.RAW, is_a_property=True)
 
     _export_raw_results_url = BlockField(name="export_raw_results_url",
-                                   field_type=FieldType.STR, is_a_property=True)
-
-
+                                         field_type=FieldType.STR, is_a_property=True)
 
     elements = BlockField(name="elements", field_type=FieldType.SIMPLE_LIST, init_val=[
         "dictionary_set_view.html"
     ])
-
 
     @property
     def export_raw_results_url(self):
@@ -60,7 +54,6 @@ class GeneSetsView(GenericBlock):
             "field": "export_json",
             "format": "json"
         })
-
 
     @property
     def table_js(self):
@@ -73,7 +66,7 @@ class GeneSetsView(GenericBlock):
             column_title_to_code_name = {
                 title: "_" + hashlib.md5(title).hexdigest()[:8]
                 for title in table_headers
-            }
+                }
             fields_list = [column_title_to_code_name[title] for title in table_headers]
 
             return {
@@ -84,13 +77,13 @@ class GeneSetsView(GenericBlock):
                         "visible": True
                     }
                     for title in table_headers
-                ],
+                    ],
                 "rows": [
                     dict(zip(fields_list, row))
                     for row in
                     [(k, list(v)) for k, v in table.iteritems()]
-                    #table.to_records().tolist() #[:100]
-                ]
+                    # table.to_records().tolist() #[:100]
+                    ]
             }
         else:
             return None
