@@ -184,8 +184,9 @@ class ResultsContainer(GenericStoreStructure):
                 new_cr.classifier = "aggregated_result"
                 for cr in flatten:
                     # new_cr.labels_encode_vector.extend(cr.labels_encode_vector)
-                    new_cr.y_true.extend(cr.y_true)
-                    new_cr.y_predicted.extend(cr.y_predicted)
+                    if cr is not None:
+                        new_cr.y_true.extend(cr.y_true)
+                        new_cr.y_predicted.extend(cr.y_predicted)
 
                 # import  ipdb; ipdb.set_trace()
                 result[key_for_result] = new_cr
