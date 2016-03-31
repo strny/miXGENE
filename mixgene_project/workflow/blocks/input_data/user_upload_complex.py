@@ -154,7 +154,7 @@ def user_upload_complex_task(exp,
 
         if pheno_df is not None:
             methyl_es.store_pheno_data_frame(pheno_df)
-        methyl_es.working_unit = block.methyl_unit
+        # methyl_es.working_unit = block.methyl_unit
 
     AllUpdated(
         exp.pk,
