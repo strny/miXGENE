@@ -305,8 +305,14 @@ class BinaryInteraction(GenericStoreStructure):
             else:
                 index = mirna_list[:sparse_df.shape[0]]
                 columns = gene_list[:sparse_df.shape[1]]
-            sparse_df['new_index'] = pd.Series(index, index=sparse_df.index)
-            sparse_df.set_index(['new_index'], inplace=True)
+            if settings.CELERY_DEBUG:
+                import sys
+                sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+                import pydevd
+                pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
+            # sparse_df['new_index'] = pd.Series(index, index=sparse_df.index)
+            sparse_df.set_index([index], inplace=True)
             sparse_df.columns = columns
             return sparse_df
         return inters_matr
