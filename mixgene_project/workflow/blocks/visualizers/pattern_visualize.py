@@ -44,7 +44,7 @@ class PatternView(GenericBlock):
     ])
 
     _input_patterns = InputBlockField(name="patterns", order_num=10,
-                                      required_data_type="ComoduleSet", required=True)
+                                      required_data_type="GeneSets", required=True)
 
     _input_edges = InputBlockField(name="edges", order_num=20,
                                    required_data_type="Edges", required=True)
@@ -85,7 +85,7 @@ class PatternView(GenericBlock):
         edges = self.get_input_var("edges")
         cs = self.get_input_var("patterns")
         if cs and edges and diff_expr:
-            pattern_set = cs.load_set().values()
+            pattern_set = cs.get_gs(conv=False).genes
             edges = edges.load_edges()
             diff_expr = diff_expr.load_expr()
             import math

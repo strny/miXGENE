@@ -59,8 +59,8 @@ def filter_by_bi(
     ).send()
 
     # targets_matrix = interaction_matrix.load_matrix()
-    # targets_matrix.columns = m_rna_df.columns
-    # targets_matrix.index = mi_rna_df.columns
+    targets_matrix.columns = m_rna_df.columns
+    targets_matrix.index = mi_rna_df.columns
 
     # allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.index)
     allowed_m_rna_index_set = set(targets_matrix.columns) & set(m_rna_df.columns)

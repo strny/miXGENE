@@ -80,12 +80,16 @@ def aggregation_task(exp, block,
     ).send()
 
     # targets_matrix = interaction_matrix.load_matrix()
+    targets_matrix.columns = m_rna.columns
+    targets_matrix.index = mi_rna.columns
 
     result_df = agg_func(m_rna, mi_rna, targets_matrix, c)
     result = m_rna_es.clone(base_filename)
     result.store_assay_data_frame(result_df)
-    result.store_pheno_data_frame(mi_rna_es.get_pheno_data_frame())
-
+    try:
+        result.store_pheno_data_frame(mi_rna_es.get_pheno_data_frame())
+    except RuntimeError as r:
+        pass
     return [result], {}
 
 
@@ -117,6 +121,12 @@ def sub_agg(m_rna, mi_rna, targets_matrix, c=1):
 
 # svd agg
 def svd_agg(m_rna, mi_rna, targets_matrix, c=1):
+    if settings.CELERY_DEBUG:
+        import sys
+        sys.path.append('/Migration/skola/phd/projects/miXGENE/mixgene_project/wrappers/pycharm-debug.egg')
+        import pydevd
+        pydevd.settrace('localhost', port=6901, stdoutToServer=True, stderrToServer=True)
+
     #
     mRNA_data = m_rna.apply(lambda x: 1.0*x/max(x), axis=0)
     miRNA_data = mi_rna.apply(lambda x: 1-1.0*x/max(x), axis=0)
@@ -132,15 +142,18 @@ def svd_agg(m_rna, mi_rna, targets_matrix, c=1):
         #
         targetting_miRNAs = targets_matrix.ix[targets_matrix[mRNA[0]]==1, mRNA].index
         #
-        selected_miRNA = miRNA_data.ix[:, targetting_miRNAs]
+        selected_miRNA = miRNA_data.ix[:, targetting_miRNAs].T
         #
-        if len(selected_miRNA.columns)>1:
+        if len(selected_miRNA.index) > 1:
             first_comp = DataFrame(np.linalg.svd(selected_miRNA)[2]).ix[0, :]
-            first_comp.index = selected_miRNA.index
-        new_rep = DataFrame(np.linalg.svd(DataFrame([aggregate_data.ix[:,mRNA[0]], first_comp ]).transpose())[2]).ix[0, :]
+            first_comp.index = selected_miRNA.columns
+        else:
+            continue
+        new_rep = DataFrame(np.linalg.svd(DataFrame([aggregate_data.ix[:, mRNA[0]], first_comp ]))[2]).ix[0, :]
         new_rep.index = aggregate_data.index
         aggregate_data.ix[:, mRNA[0]] = new_rep
     return aggregate_data
+
 
 def svd_agg_train(m_rna, mi_rna, targets_matrix, hide_columns=Index([])):
     #

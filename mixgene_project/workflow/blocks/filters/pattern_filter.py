@@ -78,7 +78,7 @@ class PatternFilter(GenericBlock):
     _gs = InputBlockField(name="gs", order_num=30, required_data_type="GeneSets", required=True)
 
 
-    _metric = ParamField(
+    metric = ParamField(
         "metric", title="Metric", order_num=40,
         input_type=InputType.SELECT, field_type=FieldType.STR,
         init_val="mutual_information",
