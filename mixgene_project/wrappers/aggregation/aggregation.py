@@ -62,7 +62,7 @@ def aggregation_task(exp, block,
 
     mi_rna = mi_rna_es.get_assay_data_frame()
     gene_platform = list(m_rna.columns)
-    mi_rna_platform = list(mi_rna)
+    mi_rna_platform = list(mi_rna.columns)
     AllUpdated(
         exp.pk,
         comment=u"Transforming interaction matrix",
