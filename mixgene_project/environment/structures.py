@@ -178,6 +178,8 @@ class BinaryInteraction(GenericStoreStructure):
                 rf = list(find_refseqs(gene))
                 if len(rf) > 0:
                     new_g.append(rf[0])
+                else:
+                    new_g.append(gene)
             mirna_list = new_g
             mirna_hasht = dict(zip(mirna_list, range(len(mirna_list))))
 
