@@ -32,9 +32,9 @@ from workflow.blocks.normalization.quantile_norm import QuantileNormBlock
 from workflow.blocks.normalization.zscore_filter import ZScoreBlock
 from workflow.blocks.snmnmf.threshold import ThresholdBlock
 from workflow.blocks.filters.filter_by_bi import FilterByInteraction
-from workflow.blocks.processing.merge_comodule import MergeComoduleSets
+# from workflow.blocks.processing.merge_comodule import MergeComoduleSets
 
-from workflow.blocks.testing.enrichment_no_t_block import EnrichmentNoTBlock
+# from workflow.blocks.testing.enrichment_no_t_block import EnrichmentNoTBlock
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 
 from workflow.blocks.pattern_search.pattern_search import PatternSearch
@@ -53,7 +53,7 @@ from workflow.blocks.visualizers.pattern_visualize import PatternView
 from workflow.blocks.visualizers.pca_visualize import PcaVisualize
 from workflow.blocks.visualizers.rc_table import RenderTable
 from workflow.blocks.visualizers.table_result_view import TableResultView
-from workflow.blocks.snmnmf.comodule_visualize import ComoduleSetView
+# from workflow.blocks.snmnmf.comodule_visualize import ComoduleSetView
 from workflow.blocks.visualizers.dictionary_visualize import DictionarySetView
 
 

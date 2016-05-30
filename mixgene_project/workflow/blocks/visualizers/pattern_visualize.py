@@ -17,7 +17,6 @@ from workflow.blocks.generic import GenericBlock
 
 from django.core.urlresolvers import reverse
 
-from environment.structures import ComoduleSet
 from wrappers.pattern_search.pattern_filter import get_patterns
 from wrappers.pattern_search.pattern_filter import differential_expression
 from scipy.stats import zscore

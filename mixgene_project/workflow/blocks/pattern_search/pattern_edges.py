@@ -42,7 +42,7 @@ def compute_edges(exp, block,
     """
         @type m_rna_es: ExpressionSet
         @type mi_rna_es: ExpressionSet
-        @type comodule_set: ComoduleSet
+        @type comodule_set: GeneSets
         @type gene2gene: BinaryInteraction
     """
     if settings.CELERY_DEBUG:
@@ -60,7 +60,7 @@ def compute_edges(exp, block,
     mData.set_index(mData.columns[0], inplace=True, drop=True)
     pheno = es.get_pheno_data_frame()
     classes = pheno[es.pheno_metadata['user_class_title']].values
-    pattern_set = cs.load_set()
+    pattern_set = cs.get_gs().load()
 
     edges = get_patterns(pattern_set.values(), mData, classes, nw)
     edges_type = Edges(exp.get_data_folder(), base_filename)
@@ -95,7 +95,7 @@ class PatternEdges(GenericBlock):
     #                                        input_type=InputType.FILE_INPUT, field_type=FieldType.CUSTOM)
 
     _input_comodule_set = InputBlockField(name="cs", order_num=20,
-                                         required_data_type="ComoduleSet", required=True)
+                                         required_data_type="GeneSets", required=True)
 
     _gene2gene = InputBlockField(name="gene2gene", order_num=30,
                                 required_data_type="BinaryInteraction",
