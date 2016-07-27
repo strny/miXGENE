@@ -34,7 +34,7 @@ from workflow.blocks.snmnmf.threshold import ThresholdBlock
 from workflow.blocks.filters.filter_by_bi import FilterByInteraction
 # from workflow.blocks.processing.merge_comodule import MergeComoduleSets
 
-# from workflow.blocks.testing.enrichment_no_t_block import EnrichmentNoTBlock
+from workflow.blocks.testing.enrichment_no_t_block import EnrichmentNoTBlock
 from workflow.blocks.snmnmf.nimfa_snmnmf import NIMFASNMNMFBlock
 
 from workflow.blocks.pattern_search.pattern_search import PatternSearch
