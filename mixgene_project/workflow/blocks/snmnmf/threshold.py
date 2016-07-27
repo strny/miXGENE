@@ -5,7 +5,7 @@ from workflow.blocks.blocks_pallet import GroupType
 from workflow.blocks.fields import ActionsList, ActionRecord, InputBlockField, ParamField, InputType, FieldType, \
     OutputBlockField
 from workflow.blocks.generic import GenericBlock, execute_block_actions_list
-from environment.structures import ComoduleSet
+from environment.structures import GeneSets, GS
 from django.conf import settings
 
 import numpy as np
@@ -44,9 +44,14 @@ def threshold_task(exp, block,
     z = 1
     x = EnrichmentInGeneSets(z)
     result = x.getGeneSet(H, T)
-    cs = ComoduleSet(exp.get_data_folder(), base_filename)
-    cs.store_set(result)
-    return [cs], {}
+
+    gene_sets = GeneSets(exp.get_data_folder(), base_filename)
+    gs = GS(result, result)
+    gene_sets.store_gs(gs)
+
+    # cs = GeneSets(exp.get_data_folder(), base_filename)
+    # cs.store_set(result)
+    return [gene_sets], {}
 
 class ThresholdBlock(GenericBlock):
     block_base_name = "THRESHOLD"
@@ -69,7 +74,7 @@ class ThresholdBlock(GenericBlock):
     t = ParamField(name="T", title="Threshold", input_type=InputType.TEXT, field_type=FieldType.FLOAT, init_val=0.1)
 
 
-    flt_es = OutputBlockField(name="comodule_set", provided_data_type="ComoduleSet")
+    flt_es = OutputBlockField(name="gene_sets", provided_data_type="GeneSets")
 
     def __init__(self, *args, **kwargs):
         super(ThresholdBlock, self).__init__(*args, **kwargs)
@@ -90,5 +95,5 @@ class ThresholdBlock(GenericBlock):
         self.celery_task.apply_async()
 
     def success(self, exp, flt_es):
-        self.set_out_var("comodule_set", flt_es)
+        self.set_out_var("gene_sets", flt_es)
         exp.store_block(self)
