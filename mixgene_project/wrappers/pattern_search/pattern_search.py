@@ -427,7 +427,7 @@ class DifferentialPatternSearcher(object):
             time_d += time.clock()-st
             if self.trivial_patterns or len(list(seed)[0]) > 2:
                 self.patterns += [pattern]    
-                check_dir(self.base_dir + 'greedy_search_pics/')
+                # check_dir(self.base_dir + 'greedy_search_pics/')
                 # if self.draw:
                 #     gene_color = dict()
                 #     for gene in pattern.genes:
